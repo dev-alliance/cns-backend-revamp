@@ -13,7 +13,7 @@ router.get("/", auth, async (req, res) => {
   res.send(results);
 });
 
-router.get("/profile", auth, async (req, res) => {
+router.get("/profile",  async (req, res) => {
   const user = await User.findById(req.user._id).select("-password");
   res.send(user);
 });
