@@ -4,6 +4,7 @@ const router = express.Router();
 const _ = require("lodash");
 const bcrypt = require("bcrypt");
 const { User, validate } = require("../Schema/UserSchema");
+const {Orders,validateOrders} = require('../Schema/OrderSchema')
 const jwt = require("jsonwebtoken");
 const config = require("config");
 
@@ -20,10 +21,10 @@ router.get("/profile", auth, async (req, res) => {
 router.post("/createUser", async (req, res) => {
   const { error } = validate(req.body);
 
-  if (error) return res.status(400).send(error.details[0].message);
+  if (error) return res.json({status:400,message:error.details[0].message});
 
   let user = await User.findOne({ email: req.body.email });
-  if (user) return res.status(400).send("user already registered");
+  if (user) return res.json({status:400,message:"User already exits"});
 
   user = new User(req.body);
   const salt = await bcrypt.genSalt(10);
@@ -34,5 +35,23 @@ router.post("/createUser", async (req, res) => {
   const result = _.pick(user, ["_id", "email", "username"]);
   return res.header("x-auth-token", token).send(result);
 });
+
+router.post("/createOrder",async (req,res)=> {
+  // const {error} = validateOrders({...req.body.info,order:req.body.order})
+
+  // if (error) return res.json({status:400,message:error.details[0].message});
+
+  order = new Orders(req.body)
+  await order.save();
+
+  return res.json({message:"Order Created Successfull"});
+  
+})
+
+
+router.get("/orders",async(req,res)=> {
+  const orders = await Orders.find({})
+  res.json({data:orders})
+})
 
 module.exports = router;
