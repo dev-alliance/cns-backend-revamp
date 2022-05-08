@@ -7,7 +7,7 @@ const { User, validate } = require("../Schema/UserSchema");
 const {Orders,validateOrders} = require('../Schema/OrderSchema')
 const jwt = require("jsonwebtoken");
 const config = require("config");
-
+const s3 = require('../s3')
 router.get("/", auth, async (req, res) => {
   const results = await User.find();
   res.send(results);
@@ -47,6 +47,12 @@ router.post("/createOrder",async (req,res)=> {
   return res.json({message:"Order Created Successfull"});
   
 })
+
+router.get('/s3url',async (req,res)=> {
+  const url = await s3.generateUploadURL()
+  res.send({url})
+})
+
 
 
 router.get("/orders",async(req,res)=> {
