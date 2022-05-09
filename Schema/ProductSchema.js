@@ -8,9 +8,9 @@ const ProductSchema = new mongoose.Schema({
  image:{type:String,required:true},
  basePrice:{type:String,required:true},
  description:{type:String,required:true},
- benefits:[{type:String}],
- variants:[{type:String}],
- discountedPrice:{type:String,required:true},
+ benefits:[],
+ variants:[],
+ price:{type:String,required:true},
  reviews:[]
 });
 

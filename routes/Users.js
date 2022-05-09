@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const auth = require("../middleware/auth");
 const router = express.Router();
@@ -7,7 +8,15 @@ const { User, validate } = require("../Schema/UserSchema");
 const {Orders,validateOrders} = require('../Schema/OrderSchema')
 const jwt = require("jsonwebtoken");
 const config = require("config");
-const s3 = require('../s3')
+const s3 = require('../s3');
+const { Product } = require("../Schema/ProductSchema");
+const Razorpay = require('razorpay')
+
+var razor = new Razorpay({
+  key_id: "rzp_test_qxsRuZfigMmu3O",
+  key_secret: "GyT6kJjJfDSt4b318RN56JTP"
+});
+
 router.get("/", auth, async (req, res) => {
   const results = await User.find();
   res.send(results);
@@ -55,9 +64,35 @@ router.get('/s3url',async (req,res)=> {
 
 
 
-router.get("/orders",async(req,res)=> {
-  const orders = await Orders.find({})
-  res.json({data:orders})
+router.get("/products",async(req,res)=> {
+  const products = await Product.find({})
+  res.json(products
+    )
 })
+
+
+router.post("/razorpay", async (req, res) => {
+  const { amount, name, mobile} = req.body;
+  const options = {
+    amount: amount * 100,
+    currency: "INR",
+    receipt: "receipt#1",
+  }
+  try {
+    const  response = await razor.orders.create(options);
+    res.send({
+      name,
+      mobile,
+      totalAmount: amount,
+      id: response.id,
+      amount: response.amount,
+      currency: response.currency,
+      receipt: response.receipt,
+    });
+  }catch(error) {
+    console.log(error)
+  }
+ 
+});
 
 module.exports = router;
