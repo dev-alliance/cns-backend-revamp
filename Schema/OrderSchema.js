@@ -4,7 +4,7 @@ const config = require("config");
 const mongoose = require("mongoose");
 
 const OrderSchema = new mongoose.Schema({
-  userid: { type: String     },
+  _id: { type: String ,required:true    },
   info:{
     firstname: { type: String, required: true },
     lastname: { type: String, required: false },
@@ -18,7 +18,7 @@ const OrderSchema = new mongoose.Schema({
     default: { type: Boolean, required: false },
     method: { type: String, required: true },
   },
-  order: { type: Array, required: true },
+  order: [],
   cartTotal:{type:String,required:true}
 });
 

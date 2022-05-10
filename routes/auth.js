@@ -28,6 +28,17 @@ router.post("/login", async (req, res) => {
   return res.send(token);
 });
 
+router.post("/loginWithGoogle", async (req, res) => {
+  console.log(req.body)
+
+  let user = await User.findOne({ email: req.body.email });
+  if (!user) return res.json({status:400,message:"Invalid user or password"});
+  
+  const token = user.generateAuthToken();
+
+  return res.send(token);
+});
+
 const validate = (req) => {
   const schema = Joi.object({
     email: Joi.string().min(5).max(255).required(),

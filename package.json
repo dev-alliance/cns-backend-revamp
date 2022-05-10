@@ -24,6 +24,7 @@
     "morgan": "^1.10.0",
     "nodemon": "^2.0.15",
     "razorpay": "^2.8.1",
+    "shortid": "^2.2.16",
     "swagger-ui-express": "^4.3.0"
   }
 }

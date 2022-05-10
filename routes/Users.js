@@ -11,6 +11,7 @@ const config = require("config");
 const s3 = require('../s3');
 const { Product } = require("../Schema/ProductSchema");
 const Razorpay = require('razorpay')
+const shortid = require('shortid');
 
 var razor = new Razorpay({
   key_id: "rzp_test_qxsRuZfigMmu3O",
@@ -22,7 +23,7 @@ router.get("/", auth, async (req, res) => {
   res.send(results);
 });
 
-router.get("/profile",  async (req, res) => {
+router.get("/profile", auth, async (req, res) => {
   const user = await User.findById(req.user._id).select("-password");
   res.send(user);
 });
@@ -45,15 +46,15 @@ router.post("/createUser", async (req, res) => {
   return res.header("x-auth-token", token).send(result);
 });
 
-router.post("/createOrder",async (req,res)=> {
+router.post("/createOrder", auth, async (req,res)=> {
   // const {error} = validateOrders({...req.body.info,order:req.body.order})
-
+  const user = await User.findById(req.user._id).select("-password");
   // if (error) return res.json({status:400,message:error.details[0].message});
 
-  order = new Orders(req.body)
+  order = new Orders({...req.body,_id:user._id})
   await order.save();
 
-  return res.json({message:"Order Created Successfull"});
+  return res.json({...req.body,userid:user._id});
   
 })
 
@@ -70,13 +71,24 @@ router.get("/products",async(req,res)=> {
     )
 })
 
+router.get("/orders",auth,async (req,res)=> {
+ 
+  const orders = await Orders.findById({_id:req.user._id})
+  res.json(orders)
+})
+
+// router.get('/orders',async(req,res)=> {
+//   const orders = await Orders.findById(req.user._id).select("-password");
+//   res.send(orders)
+// })
 
 router.post("/razorpay", async (req, res) => {
   const { amount, name, mobile} = req.body;
   const options = {
     amount: amount * 100,
     currency: "INR",
-    receipt: "receipt#1",
+    receipt: shortid.generate(),
+    
   }
   try {
     const  response = await razor.orders.create(options);
@@ -84,7 +96,7 @@ router.post("/razorpay", async (req, res) => {
       name,
       mobile,
       totalAmount: amount,
-      id: response.id,
+      
       amount: response.amount,
       currency: response.currency,
       receipt: response.receipt,
