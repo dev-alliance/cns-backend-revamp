@@ -77,6 +77,12 @@ router.get("/orders",auth,async (req,res)=> {
   res.json(orders)
 })
 
+router.get('/product/:id',async (req,res)=> {
+  console.log(req.params)
+  const product = await Product.findById(req.params.id)
+  res.json(product)
+})
+
 // router.get('/orders',async(req,res)=> {
 //   const orders = await Orders.findById(req.user._id).select("-password");
 //   res.send(orders)
