@@ -50,8 +50,7 @@ router.post("/createOrder", auth, async (req,res)=> {
   // const {error} = validateOrders({...req.body.info,order:req.body.order})
   const user = await User.findById(req.user._id).select("-password");
   // if (error) return res.json({status:400,message:error.details[0].message});
-
-  order = new Orders({...req.body,_id:user._id})
+  order = new Orders({...req.body,userid:user._id})
   await order.save();
 
   return res.json({...req.body,userid:user._id});
@@ -73,7 +72,7 @@ router.get("/products",async(req,res)=> {
 
 router.get("/orders",auth,async (req,res)=> {
  
-  const orders = await Orders.findById({_id:req.user._id})
+  const orders = await Orders.findById({userid:"627a06449aed15e396b6da0b"})
   res.json(orders)
 })
 
