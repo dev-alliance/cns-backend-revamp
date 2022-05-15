@@ -13,6 +13,13 @@ const { Product } = require("../Schema/ProductSchema");
 const Razorpay = require('razorpay')
 const shortid = require('shortid');
 
+//Required package
+var pdf = require("pdf-node");
+var fs = require("fs");
+var path = require('path')
+// Read HTML Template
+var html = fs.readFileSync(path.resolve(__dirname,"/routes/template.html"), "utf8");
+console.log(__dirname)
 var razor = new Razorpay({
   key_id: "rzp_test_qxsRuZfigMmu3O",
   key_secret: "GyT6kJjJfDSt4b318RN56JTP"
@@ -51,7 +58,7 @@ router.post("/createOrder", auth, async (req,res)=> {
   const user = await User.findById(req.user._id).select("-password");
   // if (error) return res.json({status:400,message:error.details[0].message});
 
-  order = new Orders({...req.body,_id:user._id})
+  order = new Orders({...req.body,userid:user._id})
   await order.save();
 
   return res.json({...req.body,userid:user._id});
@@ -73,7 +80,7 @@ router.get("/products",async(req,res)=> {
 
 router.get("/orders",auth,async (req,res)=> {
  
-  const orders = await Orders.findById({_id:req.user._id})
+  const orders = await Orders.find({userid:req.user._id})
   res.json(orders)
 })
 
@@ -82,6 +89,7 @@ router.get('/product/:id',async (req,res)=> {
   const product = await Product.findById(req.params.id)
   res.json(product)
 })
+
 
 // router.get('/orders',async(req,res)=> {
 //   const orders = await Orders.findById(req.user._id).select("-password");
@@ -112,5 +120,57 @@ router.post("/razorpay", async (req, res) => {
   }
  
 });
+
+router.get('/pdf',async (req,res)=> {
+  var options = {
+    format: "A3",
+    orientation: "portrait",
+    border: "10mm",
+    header: {
+        height: "45mm",
+        contents: '<div style="text-align: center;">Author: Shyam Hajare</div>'
+    },
+    footer: {
+        height: "28mm",
+        contents: {
+            first: 'Cover page',
+            2: 'Second page', // Any page number is working. 1-based index
+            default: '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>', // fallback value
+            last: 'Last Page'
+        }
+    }
+};
+
+var users = [
+  {
+    name: "tom",
+    age: "21",
+  },
+  {
+    name: "dick",
+    age: "23",
+  },
+  {
+    name: "harry",
+    age: "29",
+  },
+];
+var document = {
+  html: html,
+  data: {
+    users: users,
+  },
+  path: "./output.pdf",
+  type: "",
+};
+pdf
+  .create(document, options)
+  .then((resp) => {
+    res.json(resp);
+  })
+  .catch((error) => {
+    console.error(error);
+  });
+})
 
 module.exports = router;
