@@ -24,6 +24,7 @@ const UserSchema = new mongoose.Schema({
     required: true,
   },
   mobile: String,
+  defaultAddress:{}
 });
 
 UserSchema.methods.generateAuthToken = function () {
