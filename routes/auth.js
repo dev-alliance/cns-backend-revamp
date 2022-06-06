@@ -32,7 +32,8 @@ router.post("/loginWithGoogle", async (req, res) => {
   console.log(req.body)
 
   let user = await User.findOne({ email: req.body.email });
-  if (!user) return res.json({status:400,message:"Invalid user or password"});
+  console.log(user)
+  if (!user) return res.json({status:400,message:"Invalid user or password",ok:false});
   
   const token = user.generateAuthToken();
 

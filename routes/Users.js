@@ -168,23 +168,49 @@ router.get("/get-reviews/:id",async(req,res)=> {
 })
 
 router.post('/update-address',auth,async(req,res)=> {
+  console.log(req.body)
   const user = await User.findOneAndUpdate({_id:req.user._id},{$set:{defaultAddress:req.body}})
   await user.save();
 
   res.json({ok:true})
 });
 
-router.get("/get-address",auth,async(req,res)=> {
+router.post('/update-billing',auth,async(req,res)=> {
+  console.log(req.body)
+  const user = await User.findOneAndUpdate({_id:req.user._id},{$set:{defaultAddress:{formValues:req.body}}})
+  await user.save();
+
+  res.json({ok:true})
+});
+
+
+
+
+router.post("/update-profile",auth, async (req,res)=> {
+  console.log(req.body)
+
+  const user = await User.findOneAndUpdate({_id:req.user._id},{$set:{username:req.body.username, mobile:req.body.mobile}})
+  await user.save();
+
+  res.json({ok:true})
+})
+
+
+
+
+
+router.post("/change-password",auth, async(req,res)=> {
+  const user = await User.findById(req.user._id);
+
+  const validPassword = await bcrypt.compare(req.body.password, user.password);
+  if (!validPassword) return res.json({status:400,message:"Incorrect passsword", ok:false});
+
+  const salt = await bcrypt.genSalt(10);
+  let np = await bcrypt.hash(req.body.newPassword, salt);
+  
+  User.updateOne({email:user.email},{$set:{password:np}}).then(() => res.json({ok:true, message:"Password Changed Successfully"}) )
+  .catch(() => res.json({ok:false,message:"Error while changing password"}))
   
 })
-// router.get("/change-password",async(req,res)=> {
-//   let user = await User.findOne({ email: req.body.email });
-
-//   const validPassword = await bcrypt.compare(req.body.password, user.password);
-//   if (!validPassword) return res.json({status:400,message:"Incorrect passsword", ok:false});
-
-//   const result = User.updateOne({email:req.body.email},{$set:{password:req.body.cPassword}})
-//   res.json({message:"Password Change Successfully", ok:true,result})
-// })
 
 module.exports = router;
