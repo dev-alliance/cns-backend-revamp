@@ -10,6 +10,7 @@ const ProductSchema = new mongoose.Schema({
  description:{type:String,required:true},
  benefits:[],
  variants:[],
+ discountPrice:{type:String,required:true},
  price:{type:String,required:true},
  discountedPrice:{type:String,required:true},
  reviews:[]

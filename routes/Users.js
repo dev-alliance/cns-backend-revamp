@@ -60,7 +60,9 @@ router.post("/createOrder", auth, async (req, res) => {
   const user = await User.findById(req.user._id).select("-password");
   // if (error) return res.json({status:400,message:error.details[0].message});
 
+
   order = new Orders({ ...req.body, userid: user._id });
+
   await order.save();
 
   return res.json({ ...req.body, userid: user._id });
