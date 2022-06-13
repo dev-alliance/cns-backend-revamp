@@ -170,7 +170,7 @@ router.get("/get-reviews/:id",async(req,res)=> {
 })
 
 router.post('/update-address',auth,async(req,res)=> {
-  console.log(req.body)
+  
   const user = await User.findOneAndUpdate({_id:req.user._id},{$set:{defaultAddress:req.body}})
   await user.save();
 

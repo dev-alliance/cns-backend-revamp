@@ -15,10 +15,11 @@ router.get("/", async (req, res) => {
 router.post("/login", async (req, res) => {
   const { error } = validate(req.body);
 
-  if (error)
-    return res.json({ status: 400, message: error.details[0].message });
+  if (error) return res.json({ status: 400, message: error.details[0].message });
+
 
   let user = await User.findOne({ email: req.body.email });
+  
   if (!user)
     return res.json({ status: 400, message: "Invalid user or password" });
 
@@ -35,12 +36,11 @@ router.post("/loginWithGoogle", async (req, res) => {
   console.log(req.body);
 
   let user = await User.findOne({ email: req.body.email });
-  console.log(user)
-  if (!user) return res.json({status:400,message:"Invalid user or password",ok:false});
-  
+
+  if (!user) return res.json({status:400,message:"Invalid user or password",ok:false})
+
 
   const token = user.generateAuthToken();
-
   return res.send(token);
 });
 
