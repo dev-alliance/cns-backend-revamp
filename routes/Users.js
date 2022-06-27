@@ -13,7 +13,7 @@ const { Product } = require("../Schema/ProductSchema");
 const { ProductReview } = require("../Schema/ProductReview");
 const Razorpay = require("razorpay");
 const shortid = require("shortid");
-
+const nodemailer = require('nodemailer')
 //Required package
 var pdf = require("pdf-creator-node");
 var fs = require("fs");
@@ -227,5 +227,28 @@ router.post("/change-password", auth, async (req, res) => {
       res.json({ ok: false, message: "Error while changing password" })
     );
 });
+
+
+router.get("/mail",async (req,res)=> {
+  let transporter = nodemailer.createTransport({
+    host: "smtp.mailgun.org",
+    port: 465,
+    secure: true, // true for 465, false for other ports
+    auth: {
+      user: "postmaster@sandbox1e9880cca1b64859b9166d7beaa10841.mailgun.org", // generated ethereal user
+      pass:"cd3f46ffdb7431cab0cabc05333187c1-77985560-0daf2770", // generated ethereal password
+    },
+  });
+
+  let info = await transporter.sendMail({
+    from: 'postmaster@sandbox1e9880cca1b64859b9166d7beaa10841.mailgun.org', // sender address
+    to: "syedmohi04@gmail.com", // list of receivers
+    subject: "Hello ✔", // Subject line
+    text: "Hello world?", // plain text body
+    body:"some text"
+  });
+
+  console.log("Message sent: %s", info.messageId);
+})
 
 module.exports = router;
