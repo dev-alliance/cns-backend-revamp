@@ -60,7 +60,6 @@ router.post("/createOrder", auth, async (req, res) => {
   const user = await User.findById(req.user._id).select("-password");
   // if (error) return res.json({status:400,message:error.details[0].message});
 
-
   order = new Orders({ ...req.body, userid: user._id });
 
   await order.save();
@@ -76,6 +75,13 @@ router.get("/s3url", async (req, res) => {
 router.get("/products", async (req, res) => {
   const products = await Product.find({});
   res.json(products);
+});
+router.get("/search", async (req, res) => {
+  console.log(req.query, "search >> ");
+  if (req.query.q) {
+    const products = await Product.find({ $text:{$search:req.query.q} });
+    return res.status(200).json({ results: products });
+  }
 });
 
 router.get("/orders", auth, async (req, res) => {
@@ -112,8 +118,10 @@ router.post("/razorpay", async (req, res) => {
   }
 });
 
-router.post("/pdf",async (req, res) => {
-  const orders = await Orders.find({ order: { $elemMatch: { id: req.body.id } } })
+router.post("/pdf", async (req, res) => {
+  const orders = await Orders.find({
+    order: { $elemMatch: { id: req.body.id } },
+  });
   var options = {
     format: "A3",
     orientation: "portrait",
@@ -133,86 +141,91 @@ router.post("/pdf",async (req, res) => {
       },
     },
   };
-  
- 
 
-    pdf
-      .create({
+  pdf
+    .create(
+      {
         html: html,
         data: {
           data: orders,
         },
         path: "./output.pdf",
         type: "",
-      }, options)
-      .then((resp) => {
-        res.json(resp);
-      })
-      .catch((error) => {
-        res.json(error);
-      });
-  
+      },
+      options
+    )
+    .then((resp) => {
+      res.json(resp);
+    })
+    .catch((error) => {
+      res.json(error);
+    });
 });
-router.post('/post-review',auth,async (req,res)=> {
+router.post("/post-review", auth, async (req, res) => {
   const user = await User.findById(req.user._id).select("-password");
-  const result = {id: user._id,name:user.username,...req.body}
+  const result = { id: user._id, name: user.username, ...req.body };
 
-  const review = await ProductReview(result)
-  await review.save()
+  const review = await ProductReview(result);
+  await review.save();
 
-  res.json(result)
-})
-
-router.get("/get-reviews/:id",async(req,res)=> {
-  
-  const results = await ProductReview.find({ id:req.params.id});
-  res.json(results)
-})
-
-router.post('/update-address',auth,async(req,res)=> {
-  
-  const user = await User.findOneAndUpdate({_id:req.user._id},{$set:{defaultAddress:req.body}})
-  await user.save();
-
-  res.json({ok:true})
+  res.json(result);
 });
 
-router.post('/update-billing',auth,async(req,res)=> {
-  console.log(req.body)
-  const user = await User.findOneAndUpdate({_id:req.user._id},{$set:{defaultAddress:{formValues:req.body}}})
-  await user.save();
-
-  res.json({ok:true})
+router.get("/get-reviews/:id", async (req, res) => {
+  const results = await ProductReview.find({ id: req.params.id });
+  res.json(results);
 });
 
-
-
-
-router.post("/update-profile",auth, async (req,res)=> {
-  console.log(req.body)
-
-  const user = await User.findOneAndUpdate({_id:req.user._id},{$set:{username:req.body.username, mobile:req.body.mobile}})
+router.post("/update-address", auth, async (req, res) => {
+  const user = await User.findOneAndUpdate(
+    { _id: req.user._id },
+    { $set: { defaultAddress: req.body } }
+  );
   await user.save();
 
-  res.json({ok:true})
-})
+  res.json({ ok: true });
+});
 
+router.post("/update-billing", auth, async (req, res) => {
+  console.log(req.body);
+  const user = await User.findOneAndUpdate(
+    { _id: req.user._id },
+    { $set: { defaultAddress: { formValues: req.body } } }
+  );
+  await user.save();
 
+  res.json({ ok: true });
+});
 
+router.post("/update-profile", auth, async (req, res) => {
+  console.log(req.body);
 
+  const user = await User.findOneAndUpdate(
+    { _id: req.user._id },
+    { $set: { username: req.body.username, mobile: req.body.mobile } }
+  );
+  await user.save();
 
-router.post("/change-password",auth, async(req,res)=> {
+  res.json({ ok: true });
+});
+
+router.post("/change-password", auth, async (req, res) => {
   const user = await User.findById(req.user._id);
 
   const validPassword = await bcrypt.compare(req.body.password, user.password);
-  if (!validPassword) return res.json({status:400,message:"Incorrect passsword", ok:false});
+  if (!validPassword)
+    return res.json({ status: 400, message: "Incorrect passsword", ok: false });
 
   const salt = await bcrypt.genSalt(10);
   let np = await bcrypt.hash(req.body.newPassword, salt);
-  
-  User.updateOne({email:user.email},{$set:{password:np}}).then(() => res.json({ok:true, message:"Password Changed Successfully"}) )
-  .catch(() => res.json({ok:false,message:"Error while changing password"}))
-  
-})
+
+  User.updateOne({ email: user.email }, { $set: { password: np } })
+    .then(() =>
+      res.json({ ok: true, message: "Password Changed Successfully" })
+    )
+    .catch(() =>
+      res.json({ ok: false, message: "Error while changing password" })
+    );
+});
 
 module.exports = router;
