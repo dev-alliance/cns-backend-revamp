@@ -67,6 +67,19 @@ router.post("/createOrder", auth, async (req, res) => {
   return res.json({ ...req.body, userid: user._id });
 });
 
+router.post("/request-cancellation", async (req, res) => {
+  console.log(req.body.id)
+  const result = await Orders.findOneAndUpdate(
+    { _id: req.body.id },
+    { $set: { orderStatus: 4 } }
+  );
+ 
+    return res
+      .status(200)
+      .json({ ok: true, message: "Request is in process." , result:result});
+  
+  });
+
 router.get("/s3url", async (req, res) => {
   const url = await s3.generateUploadURL();
   res.send({ url });
@@ -97,12 +110,12 @@ router.get("/orders", auth, async (req, res) => {
 
 router.post("/add-address", auth, async (req, res) => {
   const query = { _id: req.user._id };
-  console.log(query)
+  console.log(query);
   const updateDocument = {
-    $set: { address: req.body},
+    $set: { address: req.body },
   };
   const result = await User.updateOne(query, updateDocument);
-  console.log(result)
+  console.log(result);
   if (result.acknowledged) {
     return res
       .status(200)
@@ -202,10 +215,10 @@ router.get("/get-reviews/:id", async (req, res) => {
 });
 
 router.post("/update-address", auth, async (req, res) => {
-  console.log(req.body)
+  console.log(req.body);
   const user = await User.findOneAndUpdate(
     { _id: req.user._id },
-    { $set: { defaultAddress: {formValues:req.body} } }
+    { $set: { defaultAddress: { formValues: req.body } } }
   );
   await user.save();
 
