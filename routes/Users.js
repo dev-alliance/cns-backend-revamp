@@ -13,7 +13,7 @@ const { Product } = require("../Schema/ProductSchema");
 const { ProductReview } = require("../Schema/ProductReview");
 const Razorpay = require("razorpay");
 const shortid = require("shortid");
-const nodemailer = require('nodemailer')
+const nodemailer = require("nodemailer");
 //Required package
 var pdf = require("pdf-creator-node");
 var fs = require("fs");
@@ -67,6 +67,19 @@ router.post("/createOrder", auth, async (req, res) => {
   return res.json({ ...req.body, userid: user._id });
 });
 
+router.post("/request-cancellation", async (req, res) => {
+  console.log(req.body.id)
+  const result = await Orders.findOneAndUpdate(
+    { _id: req.body.id },
+    { $set: { orderStatus: 4 } }
+  );
+ 
+    return res
+      .status(200)
+      .json({ ok: true, message: "Request is in process." , result:result});
+  
+  });
+
 router.get("/s3url", async (req, res) => {
   const url = await s3.generateUploadURL();
   res.send({ url });
@@ -79,7 +92,7 @@ router.get("/products", async (req, res) => {
 router.get("/search", async (req, res) => {
   console.log(req.query, "search >> ");
   if (req.query.q) {
-    const products = await Product.find({ $text:{$search:req.query.q} });
+    const products = await Product.find({ $text: { $search: req.query.q } });
     return res.status(200).json({ results: products });
   }
 });
@@ -87,6 +100,31 @@ router.get("/search", async (req, res) => {
 router.get("/orders", auth, async (req, res) => {
   const orders = await Orders.find({ userid: req.user._id });
   res.json(orders);
+});
+
+// router.get("/delete-address", auth, async (req, res) => {
+//   const users = await User.find({ userid: req.user._id });
+//   console.log(users);
+//   res.json(users);
+// });
+
+router.post("/add-address", auth, async (req, res) => {
+  const query = { _id: req.user._id };
+  console.log(query);
+  const updateDocument = {
+    $set: { address: req.body },
+  };
+  const result = await User.updateOne(query, updateDocument);
+  console.log(result);
+  if (result.acknowledged) {
+    return res
+      .status(200)
+      .json({ ok: true, message: "Address Added Successfully" });
+  } else {
+    return res
+      .status(400)
+      .json({ ok: false, message: "Failed to add address" });
+  }
 });
 
 router.get("/product/:id", async (req, res) => {
@@ -177,9 +215,20 @@ router.get("/get-reviews/:id", async (req, res) => {
 });
 
 router.post("/update-address", auth, async (req, res) => {
+  console.log(req.body);
   const user = await User.findOneAndUpdate(
     { _id: req.user._id },
-    { $set: { defaultAddress: req.body } }
+    { $set: { defaultAddress: { formValues: req.body } } }
+  );
+  await user.save();
+
+  res.json({ ok: true });
+});
+
+router.get("/delete-address", auth, async (req, res) => {
+  const user = await User.findOneAndUpdate(
+    { _id: req.user._id },
+    { $set: { defaultAddress: {} } }
   );
   await user.save();
 
@@ -228,27 +277,26 @@ router.post("/change-password", auth, async (req, res) => {
     );
 });
 
-
-router.get("/mail",async (req,res)=> {
+router.get("/mail", async (req, res) => {
   let transporter = nodemailer.createTransport({
     host: "smtp.mailgun.org",
     port: 465,
     secure: true, // true for 465, false for other ports
     auth: {
       user: "postmaster@sandbox1e9880cca1b64859b9166d7beaa10841.mailgun.org", // generated ethereal user
-      pass:"cd3f46ffdb7431cab0cabc05333187c1-77985560-0daf2770", // generated ethereal password
+      pass: "cd3f46ffdb7431cab0cabc05333187c1-77985560-0daf2770", // generated ethereal password
     },
   });
 
   let info = await transporter.sendMail({
-    from: 'postmaster@sandbox1e9880cca1b64859b9166d7beaa10841.mailgun.org', // sender address
+    from: "postmaster@sandbox1e9880cca1b64859b9166d7beaa10841.mailgun.org", // sender address
     to: "syedmohi04@gmail.com", // list of receivers
     subject: "Hello ✔", // Subject line
     text: "Hello world?", // plain text body
-    body:"some text"
+    body: "some text",
   });
 
   console.log("Message sent: %s", info.messageId);
-})
+});
 
 module.exports = router;
