@@ -40,10 +40,14 @@ router.post("/createUser", async (req, res) => {
   const { error } = validate(req.body);
 
   if (error)
-    return res.json({ status: 400, message: error.details[0].message });
+    return res
+      .status(400)
+      .json({ ok: false, message: error.details[0].message });
+  console.log(error);
 
   let user = await User.findOne({ email: req.body.email });
-  if (user) return res.json({ status: 400, message: "User already exits" });
+  if (user)
+    return res.status(400).json({ ok: false, message: "User already exits" });
 
   user = new User(req.body);
   const salt = await bcrypt.genSalt(10);
@@ -65,20 +69,20 @@ router.post("/createOrder", auth, async (req, res) => {
   await order.save();
 
   return res.json({ ...req.body, userid: user._id });
+  // console.log({ ...req.body, userid: user._id })
 });
 
 router.post("/request-cancellation", async (req, res) => {
-  console.log(req.body.id)
+  console.log(req.body.id);
   const result = await Orders.findOneAndUpdate(
     { _id: req.body.id },
     { $set: { orderStatus: 4 } }
   );
- 
-    return res
-      .status(200)
-      .json({ ok: true, message: "Request is in process." , result:result});
-  
-  });
+
+  return res
+    .status(200)
+    .json({ ok: true, message: "Request is in process.", result: result });
+});
 
 router.get("/s3url", async (req, res) => {
   const url = await s3.generateUploadURL();
@@ -87,13 +91,21 @@ router.get("/s3url", async (req, res) => {
 
 router.get("/products", async (req, res) => {
   const products = await Product.find({});
-  res.json(products);
+  res.status(200).json(products);
 });
 router.get("/search", async (req, res) => {
   console.log(req.query, "search >> ");
   if (req.query.q) {
-    const products = await Product.find({ $text: { $search: req.query.q } });
+    const products = await Product.find({ name:req.query.q  });
     return res.status(200).json({ results: products });
+  }
+});
+
+router.get("/filter", async (req, res) => {
+  console.log(req.query, "search >> ");
+  if (req.query.q || req.query.price) {
+    const categories = await Product.find({ category: req.query.q ,price:{$gte:req.query.price} });
+    return res.status(200).json({ok:true, results: categories});
   }
 });
 
@@ -128,7 +140,7 @@ router.post("/add-address", auth, async (req, res) => {
 });
 
 router.get("/product/:id", async (req, res) => {
-  console.log(req.params);
+
   const product = await Product.findById(req.params.id);
   res.json(product);
 });
@@ -259,29 +271,35 @@ router.post("/update-profile", auth, async (req, res) => {
 });
 
 router.post("/change-password", auth, async (req, res) => {
-  const user = await User.findById(req.user._id);
+  // const user = await User.findById(req.user._id);
 
-  const validPassword = await bcrypt.compare(req.body.password, user.password);
-  if (!validPassword)
-    return res.json({ status: 400, message: "Incorrect passsword", ok: false });
+  // const validPassword = await bcrypt.compare(req.body.password, user.password);
+  // if (!validPassword)
+  //   return res.json({ status: 400, message: "Incorrect passsword", ok: false });
 
-  const salt = await bcrypt.genSalt(10);
-  let np = await bcrypt.hash(req.body.newPassword, salt);
+  // const salt = await bcrypt.genSalt(10);
+  // let np = await bcrypt.hash(req.body.newPassword, salt);
 
-  User.updateOne({ email: user.email }, { $set: { password: np } })
-    .then(() =>
-      res.json({ ok: true, message: "Password Changed Successfully" })
-    )
-    .catch(() =>
-      res.json({ ok: false, message: "Error while changing password" })
-    );
+  // User.updateOne({ email: user.email }, { $set: { password: np } })
+  //   .then(() =>
+  //     res.json({ ok: true, message: "Password Changed Successfully" })
+  //   )
+  //   .catch(() =>
+  //     res.json({ ok: false, message: "Error while changing password" })
+  //   );
+
+  return res.status(200);
 });
 
-router.get("/mail", async (req, res) => {
+router.post("/reset", async (req, res) => {
+  const user = await User.findOne({ email: req.body.email });
+  if (!user)
+    return res.status(400).send({ ok: false, message: "User not found " });
+
   let transporter = nodemailer.createTransport({
     host: "smtp.mailgun.org",
-    port: 465,
-    secure: true, // true for 465, false for other ports
+    port: 587,
+    secure: false, // true for 465, false for other ports
     auth: {
       user: "postmaster@sandbox1e9880cca1b64859b9166d7beaa10841.mailgun.org", // generated ethereal user
       pass: "cd3f46ffdb7431cab0cabc05333187c1-77985560-0daf2770", // generated ethereal password
@@ -290,13 +308,22 @@ router.get("/mail", async (req, res) => {
 
   let info = await transporter.sendMail({
     from: "postmaster@sandbox1e9880cca1b64859b9166d7beaa10841.mailgun.org", // sender address
-    to: "syedmohi04@gmail.com", // list of receivers
-    subject: "Hello ✔", // Subject line
-    text: "Hello world?", // plain text body
-    body: "some text",
+    to: req.body.email, // list of receivers
+    subject: "Reset Password (Natmarts) ✔", // Subject line
+    text: "Please Click on the link below to reset the password", // plain text body
+    html: '<p>Click <a href="http://localhost:8000/change-password">here</a> to reset your password</p>',
   });
 
   console.log("Message sent: %s", info.messageId);
+  if (info.messageId) {
+    return res
+      .status(200)
+      .json({ ok: true, message: `Reset link sent to ${req.body.email} ` });
+  } else {
+    return res
+      .status(400)
+      .json({ ok: true, message: "Email not sent, please try again later" });
+  }
 });
 
 module.exports = router;
