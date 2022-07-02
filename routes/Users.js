@@ -96,7 +96,7 @@ router.get("/products", async (req, res) => {
 router.get("/search", async (req, res) => {
   console.log(req.query, "search >> ");
   if (req.query.q) {
-    const products = await Product.find({ name:req.query.q  });
+    const products = await Product.find({ $text: { $search: req.query.q } });
     return res.status(200).json({ results: products });
   }
 });
@@ -104,14 +104,26 @@ router.get("/search", async (req, res) => {
 router.get("/filter", async (req, res) => {
   console.log(req.query, "search >> ");
   if (req.query.q || req.query.price) {
-    const categories = await Product.find({ category: req.query.q ,price:{$gte:req.query.price} });
-    return res.status(200).json({ok:true, results: categories});
+    const categories = await Product.find({
+      category: req.query.q,
+      price: { $gte: req.query.price },
+    });
+    return res.status(200).json({ ok: true, results: categories });
   }
 });
 
 router.get("/orders", auth, async (req, res) => {
   const orders = await Orders.find({ userid: req.user._id });
   res.json(orders);
+});
+
+router.get("/all-orders", async (req, res) => {
+  const results = await Orders.find({});
+  if (results.length > 0) {
+    return res.status(200).json({ ok: true, data: results });
+  }
+
+  return res.status(200).json({ ok: true, data: [], message: "No Results" });
 });
 
 // router.get("/delete-address", auth, async (req, res) => {
@@ -140,7 +152,6 @@ router.post("/add-address", auth, async (req, res) => {
 });
 
 router.get("/product/:id", async (req, res) => {
-
   const product = await Product.findById(req.params.id);
   res.json(product);
 });
@@ -248,14 +259,17 @@ router.get("/delete-address", auth, async (req, res) => {
 });
 
 router.post("/update-billing", auth, async (req, res) => {
-  console.log(req.body);
-  const user = await User.findOneAndUpdate(
-    { _id: req.user._id },
-    { $set: { defaultAddress: { formValues: req.body } } }
-  );
-  await user.save();
 
-  res.json({ ok: true });
+  const userD = await User.findOne({_id:req.user._id})
+  const resss ={...userD.defaultAddress.formValues,...req.body}
+  
+  try {
+    await User.updateOne({_id:req.user._id},{$set:{defaultAddress:{formValues:resss}}})
+    return res.status(200).json({ok:true})
+  } catch{
+    return res.status(200).json({ok:false})
+  }
+  
 });
 
 router.post("/update-profile", auth, async (req, res) => {
@@ -323,6 +337,16 @@ router.post("/reset", async (req, res) => {
     return res
       .status(400)
       .json({ ok: true, message: "Email not sent, please try again later" });
+  }
+});
+
+router.post("/app-login", async (req, res) => {
+  const { user, password } = req.body;
+
+  if (user === "admin" && password === "admin123") {
+    return res.status(200).json({ ok: true });
+  } else {
+    return res.status(200).json({ ok: false });
   }
 });
 
