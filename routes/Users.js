@@ -285,22 +285,22 @@ router.post("/update-profile", auth, async (req, res) => {
 });
 
 router.post("/change-password", auth, async (req, res) => {
-  // const user = await User.findById(req.user._id);
+  const user = await User.findById(req.user._id);
 
-  // const validPassword = await bcrypt.compare(req.body.password, user.password);
-  // if (!validPassword)
-  //   return res.json({ status: 400, message: "Incorrect passsword", ok: false });
+  const validPassword = await bcrypt.compare(req.body.password, user.password);
+  if (!validPassword)
+    return res.json({ status: 400, message: "Incorrect passsword", ok: false });
 
-  // const salt = await bcrypt.genSalt(10);
-  // let np = await bcrypt.hash(req.body.newPassword, salt);
+  const salt = await bcrypt.genSalt(10);
+  let np = await bcrypt.hash(req.body.newPassword, salt);
 
-  // User.updateOne({ email: user.email }, { $set: { password: np } })
-  //   .then(() =>
-  //     res.json({ ok: true, message: "Password Changed Successfully" })
-  //   )
-  //   .catch(() =>
-  //     res.json({ ok: false, message: "Error while changing password" })
-  //   );
+  User.updateOne({ email: user.email }, { $set: { password: np } })
+    .then(() =>
+      res.json({ ok: true, message: "Password Changed Successfully" })
+    )
+    .catch(() =>
+      res.json({ ok: false, message: "Error while changing password" })
+    );
 
   return res.status(200);
 });
