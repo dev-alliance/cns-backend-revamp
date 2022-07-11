@@ -18,6 +18,7 @@ const nodemailer = require("nodemailer");
 var pdf = require("pdf-creator-node");
 var fs = require("fs");
 var path = require("path");
+const { Deliveryapp } = require("../Schema/DeliveryAppSchema");
 // Read HTML Template
 var html = fs.readFileSync(path.resolve(__dirname, "../template.html"), "utf8");
 
@@ -118,7 +119,16 @@ router.get("/orders", auth, async (req, res) => {
 });
 
 router.get("/all-orders", async (req, res) => {
-  const results = await Orders.find({});
+  const results = await Orders.find({}).where({ orderStatus: { $in: [1, 2] } });
+  if (results.length > 0) {
+    return res.status(200).json({ ok: true, data: results });
+  }
+
+  return res.status(200).json({ ok: true, data: [], message: "No Results" });
+});
+
+router.get("/cancelled", async (req, res) => {
+  const results = await Orders.find({}).where({ orderStatus: 4 });
   if (results.length > 0) {
     return res.status(200).json({ ok: true, data: results });
   }
@@ -259,17 +269,18 @@ router.get("/delete-address", auth, async (req, res) => {
 });
 
 router.post("/update-billing", auth, async (req, res) => {
+  const userD = await User.findOne({ _id: req.user._id });
+  const resss = { ...userD.defaultAddress.formValues, ...req.body };
 
-  const userD = await User.findOne({_id:req.user._id})
-  const resss ={...userD.defaultAddress.formValues,...req.body}
-  
   try {
-    await User.updateOne({_id:req.user._id},{$set:{defaultAddress:{formValues:resss}}})
-    return res.status(200).json({ok:true})
-  } catch{
-    return res.status(200).json({ok:false})
+    await User.updateOne(
+      { _id: req.user._id },
+      { $set: { defaultAddress: { formValues: resss } } }
+    );
+    return res.status(200).json({ ok: true });
+  } catch {
+    return res.status(200).json({ ok: false });
   }
-  
 });
 
 router.post("/update-profile", auth, async (req, res) => {
@@ -340,13 +351,54 @@ router.post("/reset", async (req, res) => {
   }
 });
 
-router.post("/app-login", async (req, res) => {
-  const { user, password } = req.body;
-
-  if (user === "admin" && password === "admin123") {
+router.post("/app-register", async (req, res) => {
+  const hashPassword = await bcrypt.hash(req.body.password, 10);
+  try {
+    const newUser = new Deliveryapp({ ...req.body, password: hashPassword });
+    await newUser.save();
     return res.status(200).json({ ok: true });
-  } else {
+  } catch (err) {
+    console.log(err.message);
     return res.status(200).json({ ok: false });
+  }
+});
+
+router.post("/app-login", async (req, res) => {
+  const user = await Deliveryapp.findOne({ user: req.body.user });
+  if (!user) return res.status(404).send("Invalid user or password");
+
+  const hashPassword = await bcrypt.compare(req.body.password, user.password);
+
+  if (hashPassword) {
+    return res.status(200).json({ ok: true });
+  }
+});
+
+router.post("/app-cancellation", async (req, res) => {
+  try {
+    const result = await Orders.findOneAndUpdate(
+      { _id: req.body.id },
+      { $set: { orderStatus: req.body.status } }
+    );
+
+    return res
+      .status(200)
+      .json({ ok: true, message: "Status Changed.", result: result });
+  } catch (err) {
+    return res.status(400).json({
+      ok: true,
+      message: "Server Error, Please try again",
+      result: result,
+    });
+  }
+});
+
+router.get("/search-order/:id", async (req, res) => {
+  try {
+    const order = await Orders.findOne({ _id: req.params.id });
+    return res.status(200).send(order);
+  } catch (err) {
+    return res.status(404).send("Invalid Order ID");
   }
 });
 
