@@ -52,6 +52,14 @@ router.post("/add-product", async (req, res) => {
   return res.json({ ok: true, message: "Product Created Successfull" });
 });
 
+router.post("/remove-product", async (req, res) => {
+  
+  const result = await Product.deleteOne({_id:req.body.id})
+  
+
+  return res.json({ ok: true, message: "Product Deleted Successfull" });
+});
+
 router.post("/add-category", async (req, res) => {
   const category = new Category(req.body);
   await category.save();

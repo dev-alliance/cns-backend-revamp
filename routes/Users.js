@@ -114,7 +114,7 @@ router.get("/filter", async (req, res) => {
 });
 
 router.get("/orders", auth, async (req, res) => {
-  const orders = await Orders.find({ userid: req.user._id });
+  const orders = await Orders.find({ userid: req.user._id }).sort({timestamp: -1})
   res.json(orders);
 });
 

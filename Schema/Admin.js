@@ -16,6 +16,9 @@ const AdminSchema = new mongoose.Schema({
     maxlength: 1024,
     required: true,
   },
+  role:{
+    type:String
+  }
 });
 
 AdminSchema.methods.generateAuthToken = function () {
