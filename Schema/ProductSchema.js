@@ -4,17 +4,16 @@ const config = require("config");
 const mongoose = require("mongoose");
 
 const ProductSchema = new mongoose.Schema({
- name:{type:String,required:true},
- image:{type:String,required:true},
- basePrice:{type:String,required:true},
- description:{type:String,required:true},
- benefits:[],
- variants:[],
- discountPrice:{type:String,required:true},
- price:{type:Number,required:true},
- discountedPrice:{type:String,required:true},
- reviews:[],
- category:{type:String,required:true}
+  name: { type: String, required: true },
+  image: [{ type: String }],
+  basePrice: { type: String, required: true },
+  description: { type: String, required: true },
+  benefits: [],
+  variants: [],
+  price: { type: Number, required: true },
+  discountedPrice: { type: String, required: true },
+  reviews: [],
+  category: { type: String, required: true },
 });
 
 ProductSchema.methods.generateAuthToken = function () {
