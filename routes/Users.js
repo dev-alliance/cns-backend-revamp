@@ -128,7 +128,9 @@ router.get("/s3url", async (req, res) => {
   const url = await s3.generateUploadURL();
   res.send({ url });
 });
-
+router.get("/health",async(req,res)=> {
+  return res.status(200).send("OK")
+})
 router.get("/products", async (req, res) => {
   const products = await Product.find({});
   res.status(200).json(products);
