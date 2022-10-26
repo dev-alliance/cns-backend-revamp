@@ -3,8 +3,12 @@ const express = require("express");
 const auth = require("../middleware/auth");
 const router = express.Router();
 const _ = require("lodash");
+const sgMail = require("@sendgrid/mail");
 const bcrypt = require("bcrypt");
 const { User, validate } = require("../Schema/UserSchema");
+sgMail.setApiKey(
+  "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"
+);
 const { Orders, validateOrders } = require("../Schema/OrderSchema");
 const jwt = require("jsonwebtoken");
 const config = require("config");
@@ -19,6 +23,7 @@ var pdf = require("pdf-creator-node");
 var fs = require("fs");
 var path = require("path");
 const { Deliveryapp } = require("../Schema/DeliveryAppSchema");
+const { Category } = require("../Schema/Categories");
 // Read HTML Template
 var html = fs.readFileSync(path.resolve(__dirname, "../template.html"), "utf8");
 
@@ -73,6 +78,40 @@ router.post("/createOrder", auth, async (req, res) => {
   // console.log({ ...req.body, userid: user._id })
 });
 
+router.post("/update", async (req, res) => {
+  const query = { _id: req.body._id };
+  console.log(query);
+
+  const r = await Product.findOne({ _id: req.body._id });
+  const updateDocument = {
+    $set: req.body,
+  };
+  const result = await Product.updateOne(query, updateDocument);
+  if (result.modifiedCount > 0) {
+    return res.status(200).json({ ok: true, message: "Updated", result });
+  } else {
+    return res.status(200).json({ ok: false, message: "failed", result });
+  }
+  // console.log({ ...req.body, userid: user._id })
+});
+
+router.post("/update-category", async (req, res) => {
+  const query = { _id: req.body._id };
+  console.log(query);
+
+  const r = await Category.findOne({ _id: req.body._id });
+  const updateDocument = {
+    $set: { name: req.body.name },
+  };
+  const result = await Category.updateOne(query, updateDocument);
+  if (result.modifiedCount > 0) {
+    return res.status(200).json({ ok: true, message: "Updated", result });
+  } else {
+    return res.status(200).json({ ok: false, message: "failed", result });
+  }
+  // console.log({ ...req.body, userid: user._id })
+});
+
 router.post("/request-cancellation", async (req, res) => {
   console.log(req.body.id);
   const result = await Orders.findOneAndUpdate(
@@ -114,7 +153,9 @@ router.get("/filter", async (req, res) => {
 });
 
 router.get("/orders", auth, async (req, res) => {
-  const orders = await Orders.find({ userid: req.user._id }).sort({timestamp: -1})
+  const orders = await Orders.find({ userid: req.user._id }).sort({
+    timestamp: -1,
+  });
   res.json(orders);
 });
 
@@ -295,15 +336,12 @@ router.post("/update-profile", auth, async (req, res) => {
   res.json({ ok: true });
 });
 
-router.post("/change-password", auth, async (req, res) => {
-  const user = await User.findById(req.user._id);
-
-  const validPassword = await bcrypt.compare(req.body.password, user.password);
-  if (!validPassword)
-    return res.json({ status: 400, message: "Incorrect passsword", ok: false });
+router.post("/change-password", async (req, res) => {
+  console.log(req.body)
+  const user = await User.findById({_id:req.body.id});
 
   const salt = await bcrypt.genSalt(10);
-  let np = await bcrypt.hash(req.body.newPassword, salt);
+  let np = await bcrypt.hash(req.body.password, salt);
 
   User.updateOne({ email: user.email }, { $set: { password: np } })
     .then(() =>
@@ -321,34 +359,30 @@ router.post("/reset", async (req, res) => {
   if (!user)
     return res.status(400).send({ ok: false, message: "User not found " });
 
-  let transporter = nodemailer.createTransport({
-    host: "smtp.mailgun.org",
-    port: 587,
-    secure: false, // true for 465, false for other ports
-    auth: {
-      user: "postmaster@sandbox1e9880cca1b64859b9166d7beaa10841.mailgun.org", // generated ethereal user
-      pass: "cd3f46ffdb7431cab0cabc05333187c1-77985560-0daf2770", // generated ethereal password
+  const msg = {
+    to: "sdfahad729@gmail.com", // Change to your recipient
+    from: "syedmohi04@gmail.com", // Change to your verified sender
+    subject: "Sending with SendGrid is Fun",
+    text: "and easy to do anywhere, even with Node.js",
+    templateId: "d-42ad1dfe6e9c4e0f84633588614fb44c",
+    dynamicTemplateData: {
+     url:`http://localhost:3000/reset/${user._id}`
     },
-  });
-
-  let info = await transporter.sendMail({
-    from: "postmaster@sandbox1e9880cca1b64859b9166d7beaa10841.mailgun.org", // sender address
-    to: req.body.email, // list of receivers
-    subject: "Reset Password (Natmarts) ✔", // Subject line
-    text: "Please Click on the link below to reset the password", // plain text body
-    html: '<p>Click <a href="http://localhost:8000/change-password">here</a> to reset your password</p>',
-  });
-
-  console.log("Message sent: %s", info.messageId);
-  if (info.messageId) {
-    return res
-      .status(200)
-      .json({ ok: true, message: `Reset link sent to ${req.body.email} ` });
-  } else {
-    return res
-      .status(400)
-      .json({ ok: true, message: "Email not sent, please try again later" });
-  }
+  };
+  sgMail
+    .send(msg)
+    .then(() => {
+      console.log("Email sent");
+      return res.status(200).json({
+        ok: true,
+        message:
+          "Thanks! If there's an account associated with this email, we'll send the password reset instructions immediately.",
+      });
+    })
+    .catch((error) => {
+      console.error(error);
+      return res.status(200).json({ ok: false });
+    });
 });
 
 router.post("/app-register", async (req, res) => {

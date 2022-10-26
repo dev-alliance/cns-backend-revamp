@@ -9,6 +9,9 @@ const upload = multer({ dest: "uploads/" });
 const { uploadFile } = require("../s3");
 const _ = require("lodash");
 const { Category } = require("../Schema/Categories");
+const { Orders } = require("../Schema/OrderSchema");
+const { Extra } = require("../Schema/Extra");
+const { Enquiry } = require("../Schema/Enquiry");
 router.post("/add-user", async (req, res) => {
   let admin = await Admin.findOne({ user: req.body.user });
   if (admin)
@@ -23,9 +26,17 @@ router.post("/add-user", async (req, res) => {
   const result = _.pick(admin, ["_id", "user"]);
   return res.header("x-auth-token", token).send({ ...result, ok: true });
 });
-
+router.get("/orders", async (req, res) => {
+  const orders = await Orders.find({}).where({ orderStatus: { $in: [1, 2] } });
+  res.json(orders);
+});
+router.get("/get-info", async (req, res) => {
+  const products = await Product.find().count();
+  const orders = await Orders.find({}).where({ orderStatus: { $in: [1, 2] } });
+  return res.json({ count: products, total: orders });
+});
 router.post("/login", async (req, res) => {
-  let admin = await Admin.findOne({ email: req.body.email });
+  let admin = await Admin.findOne({ user: req.body.user });
 
   if (!admin)
     return res
@@ -40,7 +51,40 @@ router.post("/login", async (req, res) => {
 
   const token = admin.generateAuthToken();
 
-  return res.json({ ok: true, token });
+  return res.json({ ok: true, token, user: admin });
+});
+
+router.post("/update-extra", async (req, res) => {
+  const result = await new Extra(req.body);
+  await result.save();
+
+  return res.status(200).json({ ok: true });
+});
+
+router.get("/extra", async (req, res) => {
+  const result = await Extra.find({});
+  return res.status(200).json({ ok: true, result });
+});
+
+
+router.post("/enquiry", async (req, res) => {
+  console.log(req.body);
+
+  const enquiry = new Enquiry(req.body);
+  await enquiry.save();
+
+  return res.json({
+    ok: true,
+    message: "Thanks for contacting us. Our team will contact you shortly.",
+  });
+});
+
+router.get("/enquries", async (req, res) => {
+  const data = await Enquiry.find({});
+  return res.json({
+    ok: true,
+    data,
+  });
 });
 
 router.post("/add-product", async (req, res) => {
@@ -53,13 +97,20 @@ router.post("/add-product", async (req, res) => {
 });
 
 router.post("/remove-product", async (req, res) => {
-  
-  const result = await Product.deleteOne({_id:req.body.id})
-  
+  const result = await Product.deleteOne({ _id: req.body.id });
 
   return res.json({ ok: true, message: "Product Deleted Successfull" });
 });
+router.post("/remove-enq", async (req, res) => {
+   await Enquiry.deleteOne({ _id: req.body.id });
 
+  return res.json({ ok: true, message: "Product Deleted Successfull" });
+});
+router.post("/remove-category", async (req, res) => {
+  const result = await Category.deleteOne({ _id: req.body.id });
+
+  return res.json({ ok: true, message: "Product Deleted Successfull" });
+});
 router.post("/add-category", async (req, res) => {
   const category = new Category(req.body);
   await category.save();
@@ -72,21 +123,24 @@ router.get("/get-category", async (req, res) => {
   return res.json({ data: category, ok: true });
 });
 
-router.post("/upload-action-files", upload.array("file",5), async (req, res) => {
+router.post(
+  "/upload-action-files",
+  upload.array("file", 5),
+  async (req, res) => {
     console.log(req.files);
 
     let rest = [];
-    for(let i= 0; i<req.files?.length; i++) {
+    for (let i = 0; i < req.files?.length; i++) {
       try {
         const s = await uploadFile(req.files[i]);
         rest.push(s.Location);
       } catch (err) {
-        return res.json({ok:false});
+        return res.json({ ok: false });
       }
     }
-  
-    return res.json({ok:true,data:rest})
-    
-  });
+
+    return res.json({ ok: true, data: rest });
+  }
+);
 
 module.exports = router;
