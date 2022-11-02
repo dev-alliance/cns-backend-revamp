@@ -15,6 +15,7 @@ const ProductSchema = new mongoose.Schema({
   reviews: [],
   category: { type: String, required: true },
   stock:{type:String}
+  
 });
 
 ProductSchema.methods.generateAuthToken = function () {

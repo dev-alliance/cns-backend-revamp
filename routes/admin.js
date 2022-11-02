@@ -55,10 +55,14 @@ router.post("/login", async (req, res) => {
 });
 
 router.post("/update-extra", async (req, res) => {
-  const result = await new Extra(req.body);
-  await result.save();
-
-  return res.status(200).json({ ok: true });
+  const result = await Extra.updateOne({id:req.body.id},{
+    $set:req.body
+  })
+  if(result.modifiedCount > 0) {
+    return res.status(200).json({ok:true,message:"Settings updated"})
+  } else {
+    return res.status(200).json({ok:false,message:"Failed to update settings"})
+  }
 });
 
 router.get("/extra", async (req, res) => {

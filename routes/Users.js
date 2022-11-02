@@ -4,6 +4,8 @@ const auth = require("../middleware/auth");
 const router = express.Router();
 const _ = require("lodash");
 const sgMail = require("@sendgrid/mail");
+const pdfInvoice = require('pdf-invoice')
+
 const bcrypt = require("bcrypt");
 const { User, validate } = require("../Schema/UserSchema");
 sgMail.setApiKey(
@@ -156,7 +158,7 @@ router.get("/filter", async (req, res) => {
 
 router.get("/orders", auth, async (req, res) => {
   const orders = await Orders.find({ userid: req.user._id }).sort({
-    timestamp: -1,
+    date: -1,
   });
   res.json(orders);
 });
@@ -233,56 +235,35 @@ router.post("/razorpay", async (req, res) => {
 });
 
 router.post("/pdf", async (req, res) => {
-  const orders = await Orders.find({
-    order: { $elemMatch: { id: req.body.id } },
-  });
-  var options = {
-    format: "A3",
-    orientation: "portrait",
-    border: "10mm",
-    header: {
-      height: "45mm",
-      contents: '<div style="text-align: center;">Author: Shyam Hajare</div>',
+  const order = await Orders.findOne({ _id: req.body.id });
+  const document = pdfInvoice({
+    company: {
+      phone: '(99) 9 9999-9999',
+      email: 'info@natmarts.com',
+      address: '195 Broaddus Maple Court Avenue, United States of America',
+      name: 'Natmarts',
     },
-    footer: {
-      height: "28mm",
-      contents: {
-        first: "Cover page",
-        2: "Second page", // Any page number is working. 1-based index
-        default:
-          '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>', // fallback value
-        last: "Last Page",
-      },
+    customer: {
+      name: order.firstname,
+      email: order.email,
+      address:order.address,
+      country:order.country,
+      date:order.date
     },
-  };
-
-  pdf
-    .create(
-      {
-        html: html,
-        data: {
-          data: orders,
-        },
-        path: "./output.pdf",
-        type: "",
-      },
-      options
-    )
-    .then((resp) => {
-      res.json(resp);
-    })
-    .catch((error) => {
-      res.json(error);
-    });
-});
-router.post("/post-review", auth, async (req, res) => {
-  const user = await User.findById(req.user._id).select("-password");
-  const result = { id: user._id, name: user.username, ...req.body };
-
-  const review = await ProductReview(result);
-  await review.save();
-
-  res.json(result);
+    items: [
+      {amount: 50.0, name: 'XYZ', description: 'Lorem ipsum dollor sit amet', quantity: 12},
+      {amount: 12.0, name: 'ABC', description: 'Lorem ipsum dollor sit amet', quantity: 12},
+      {amount: 127.72, name: 'DFE', description: 'Lorem ipsum dollor sit amet', quantity: 12},
+    ],
+  })
+   
+  // That's it! Do whatever you want now.
+  // Pipe it to a file for instance:
+   
+  const fs = require('fs')
+   
+  document.generate() // triggers rendering
+  document.pdfkitDoc.pipe(fs.createWriteStream('file.pdf'))
 });
 
 router.get("/get-reviews/:id", async (req, res) => {
