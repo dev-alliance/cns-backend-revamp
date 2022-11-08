@@ -4,7 +4,7 @@ const auth = require("../middleware/auth");
 const router = express.Router();
 const _ = require("lodash");
 const sgMail = require("@sendgrid/mail");
-const pdfInvoice = require('pdf-invoice')
+const pdfInvoice = require("pdf-invoice");
 
 const bcrypt = require("bcrypt");
 const { User, validate } = require("../Schema/UserSchema");
@@ -26,6 +26,8 @@ var fs = require("fs");
 var path = require("path");
 const { Deliveryapp } = require("../Schema/DeliveryAppSchema");
 const { Category } = require("../Schema/Categories");
+const { Cost } = require("../Schema/Cost");
+const { result } = require("lodash");
 // Read HTML Template
 var html = fs.readFileSync(path.resolve(__dirname, "../template.html"), "utf8");
 
@@ -130,9 +132,9 @@ router.get("/s3url", async (req, res) => {
   const url = await s3.generateUploadURL();
   res.send({ url });
 });
-router.get("/health",async(req,res)=> {
-  return res.status(200).send("OK")
-})
+router.get("/health", async (req, res) => {
+  return res.status(200).send("OK");
+});
 router.get("/products", async (req, res) => {
   const products = await Product.find({});
   res.status(200).json(products);
@@ -238,32 +240,47 @@ router.post("/pdf", async (req, res) => {
   const order = await Orders.findOne({ _id: req.body.id });
   const document = pdfInvoice({
     company: {
-      phone: '(99) 9 9999-9999',
-      email: 'info@natmarts.com',
-      address: '195 Broaddus Maple Court Avenue, United States of America',
-      name: 'Natmarts',
+      phone: "(99) 9 9999-9999",
+      email: "info@natmarts.com",
+      address: "195 Broaddus Maple Court Avenue, United States of America",
+      name: "Natmarts",
     },
     customer: {
       name: order.firstname,
       email: order.email,
-      address:order.address,
-      country:order.country,
-      date:order.date
+      address: order.address,
+      country: order.country,
+      date: order.date,
     },
     items: [
-      {amount: 50.0, name: 'XYZ', description: 'Lorem ipsum dollor sit amet', quantity: 12},
-      {amount: 12.0, name: 'ABC', description: 'Lorem ipsum dollor sit amet', quantity: 12},
-      {amount: 127.72, name: 'DFE', description: 'Lorem ipsum dollor sit amet', quantity: 12},
+      {
+        amount: 50.0,
+        name: "XYZ",
+        description: "Lorem ipsum dollor sit amet",
+        quantity: 12,
+      },
+      {
+        amount: 12.0,
+        name: "ABC",
+        description: "Lorem ipsum dollor sit amet",
+        quantity: 12,
+      },
+      {
+        amount: 127.72,
+        name: "DFE",
+        description: "Lorem ipsum dollor sit amet",
+        quantity: 12,
+      },
     ],
-  })
-   
+  });
+
   // That's it! Do whatever you want now.
   // Pipe it to a file for instance:
-   
-  const fs = require('fs')
-   
-  document.generate() // triggers rendering
-  document.pdfkitDoc.pipe(fs.createWriteStream('file.pdf'))
+
+  const fs = require("fs");
+
+  document.generate(); // triggers rendering
+  document.pdfkitDoc.pipe(fs.createWriteStream("file.pdf"));
 });
 
 router.get("/get-reviews/:id", async (req, res) => {
@@ -291,6 +308,36 @@ router.get("/delete-address", auth, async (req, res) => {
 
   res.json({ ok: true });
 });
+
+router.post("/shippingCost", async (req, res) => {
+
+  const result = await Cost.findOne({name:req.body.name})
+ console.log(result,req.body)
+  if(result) {
+    return res.status(200).json({ok:false,message:"State Already Exists"})
+  }
+
+  try {
+    const re = new Cost(req.body);
+    await re.save();
+    return res.status(200).json({ ok: true, message: "Pricing Added" });
+  } catch (err) {
+    return res
+      .status(200)
+      .json({ ok: false, message: "failed to add product" });
+  }
+});
+
+router.get("/get-shippingCost",async(req,res)=> {
+  const results = await Cost.find();
+  return res.status(200).json({ok:true,data:results})
+})
+
+router.delete("/delete-pricing/:id",async(req,res)=> {
+  
+  const results = await Cost.deleteOne({_id:req.params.id})
+  return res.status(200).json({ok:true,data:results})
+})
 
 router.post("/update-billing", auth, async (req, res) => {
   const userD = await User.findOne({ _id: req.user._id });
@@ -320,8 +367,8 @@ router.post("/update-profile", auth, async (req, res) => {
 });
 
 router.post("/change-password", async (req, res) => {
-  console.log(req.body)
-  const user = await User.findById({_id:req.body.id});
+  console.log(req.body);
+  const user = await User.findById({ _id: req.body.id });
 
   const salt = await bcrypt.genSalt(10);
   let np = await bcrypt.hash(req.body.password, salt);
@@ -349,7 +396,7 @@ router.post("/reset", async (req, res) => {
     text: "and easy to do anywhere, even with Node.js",
     templateId: "d-42ad1dfe6e9c4e0f84633588614fb44c",
     dynamicTemplateData: {
-     url:`http://localhost:3000/reset/${user._id}`
+      url: `http://localhost:3000/reset/${user._id}`,
     },
   };
   sgMail
