@@ -5,7 +5,7 @@ const router = express.Router();
 const _ = require("lodash");
 const sgMail = require("@sendgrid/mail");
 const pdfInvoice = require("pdf-invoice");
-
+const niceInvoice = require("nice-invoice");
 const bcrypt = require("bcrypt");
 const { User, validate } = require("../Schema/UserSchema");
 sgMail.setApiKey(
@@ -236,51 +236,57 @@ router.post("/razorpay", async (req, res) => {
   }
 });
 
-router.post("/pdf", async (req, res) => {
-  const order = await Orders.findOne({ _id: req.body.id });
-  const document = pdfInvoice({
-    company: {
-      phone: "(99) 9 9999-9999",
-      email: "info@natmarts.com",
-      address: "195 Broaddus Maple Court Avenue, United States of America",
-      name: "Natmarts",
+router.get("/test", async (req, res) => {});
+
+router.get("/pdf/:id", async (req, res) => {
+  const order = await Orders.findOne({ _id: req.params.id });
+  const invoiceDetail = {
+    shipping: {
+      name: order.info.firstname + " " + order.info.lastname,
+      address: order.info.address,
+      city: order.info.city,
+      country: order.info.country,
+      state: "Hyderabad",
+      postal_code: order.info.code,
     },
-    customer: {
-      name: order.firstname,
-      email: order.email,
-      address: order.address,
-      country: order.country,
-      date: order.date,
+    items: order?.order?.map((pr) => {
+      return {
+        item: pr.name,
+        description: pr.description,
+        quantity: pr.quantity,
+        price: 100,
+        tax: "",
+      };
+    }),
+
+    total: parseInt(order.cartTotal),
+    order_number: req.params.id,
+    header: {
+      company_name: "Natmarts",
+      company_address:
+        "Pahadi Shareef, Airport Road, Hyderabad - 05, TS, India",
     },
-    items: [
-      {
-        amount: 50.0,
-        name: "XYZ",
-        description: "Lorem ipsum dollor sit amet",
-        quantity: 12,
-      },
-      {
-        amount: 12.0,
-        name: "ABC",
-        description: "Lorem ipsum dollor sit amet",
-        quantity: 12,
-      },
-      {
-        amount: 127.72,
-        name: "DFE",
-        description: "Lorem ipsum dollor sit amet",
-        quantity: 12,
-      },
-    ],
-  });
+    footer: {
+      text: "Natmarts.com",
+    },
+    currency_symbol: "INR",
+    date: {
+      billing_date: JSON.stringify(new Date(order.date)).slice(1, 11),
+      due_date: null,
+    },
+  };
 
-  // That's it! Do whatever you want now.
-  // Pipe it to a file for instance:
+  niceInvoice(invoiceDetail, path.join(__dirname,`../uploads/${order._id}.pdf`));
+  //  res.download(path.join(__dirname,'../uploads/invoice.pdf'))
+  try {
+    const s33 = await s3.uploadFile({path:path.join(__dirname,`../uploads/${order._id}.pdf`),filename:`${order._id}`})
+    console.log(s33)
+    return res.status(200).json({ok:true,url:s33.Location})
+    
+  }catch(er) {
+    return res.status(200).json({ok:false,url:null})
+  }
 
-  const fs = require("fs");
-
-  document.generate(); // triggers rendering
-  document.pdfkitDoc.pipe(fs.createWriteStream("file.pdf"));
 });
 
 router.get("/get-reviews/:id", async (req, res) => {
@@ -310,11 +316,10 @@ router.get("/delete-address", auth, async (req, res) => {
 });
 
 router.post("/shippingCost", async (req, res) => {
-
-  const result = await Cost.findOne({name:req.body.name})
- console.log(result,req.body)
-  if(result) {
-    return res.status(200).json({ok:false,message:"State Already Exists"})
+  const result = await Cost.findOne({ name: req.body.name });
+  console.log(result, req.body);
+  if (result) {
+    return res.status(200).json({ ok: false, message: "State Already Exists" });
   }
 
   try {
@@ -328,16 +333,15 @@ router.post("/shippingCost", async (req, res) => {
   }
 });
 
-router.get("/get-shippingCost",async(req,res)=> {
+router.get("/get-shippingCost", async (req, res) => {
   const results = await Cost.find();
-  return res.status(200).json({ok:true,data:results})
-})
+  return res.status(200).json({ ok: true, data: results });
+});
 
-router.delete("/delete-pricing/:id",async(req,res)=> {
-  
-  const results = await Cost.deleteOne({_id:req.params.id})
-  return res.status(200).json({ok:true,data:results})
-})
+router.delete("/delete-pricing/:id", async (req, res) => {
+  const results = await Cost.deleteOne({ _id: req.params.id });
+  return res.status(200).json({ ok: true, data: results });
+});
 
 router.post("/update-billing", auth, async (req, res) => {
   const userD = await User.findOne({ _id: req.user._id });

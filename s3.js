@@ -31,6 +31,7 @@ module.exports.generateUploadURL =async  ()=> {
 }
 
 module.exports.uploadFile = file => {
+    console.log(file)
     const fileStream = fs.createReadStream(file.path)
 
     const params = {

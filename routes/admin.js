@@ -12,6 +12,10 @@ const { Category } = require("../Schema/Categories");
 const { Orders } = require("../Schema/OrderSchema");
 const { Extra } = require("../Schema/Extra");
 const { Enquiry } = require("../Schema/Enquiry");
+const sgMail = require("@sendgrid/mail");
+sgMail.setApiKey(
+  "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"
+);
 router.post("/add-user", async (req, res) => {
   let admin = await Admin.findOne({ user: req.body.user });
   if (admin)
@@ -72,15 +76,38 @@ router.get("/extra", async (req, res) => {
 
 
 router.post("/enquiry", async (req, res) => {
-  console.log(req.body);
+  
+
 
   const enquiry = new Enquiry(req.body);
   await enquiry.save();
 
-  return res.json({
-    ok: true,
-    message: "Thanks for contacting us. Our team will contact you shortly.",
-  });
+  const msg = {
+    to: "mohi@flivv.com", // Change to your recipient
+    from: "syedmohi04@gmail.com", // Change to your verified sender
+    subject: "Enquiry From Natmarts.com",
+    text: `
+    Name: ${req.body.name}
+    Contact: ${req.body.contact}
+    Email: ${req.body.email}
+    Message: ${req.body.message}
+    `,
+  };
+  sgMail
+    .send(msg)
+    .then(() => {
+      console.log("Email sent");
+      return res.json({
+        ok: true,
+        message: "Thanks for contacting us. Our team will contact you shortly.",
+      });
+    })
+    .catch((error) => {
+      console.error(error);
+      return res.status(200).json({ ok: false });
+    });
+
+  
 });
 
 router.get("/enquries", async (req, res) => {
