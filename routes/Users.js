@@ -276,17 +276,21 @@ router.get("/pdf/:id", async (req, res) => {
     },
   };
 
-  niceInvoice(invoiceDetail, path.join(__dirname,`../uploads/${order._id}.pdf`));
+  niceInvoice(
+    invoiceDetail,
+    path.join(__dirname, `../uploads/${order._id}.pdf`)
+  );
   //  res.download(path.join(__dirname,'../uploads/invoice.pdf'))
   try {
-    const s33 = await s3.uploadFile({path:path.join(__dirname,`../uploads/${order._id}.pdf`),filename:`${order._id}`})
-    console.log(s33)
-    return res.status(200).json({ok:true,url:s33.Location})
-    
-  }catch(er) {
-    return res.status(200).json({ok:false,url:null})
+    const s33 = await s3.uploadFile({
+      path: path.join(__dirname, `../uploads/${order._id}.pdf`),
+      filename: `${order._id}`,
+    });
+    console.log(s33);
+    return res.status(200).json({ ok: true, url: s33.Location });
+  } catch (er) {
+    return res.status(200).json({ ok: false, url: null });
   }
-
 });
 
 router.get("/get-reviews/:id", async (req, res) => {
@@ -411,6 +415,31 @@ router.post("/reset", async (req, res) => {
         ok: true,
         message:
           "Thanks! If there's an account associated with this email, we'll send the password reset instructions immediately.",
+      });
+    })
+    .catch((error) => {
+      console.error(error);
+      return res.status(200).json({ ok: false });
+    });
+});
+
+router.post("/order", async (req, res) => {
+
+  const msg = {
+    to: "sdfahad729@gmail.com", // Change to your recipient
+    from: "syedmohi04@gmail.com", // Change to your verified sender
+    subject: "Sending with SendGrid is Fun",
+    text: `Please download your order from here ${req.body.link}`
+   
+  };
+  sgMail
+    .send(msg)
+    .then(() => {
+      console.log("Email sent");
+      return res.status(200).json({
+        ok: true,
+        message:
+          "Email Sent.",
       });
     })
     .catch((error) => {
