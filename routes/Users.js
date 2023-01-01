@@ -215,6 +215,7 @@ router.get("/product/:id", async (req, res) => {
 
 router.post("/razorpay", async (req, res) => {
   const { amount, name, mobile } = req.body;
+
   const options = {
     amount: amount * 100,
     currency: "INR",
@@ -232,7 +233,7 @@ router.post("/razorpay", async (req, res) => {
       receipt: response.receipt,
     });
   } catch (error) {
-    console.log(error);
+    return res.json({ok:false})
   }
 });
 

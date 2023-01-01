@@ -143,6 +143,7 @@ router.post("/remove-category", async (req, res) => {
   return res.json({ ok: true, message: "Product Deleted Successfull" });
 });
 router.post("/add-category", async (req, res) => {
+  console.log(req.body)
   const category = new Category(req.body);
   await category.save();
 
