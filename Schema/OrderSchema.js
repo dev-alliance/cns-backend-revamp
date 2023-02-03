@@ -17,6 +17,9 @@ const OrderSchema = new mongoose.Schema({
     additional: { type: String, required: false },
     default: { type: Boolean, required: false },
     method: { type: String, required: true },
+    state:{
+      type:Object
+    }
    
   },
   order: [],

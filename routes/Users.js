@@ -11,6 +11,8 @@ const { User, validate } = require("../Schema/UserSchema");
 sgMail.setApiKey(
   "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"
 );
+const orderid = require('order-id')('key');
+
 const { Orders, validateOrders } = require("../Schema/OrderSchema");
 const jwt = require("jsonwebtoken");
 const config = require("config");
@@ -215,11 +217,11 @@ router.get("/product/:id", async (req, res) => {
 
 router.post("/razorpay", async (req, res) => {
   const { amount, name, mobile } = req.body;
-
+  const id = orderid.generate();
   const options = {
     amount: amount * 100,
     currency: "INR",
-    receipt: shortid.generate(),
+    receipt: id,
   };
   try {
     const response = await razor.orders.create(options);

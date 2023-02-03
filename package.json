@@ -29,6 +29,7 @@
     "nice-invoice": "^1.1.8",
     "nodemailer": "^6.7.5",
     "nodemon": "^2.0.15",
+    "order-id": "^2.1.2",
     "pdf-creator-node": "^2.3.4",
     "pdf-invoice": "^1.0.2",
     "pdf-node": "^1.0.0",

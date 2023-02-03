@@ -6,10 +6,11 @@ const mongoose = require("mongoose");
 const ProductSchema = new mongoose.Schema({
   name: { type: String, required: true },
   arabic: { type: String, required: true },
+  telugu: { type: String, required: true },
   image: [{ type: String }],
   basePrice: { type: String, required: true },
   description: { type: String, required: true },
-  benefits: [],
+  benefits: String,
   variants: [],
   price: { type: Number, required: true },
   discountedPrice: { type: String, required: true },
