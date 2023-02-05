@@ -6,6 +6,9 @@ const CategorySchema = new mongoose.Schema({
   }, 
   arabic: {
     type: String,
+  } ,
+  telugu: {
+    type: String,
   },
 });
 

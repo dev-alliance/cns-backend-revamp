@@ -11,12 +11,15 @@ const ProductSchema = new mongoose.Schema({
   basePrice: { type: String, required: true },
   description: { type: String, required: true },
   benefits: String,
+  benefitsar:String,
+  benefitstr:String,
   variants: [],
   price: { type: Number, required: true },
   discountedPrice: { type: String, required: true },
   reviews: [],
   category: { type: String, required: true },
-  stock:{type:String}
+  stock:{type:String},
+  aed:String
   
 });
 
