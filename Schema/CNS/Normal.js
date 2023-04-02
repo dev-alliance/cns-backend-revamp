@@ -1,13 +1,18 @@
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
+  firstName: String,
+  lastName: String,
+  job: String,
+  team: String,
+  landline: String,
+  mobile: String,
   email: {
     type: String,
     required: true,
   },
   password: {
     type: String,
-    required: true,
   },
   role: {
     type: String,
@@ -17,7 +22,8 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  image:String
 });
 
-const User = mongoose.model("cns.admin", userSchema);
-exports.User = User;
+const Normal = mongoose.model("cns.users", userSchema);
+exports.Normal = Normal;
