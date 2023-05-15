@@ -6,6 +6,7 @@ const { Branch } = require("../Schema/CNS/BranchSchema");
 const { Folder } = require("../Schema/CNS/FolderSchema");
 const { Team } = require("../Schema/CNS/TeamSchema");
 const { Normal } = require("../Schema/CNS/Normal");
+const { Clauses } = require("../Schema/CNS/Clauses");
 
 sgMail.setApiKey(
   "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"
@@ -25,7 +26,7 @@ router.post("/create-user", async (req, res) => {
     user.save();
 
     const msg = {
-      to: req.body.email, // Change to your recipient
+      to: 'smohi6069@gmail.com', // Change to your recipient
       from: "syedmohi04@gmail.com", // Change to your verified sender
       subject: "ContractnSign Email Verification",
       text: "Please verify your email address",
@@ -96,9 +97,9 @@ router.post("/login", async (req, res) => {
     return res.json({ ok: false, message: "Invalid username or password." });
   }
 
-  if (!user.emailVerified) {
-    return res.json({ ok: false, message: "Please verify Email address." });
-  }
+  // if (!user.emailVerified) {
+  //   return res.json({ ok: false, message: "Please verify Email address." });
+  // }
 
   if (user.password != req.body.password) {
     return res.json({ ok: false, message: "Password is incorrect." });
@@ -121,9 +122,9 @@ router.post("/create-branch", async (req, res) => {
 });
 
 // Define the route to get all form submissions
-router.get("/forms", async (req, res) => {
+router.get("/forms/:id", async (req, res) => {
   try {
-    const forms = await Branch.find();
+    const forms = await Branch.find({id:req.params.id});
     res.send(forms);
   } catch (err) {
     console.log(err);
@@ -161,6 +162,7 @@ router.post("/forms/:id", async (req, res) => {
 
 router.post("/create-folder", async (req, res) => {
   const submission = new Folder(req.body);
+  console.log(req.body,'sap')
 
   try {
     await submission.save();
@@ -170,9 +172,9 @@ router.post("/create-folder", async (req, res) => {
   }
 });
 
-router.get("/folders", async (req, res) => {
+router.get("/folders/:id", async (req, res) => {
   try {
-    const folders = await Folder.find();
+    const folders = await Folder.find({id:req.params.id});
     res.json(folders);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -244,9 +246,9 @@ router.post("/create-team", async (req, res) => {
 });
 
 // Define the route to get all form submissions
-router.get("/teams", async (req, res) => {
+router.get("/teams/:id", async (req, res) => {
   try {
-    const forms = await Team.find();
+    const forms = await Team.find({id:req.params.id});
     res.send(forms);
   } catch (err) {
     console.log(err);
@@ -254,9 +256,9 @@ router.get("/teams", async (req, res) => {
   }
 });
 
-router.get("/users", async (req, res) => {
+router.get("/users/:id", async (req, res) => {
   try {
-    const forms = await Normal.find();
+    const forms = await Normal.find({id:req.params.id});
     res.send(forms);
   } catch (err) {
     console.log(err);
@@ -300,5 +302,31 @@ router.delete("/user/:id", async (req, res) => {
     return res.status(500).send("Error deleting user");
   }
 });
+
+
+router.post("/create-clauses", async (req, res) => {
+  try {
+    const form = new Clauses(req.body);
+    await form.save();
+    return res
+      .status(201)
+      .json({ ok: true, message: "Clauses Created Successfully." });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send("Error saving form data");
+  }
+});
+
+router.get("/clauses/:id", async (req, res) => {
+  try {
+    const forms = await Clauses.find({id:req.params.id});
+    res.send(forms);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Error retrieving form data");
+  }
+});
+
+
 
 module.exports = router;

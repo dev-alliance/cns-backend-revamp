@@ -12,6 +12,7 @@ const BranchSchema = new mongoose.Schema({
   branchId: String,
   year: Number,
   status: Boolean,
+  id:String
 });
 
 // Define the Mongoose model for the form data
