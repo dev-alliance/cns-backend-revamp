@@ -206,13 +206,38 @@ async function getFolder(req, res, next) {
   next();
 }
 
-router.delete("/folders/:id", getFolder, async (req, res) => {
-  try {
-    await res.folder.remove();
-    return res.status(200).send("Folder Deleted.");
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+router.delete("/folders/:id", async (req, res) => {
+  const r = await Folder.deleteOne({ _id: req.params.id });
+  console.log(r);
+  if (r.deletedCount > 0) {
+    return res.json({ ok: true, message: "Folder Deleted." })
+  } else {
+    res.json({ ok: false, 'message': "Failed to delete folder" })
   }
+
+
+});
+
+router.delete("/file/:folderId/:id", async (req, res) => {
+  const r = await Folder.findOne({ _id: req.params.folderId });
+
+  const result = r.files.filter(file => file._id != req.params.id);
+  const query = await Folder.updateOne({ _id: req.params.folderId }, {
+    $set: {
+      files: result
+    }
+  })
+  console.log(query)
+
+  if (query.modifiedCount > 0) {
+    return res.json({ ok: true, message: "File Deleted" });
+
+  } else {
+    return res.json({ ok: false, message: "Failed to delete file" })
+  }
+
+
+
 });
 
 router.post("/document", async (req, res) => {
