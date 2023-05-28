@@ -1,11 +1,6 @@
 const mongoose = require("mongoose");
 
 const folderSchema = new mongoose.Schema({
-  userId:String,
-  id:{
-    type:String,
-    required:true
-  },
   name: {
     type: String,
     required: true,

@@ -7,7 +7,7 @@ const { Folder } = require("../Schema/CNS/FolderSchema");
 const { Team } = require("../Schema/CNS/TeamSchema");
 const { Normal } = require("../Schema/CNS/Normal");
 const { Clauses } = require("../Schema/CNS/Clauses");
-
+const { Templates } = require("../Schema/CNS/TemplateSchema");
 sgMail.setApiKey(
   "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"
 );
@@ -26,7 +26,7 @@ router.post("/create-user", async (req, res) => {
     user.save();
 
     const msg = {
-      to: 'smohi6069@gmail.com', // Change to your recipient
+      to: req.body.email, // Change to your recipient
       from: "syedmohi04@gmail.com", // Change to your verified sender
       subject: "ContractnSign Email Verification",
       text: "Please verify your email address",
@@ -149,7 +149,8 @@ router.post("/forms/:id", async (req, res) => {
       res
         .status(200)
         .send(
-          `Branch is ${req.body.status ? "Un-archive" : "Archive"
+          `Branch is ${
+            req.body.status ? "Un-archive" : "Archive"
           } successfully.`
         );
     }
@@ -161,7 +162,6 @@ router.post("/forms/:id", async (req, res) => {
 
 router.post("/create-folder", async (req, res) => {
   const submission = new Folder(req.body);
-  console.log(req.body, 'sap')
 
   try {
     await submission.save();
@@ -172,7 +172,7 @@ router.post("/create-folder", async (req, res) => {
 });
 
 router.get("/folders/:id", async (req, res) => {
-  console.log('htting >>')
+  console.log("htting >>");
   try {
     const folders = await Folder.find({ id: req.params.id });
     return res.json(folders);
@@ -182,7 +182,7 @@ router.get("/folders/:id", async (req, res) => {
 });
 
 router.get("/getFolderContents/:id", async (req, res) => {
-  console.log('htting >>')
+  console.log("htting >>");
   try {
     const folders = await Folder.find({ _id: req.params.id });
     return res.json(folders);
@@ -194,7 +194,7 @@ router.get("/getFolderContents/:id", async (req, res) => {
 async function getFolder(req, res, next) {
   let folder;
   try {
-    folder = await Folder.find({ id: req.params.id });
+    folder = await Folder.findById(req.params.id);
     if (folder == null) {
       return res.status(404).json({ message: "Folder not found" });
     }
@@ -210,38 +210,35 @@ router.delete("/folders/:id", async (req, res) => {
   const r = await Folder.deleteOne({ _id: req.params.id });
   console.log(r);
   if (r.deletedCount > 0) {
-    return res.json({ ok: true, message: "Folder Deleted." })
+    return res.json({ ok: true, message: "Folder Deleted." });
   } else {
-    res.json({ ok: false, 'message': "Failed to delete folder" })
+    res.json({ ok: false, message: "Failed to delete folder" });
   }
-
-
 });
 
 router.delete("/file/:folderId/:id", async (req, res) => {
   const r = await Folder.findOne({ _id: req.params.folderId });
 
-  const result = r.files.filter(file => file._id != req.params.id);
-  const query = await Folder.updateOne({ _id: req.params.folderId }, {
-    $set: {
-      files: result
+  const result = r.files.filter((file) => file._id != req.params.id);
+  const query = await Folder.updateOne(
+    { _id: req.params.folderId },
+    {
+      $set: {
+        files: result,
+      },
     }
-  })
-  console.log(query)
+  );
+  console.log(query);
 
   if (query.modifiedCount > 0) {
     return res.json({ ok: true, message: "File Deleted" });
-
   } else {
-    return res.json({ ok: false, message: "Failed to delete file" })
+    return res.json({ ok: false, message: "Failed to delete file" });
   }
-
-
-
 });
 
 router.post("/document", async (req, res) => {
-  console.log(req.body)
+  console.log(req.body);
   try {
     const form = await Folder.updateOne(
       { _id: req.body.id },
@@ -260,6 +257,27 @@ router.post("/document", async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).send("Error deleting form data");
+  }
+});
+
+router.post("/create-template", async (req, res) => {
+  console.log(req.body);
+  try {
+    const r = new Templates(req.body.payload);
+    await r.save();
+    return res.json({ ok: true, message: "Template upload successfully." });
+  } catch (err) {
+    return res.json({ ok: false, message: "Failed to upload template" });
+  }
+});
+
+router.get("/templates/:id", async (req, res) => {
+  console.log(req.body);
+  try {
+    const r = await Templates.find({ id: req.params.id });
+    return res.json({ ok: true, data: r });
+  } catch (err) {
+    return res.json({ ok: false, message: "Failed to load template" });
   }
 });
 
@@ -338,7 +356,6 @@ router.delete("/user/:id", async (req, res) => {
   }
 });
 
-
 router.post("/create-clauses", async (req, res) => {
   try {
     const form = new Clauses(req.body);
@@ -362,6 +379,15 @@ router.get("/clauses/:id", async (req, res) => {
   }
 });
 
-
-
+router.delete("/clauses/:id", async (req, res) => {
+  try {
+    const forms = await Clauses.deleteOne({ _id: req.params.id });
+    if (forms.deletedCount > 0) {
+      return res.json({ ok: true, message: "Clause Deleted." });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Error retrieving form data");
+  }
+});
 module.exports = router;
