@@ -124,7 +124,7 @@ router.post("/create-branch", async (req, res) => {
 // Define the route to get all form submissions
 router.get("/forms/:id", async (req, res) => {
   try {
-    const forms = await Branch.find({id:req.params.id});
+    const forms = await Branch.find({ id: req.params.id });
     res.send(forms);
   } catch (err) {
     console.log(err);
@@ -149,8 +149,7 @@ router.post("/forms/:id", async (req, res) => {
       res
         .status(200)
         .send(
-          `Branch is ${
-            req.body.status ? "Un-archive" : "Archive"
+          `Branch is ${req.body.status ? "Un-archive" : "Archive"
           } successfully.`
         );
     }
@@ -162,7 +161,7 @@ router.post("/forms/:id", async (req, res) => {
 
 router.post("/create-folder", async (req, res) => {
   const submission = new Folder(req.body);
-  console.log(req.body,'sap')
+  console.log(req.body, 'sap')
 
   try {
     await submission.save();
@@ -173,9 +172,20 @@ router.post("/create-folder", async (req, res) => {
 });
 
 router.get("/folders/:id", async (req, res) => {
+  console.log('htting >>')
   try {
-    const folders = await Folder.find({id:req.params.id});
-    res.json(folders);
+    const folders = await Folder.find({ id: req.params.id });
+    return res.json(folders);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.get("/getFolderContents/:id", async (req, res) => {
+  console.log('htting >>')
+  try {
+    const folders = await Folder.find({ _id: req.params.id });
+    return res.json(folders);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -184,7 +194,7 @@ router.get("/folders/:id", async (req, res) => {
 async function getFolder(req, res, next) {
   let folder;
   try {
-    folder = await Folder.findById(req.params.id);
+    folder = await Folder.find({ id: req.params.id });
     if (folder == null) {
       return res.status(404).json({ message: "Folder not found" });
     }
@@ -248,7 +258,7 @@ router.post("/create-team", async (req, res) => {
 // Define the route to get all form submissions
 router.get("/teams/:id", async (req, res) => {
   try {
-    const forms = await Team.find({id:req.params.id});
+    const forms = await Team.find({ id: req.params.id });
     res.send(forms);
   } catch (err) {
     console.log(err);
@@ -258,7 +268,7 @@ router.get("/teams/:id", async (req, res) => {
 
 router.get("/users/:id", async (req, res) => {
   try {
-    const forms = await Normal.find({id:req.params.id});
+    const forms = await Normal.find({ id: req.params.id });
     res.send(forms);
   } catch (err) {
     console.log(err);
@@ -319,7 +329,7 @@ router.post("/create-clauses", async (req, res) => {
 
 router.get("/clauses/:id", async (req, res) => {
   try {
-    const forms = await Clauses.find({id:req.params.id});
+    const forms = await Clauses.find({ id: req.params.id });
     res.send(forms);
   } catch (err) {
     console.log(err);
