@@ -300,6 +300,15 @@ router.get("/get-reviews/:id", async (req, res) => {
   const results = await ProductReview.find({ id: req.params.id });
   res.json(results);
 });
+router.post("/post-review", auth, async (req, res) => {
+  const user = await User.findById(req.user._id).select("-password");
+  const result = { id: user._id, name: user.username, ...req.body };
+
+  const review = await ProductReview(result);
+  await review.save();
+
+  res.json(result);
+});
 
 router.post("/update-address", auth, async (req, res) => {
   console.log(req.body);

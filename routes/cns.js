@@ -8,6 +8,7 @@ const { Team } = require("../Schema/CNS/TeamSchema");
 const { Normal } = require("../Schema/CNS/Normal");
 const { Clauses } = require("../Schema/CNS/Clauses");
 const { Templates } = require("../Schema/CNS/TemplateSchema");
+
 sgMail.setApiKey(
   "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"
 );
@@ -92,22 +93,17 @@ router.post("/verify-email", async (req, res) => {
 
 router.post("/login", async (req, res) => {
   const user = await User.findOne({ email: req.body.email });
-
   if (!user) {
     return res.json({ ok: false, message: "Invalid username or password." });
   }
-
   // if (!user.emailVerified) {
   //   return res.json({ ok: false, message: "Please verify Email address." });
   // }
-
   if (user.password != req.body.password) {
     return res.json({ ok: false, message: "Password is incorrect." });
   }
-
   return res.json({ ok: true, user });
 });
-
 router.post("/create-branch", async (req, res) => {
   try {
     const form = new Branch(req.body);
