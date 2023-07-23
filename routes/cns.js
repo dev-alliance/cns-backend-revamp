@@ -8,6 +8,8 @@ const { Team } = require("../Schema/CNS/TeamSchema");
 const { Normal } = require("../Schema/CNS/Normal");
 const { Clauses } = require("../Schema/CNS/Clauses");
 const { Templates } = require("../Schema/CNS/TemplateSchema");
+const { Tag } = require("../Schema/CNS/Tags");
+const { CustomField } = require("../Schema/CNS/customFields");
 
 sgMail.setApiKey(
   "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"
@@ -61,10 +63,27 @@ router.post("/add-user", async (req, res) => {
   if (usr) {
     return res.json({ ok: false, message: "user already exits." });
   }
+  console.log(req.body);
   try {
     const user = new Normal(req.body);
     user.save();
-    return res.json({ ok: true, message: "User created successfully." });
+
+    if (req.body.team) {
+      const team = await Team.updateOne(
+        { _id: req.body.team },
+        {
+          $push: {
+            members: user,
+          },
+        }
+      );
+
+      if (team.modifiedCount > 0) {
+        return res.json({ ok: true, message: "User created successfully." });
+      } else {
+        return res.json({ ok: true, message: "Fail to create user." });
+      }
+    }
   } catch (err) {
     return res
       .status(200)
@@ -168,7 +187,6 @@ router.post("/create-folder", async (req, res) => {
 });
 
 router.get("/folders/:id", async (req, res) => {
-  console.log("htting >>");
   try {
     const folders = await Folder.find({ id: req.params.id });
     return res.json(folders);
@@ -257,13 +275,34 @@ router.post("/document", async (req, res) => {
 });
 
 router.post("/create-template", async (req, res) => {
-  console.log(req.body);
   try {
-    const r = new Templates(req.body.payload);
+    const r = new Templates(req.body);
     await r.save();
     return res.json({ ok: true, message: "Template upload successfully." });
   } catch (err) {
     return res.json({ ok: false, message: "Failed to upload template" });
+  }
+});
+
+router.post("/update-password", async (req, res) => {
+  const { newPassword, old } = req.body;
+  const user = await User.findOne({ _id: req.body.id });
+  if (user.password == old) {
+    const w = await User.updateOne(
+      { _id: req.body.id },
+      {
+        $set: {
+          password: newPassword,
+        },
+      }
+    );
+    if (w.modifiedCount > 0) {
+      return res.json({ ok: true });
+    } else {
+      return res.json({ ok: false });
+    }
+  } else {
+    return res.json({ ok: false, message: "Password doesn't match" });
   }
 });
 
@@ -368,6 +407,54 @@ router.post("/create-clauses", async (req, res) => {
 router.get("/clauses/:id", async (req, res) => {
   try {
     const forms = await Clauses.find({ id: req.params.id });
+    res.send(forms);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Error retrieving form data");
+  }
+});
+// tags
+router.post("/create-tag", async (req, res) => {
+  try {
+    const form = new Tag(req.body);
+    await form.save();
+    return res
+      .status(201)
+      .json({ ok: true, message: "Tag Created Successfully." });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send("Error saving form data");
+  }
+});
+
+router.get("/tag/:id", async (req, res) => {
+  try {
+    const forms = await Tag.find({ id: req.params.id });
+    res.send(forms);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Error retrieving form data");
+  }
+});
+
+// custom fields
+
+router.post("/create-custom-field", async (req, res) => {
+  try {
+    const form = new CustomField(req.body);
+    await form.save();
+    return res
+      .status(201)
+      .json({ ok: true, message: "Custom Field Created Successfully." });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send("Error saving form data");
+  }
+});
+
+router.get("/custom-field/:id", async (req, res) => {
+  try {
+    const forms = await CustomField.find({ id: req.params.id });
     res.send(forms);
   } catch (err) {
     console.log(err);

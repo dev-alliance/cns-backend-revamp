@@ -2,11 +2,11 @@ const mongoose = require("mongoose");
 
 const TeamSchema = new mongoose.Schema({
   name: String,
-id:String,
-  manager: String,
+  id: String,
+  manager: {},
 
   status: Boolean,
-  members:[]
+  members: [],
 });
 
 // Define the Mongoose model for the form data

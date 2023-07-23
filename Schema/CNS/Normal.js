@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema({
   firstName: String,
   lastName: String,
   job: String,
-  team: String,
+  team: {},
   landline: String,
   mobile: String,
   email: {
@@ -23,7 +23,13 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  image:String
+  image:String,
+  status:Boolean,
+  disabled:{
+    type:Boolean,
+    default:false
+  }
+
 });
 
 const Normal = mongoose.model("cns.users", userSchema);
