@@ -31,7 +31,7 @@ router.post("/add-user", async (req, res) => {
   return res.header("x-auth-token", token).send({ ...result, ok: true });
 });
 router.get("/orders", async (req, res) => {
-  const orders = await Orders.find({}).where({ orderStatus: { $in: [1, 2] } });
+  const orders = await Orders.find()
   res.json(orders);
 });
 router.get("/get-info", async (req, res) => {

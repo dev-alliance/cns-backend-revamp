@@ -511,4 +511,14 @@ router.get("/search-order/:id", async (req, res) => {
   }
 });
 
+
+router.get("/filter-order/:id", async (req, res) => {
+  try {
+    const order = await Orders.find({orderStatus:req.params.id});
+    return res.status(200).send(order);
+  } catch (err) {
+    return res.status(404).send("Invalid Order ID");
+  }
+});
+
 module.exports = router;
