@@ -65,10 +65,16 @@ router.post("/create-user", async (req, res) => {
 });
 
 router.post("/add-user", async (req, res) => {
-  const usr = await Normal.findOne({ email: req.body.email });
-  if (usr) {
-    return res.json({ ok: false, message: "user already exits." });
+
+
+  const t = await Normal.findOne({email:req.body.email}).where({id:req.body.id})
+
+
+
+  if(t)  {
+    return res.json({ok:false,message:"User already exits."})
   }
+
   try {
     const user = new Normal(req.body);
 
@@ -311,7 +317,7 @@ router.post("/update-password", async (req, res) => {
       return res.json({ ok: false });
     }
   } else {
-    return res.json({ ok: false, message: "Password doesn't match" });
+    return res.json({ ok: false, message: "Old password incorrect." });
   }
 });
 
@@ -501,7 +507,7 @@ router.post("/create-custom-field", async (req, res) => {
     await form.save();
     return res
       .status(201)
-      .json({ ok: true, message: "Custom Field Created Successfully." });
+      .json({ ok: true, message: "Custom Field Created." });
   } catch (err) {
     console.log(err);
     return res.status(500).send("Error saving form data");
