@@ -10,6 +10,9 @@ const { Clauses } = require("../Schema/CNS/Clauses");
 const { Templates } = require("../Schema/CNS/TemplateSchema");
 const { Tag } = require("../Schema/CNS/Tags");
 const { CustomField } = require("../Schema/CNS/customFields");
+const { Permissions } = require("../Schema/CNS/Permissions");
+const nodemailer = require("nodemailer");
+const path = require("path");
 
 sgMail.setApiKey(
   "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"
@@ -24,9 +27,12 @@ router.post("/create-user", async (req, res) => {
   if (usr) {
     return res.json({ ok: false, message: "user already exits." });
   }
+
   try {
     const user = new User(req.body);
     user.save();
+
+    return res.json({ ok: true, message: "Please login to continue." });
 
     const msg = {
       to: req.body.email, // Change to your recipient
@@ -63,10 +69,8 @@ router.post("/add-user", async (req, res) => {
   if (usr) {
     return res.json({ ok: false, message: "user already exits." });
   }
-  console.log(req.body);
   try {
     const user = new Normal(req.body);
-    user.save();
 
     if (req.body.team) {
       const team = await Team.updateOne(
@@ -79,11 +83,16 @@ router.post("/add-user", async (req, res) => {
       );
 
       if (team.modifiedCount > 0) {
+        await user.save();
         return res.json({ ok: true, message: "User created successfully." });
       } else {
         return res.json({ ok: true, message: "Fail to create user." });
       }
     }
+    await user.save();
+    return res
+      .status(200)
+      .json({ ok: true, message: "User Created successfully." });
   } catch (err) {
     return res
       .status(200)
@@ -316,6 +325,20 @@ router.get("/templates/:id", async (req, res) => {
   }
 });
 
+router.get("/delete-template/:id", async (req, res) => {
+  console.log(req.body);
+  try {
+    const r = await Templates.deleteOne({ _id: req.params.id });
+    if (r.deletedCount > 0) {
+      return res.json({ ok: true, data: r, message: "Template deleted" });
+    } else {
+      return res.json({ ok: false, data: r, message: "Something went wrong" });
+    }
+  } catch (err) {
+    return res.json({ ok: false, message: "Failed to load template" });
+  }
+});
+
 router.get("/folders/:id", getFolder, (req, res) => {
   res.json(res.folder);
 });
@@ -345,6 +368,39 @@ router.get("/teams/:id", async (req, res) => {
 });
 
 router.get("/users/:id", async (req, res) => {
+  try {
+    const forms = await Normal.find({ id: req.params.id });
+    res.send(forms);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Error retrieving form data");
+  }
+});
+
+router.get("/disable-user/:id/:status", async (req, res) => {
+  try {
+    const forms = await Normal.updateOne(
+      { _id: req.params.id },
+      {
+        $set: {
+          status: req.params.status,
+        },
+      }
+    );
+    if (forms.modifiedCount > 0) {
+      return res.status(200).json({ ok: true, message: "User Status Changed" });
+    } else {
+      return res
+        .status(200)
+        .json({ ok: false, message: "Failed to change status." });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(200).json({ ok: false, message: "Something went wrong" });
+  }
+});
+
+router.get("/user-status/:stat", async (req, res) => {
   try {
     const forms = await Normal.find({ id: req.params.id });
     res.send(forms);
@@ -462,6 +518,17 @@ router.get("/custom-field/:id", async (req, res) => {
   }
 });
 
+router.delete("/custom-field/:id", async (req, res) => {
+  console.log(req.params.id);
+  try {
+    await CustomField.deleteOne({ _id: req.params.id });
+    return res.status(200).send({ ok: true, message: "Custom Field Deleted." });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Error retrieving form data");
+  }
+});
+
 router.delete("/clauses/:id", async (req, res) => {
   try {
     const forms = await Clauses.deleteOne({ _id: req.params.id });
@@ -473,4 +540,105 @@ router.delete("/clauses/:id", async (req, res) => {
     res.status(500).send("Error retrieving form data");
   }
 });
+
+router.post("/create-permission", async (req, res) => {
+  try {
+    const permissions = new Permissions(req.body);
+    await permissions.save();
+    return res.json({ ok: true, message: "Role created successfully." });
+  } catch (err) {
+    return res.json({ ok: false, message: "Failed to add roles & permission" });
+  }
+});
+
+router.get("/permissions/:id", async (req, res) => {
+  try {
+    const permissions = await Permissions.find({ id: req.params.id }).select(
+      "-permissions"
+    );
+    return res.json({ ok: true, data: permissions });
+  } catch (err) {
+    return res.json({
+      ok: false,
+      message: "Failed to load add roles & permission",
+    });
+  }
+});
+router.delete("/permission/:id", async (req, res) => {
+  try {
+    const permissions = await Permissions.deleteOne({ _id: req.params.id });
+    if (permissions.deletedCount > 0) {
+      return res.json({ ok: true, message: "Role delete successfully." });
+    }
+  } catch (err) {
+    return res.json({
+      ok: false,
+      message: "Failed to delete roles & permission",
+    });
+  }
+});
+
+const fs = require("fs");
+const https = require("https");
+const Document = require("extract-word-docs");
+const file = fs.createWriteStream("data.docx");
+const Downloader = require("nodejs-file-downloader");
+
+
+
+router.post("/convert-file-docx", async (req, res) => {
+  console.log(req.body)
+ 
+    const downloader = new Downloader({
+      url: req.body.url, //If the file name already exists, a new file with the name 200MB1.zip is created.
+      directory: "./downloads", //This folder will be created, if it doesn't exist.   
+    });
+    try {
+      const {filePath,downloadStatus} = await downloader.download(); //Downloader.download() resolves with some useful properties.
+      console.log(downloadStatus)
+      console.log("All done",filePath);
+
+
+      let document = new Document(path.join(__dirname, `../${filePath}`), {
+        editable: false,
+        delText: false,
+      });
+    
+      document.extractAsHTML().then((data) => {
+        return res.json(data)
+      });
+
+     
+    } catch (error) {
+      //IMPORTANT: Handle a possible error. An error is thrown in case of network errors, or status codes of 400 and above.
+      //Note that if the maxAttempts is set to higher than 1, the error is thrown only if all attempts fail.
+      console.log("Download failed", error);
+    }
+
+});
+
+
+// billing
+
+const stripe = require('stripe')('sk_test_51Dht8aEvBzTnEP3GqXgdBNTtVTcPOMBrQp1otlkoRMsQh2VXFh8dRlceAU56safCNoB1WurmnFcoSoVCJj1gSMJK00MHeBiphi');
+
+router.get("/create-billing",async(req,res)=> {
+  stripe.products.create({
+    name: 'Starter Subscription',
+    description: '$12/Month subscription',
+  }).then(product => {
+    stripe.prices.create({
+      unit_amount: 1200,
+      currency: 'usd',
+      recurring: {
+        interval: 'month',
+      },
+      product: product.id,
+    }).then(price => {
+      console.log('Success! Here is your starter subscription product id: ' + product.id);
+      console.log('Success! Here is your premium subscription price id: ' + price.id);
+    });
+  });
+})
+
 module.exports = router;

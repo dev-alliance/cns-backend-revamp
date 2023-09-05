@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
 const folderSchema = new mongoose.Schema({
+  id:String,
   name: {
     type: String,
     required: true,
@@ -21,7 +22,12 @@ const folderSchema = new mongoose.Schema({
   {
     name:String,
     desc:String,
-    file:String
+    file:String,
+    timestamp: {
+      type: Date,
+      default: Date.now,
+    }
+
   } 
   ], timestamp: {
     type: Date,

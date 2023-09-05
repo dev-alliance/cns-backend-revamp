@@ -24,7 +24,10 @@ const userSchema = new mongoose.Schema({
     default: false,
   },
   image:String,
-  status:Boolean,
+  status:{
+    type:Boolean,
+    default:true
+  },
   disabled:{
     type:Boolean,
     default:false
