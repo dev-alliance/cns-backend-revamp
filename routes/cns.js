@@ -578,67 +578,7 @@ router.delete("/permission/:id", async (req, res) => {
   }
 });
 
-const fs = require("fs");
-const https = require("https");
-const Document = require("extract-word-docs");
-const file = fs.createWriteStream("data.docx");
-const Downloader = require("nodejs-file-downloader");
 
 
-
-router.post("/convert-file-docx", async (req, res) => {
-  console.log(req.body)
- 
-    const downloader = new Downloader({
-      url: req.body.url, //If the file name already exists, a new file with the name 200MB1.zip is created.
-      directory: "./downloads", //This folder will be created, if it doesn't exist.   
-    });
-    try {
-      const {filePath,downloadStatus} = await downloader.download(); //Downloader.download() resolves with some useful properties.
-      console.log(downloadStatus)
-      console.log("All done",filePath);
-
-
-      let document = new Document(path.join(__dirname, `../${filePath}`), {
-        editable: false,
-        delText: false,
-      });
-    
-      document.extractAsHTML().then((data) => {
-        return res.json(data)
-      });
-
-     
-    } catch (error) {
-      //IMPORTANT: Handle a possible error. An error is thrown in case of network errors, or status codes of 400 and above.
-      //Note that if the maxAttempts is set to higher than 1, the error is thrown only if all attempts fail.
-      console.log("Download failed", error);
-    }
-
-});
-
-
-// billing
-
-const stripe = require('stripe')('sk_test_51Dht8aEvBzTnEP3GqXgdBNTtVTcPOMBrQp1otlkoRMsQh2VXFh8dRlceAU56safCNoB1WurmnFcoSoVCJj1gSMJK00MHeBiphi');
-
-router.get("/create-billing",async(req,res)=> {
-  stripe.products.create({
-    name: 'Starter Subscription',
-    description: '$12/Month subscription',
-  }).then(product => {
-    stripe.prices.create({
-      unit_amount: 1200,
-      currency: 'usd',
-      recurring: {
-        interval: 'month',
-      },
-      product: product.id,
-    }).then(price => {
-      console.log('Success! Here is your starter subscription product id: ' + product.id);
-      console.log('Success! Here is your premium subscription price id: ' + price.id);
-    });
-  });
-})
 
 module.exports = router;
