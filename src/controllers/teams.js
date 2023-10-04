@@ -5,11 +5,11 @@ const createTeam = async (req, res) => {
       const form = new Team(req.body);
       await form.save();
       return res
-        .status(201)
+        .status(200)
         .json({ ok: true, message: "Team Created Successfully." });
     } catch (err) {
       console.log(err);
-      return res.status(500).send("Error saving form data");
+      return res.status(400).send("Failed to create team.");
     }
   }
 
@@ -37,13 +37,13 @@ const createTeam = async (req, res) => {
         return res
           .status(200)
           .send(
-            `Team is ${req.body.status ? "Un-archive" : "Archive"} successfully.`
+            `Team ${req.body.status ? "Un-archive" : "Archive"} successfully.`
           );
       } else {
-        return res.status(404).send("Form not found");
+        return res.status(404).send("Team not found.");
       }
     } catch (err) {
-      return res.status(500).send("Error deleting form data");
+      return res.status(400).send(`Failed to ${req.body.status ? "Un-archive" : "Archive"} team.`);
     }
   }
 

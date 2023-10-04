@@ -6,7 +6,7 @@ const createUser = async (req, res) => {
   });
 
   if (t) {
-    return res.json({ ok: false, message: "User already exits." });
+    return res.status(422).json({ ok: false, message: "User already exits." });
   }
 
   try {
@@ -24,9 +24,9 @@ const createUser = async (req, res) => {
 
       if (team.modifiedCount > 0) {
         await user.save();
-        return res.json({ ok: true, message: "User created successfully." });
+        return res.status(200).json({ ok: true, message: "User created successfully." });
       } else {
-        return res.json({ ok: true, message: "Fail to create user." });
+        return res.status(400).json({ ok: true, message: "Fail to create user." });
       }
     }
     await user.save();
@@ -35,30 +35,18 @@ const createUser = async (req, res) => {
       .json({ ok: true, message: "User Created successfully." });
   } catch (err) {
     return res
-      .status(200)
-      .json({ ok: false, message: "failed to create user" });
+      .status(400)
+      .json({ ok: false, message: "Fail to create user." });
   }
 };
 
 const getUsersById = async (req, res) => {
-  const { newPassword, old } = req.body;
-  const user = await Admin.findOne({ _id: req.body.id });
-  if (user.password == old) {
-    const w = await User.updateOne(
-      { _id: req.body.id },
-      {
-        $set: {
-          password: newPassword,
-        },
-      }
-    );
-    if (w.modifiedCount > 0) {
-      return res.json({ ok: true });
-    } else {
-      return res.json({ ok: false });
-    }
-  } else {
-    return res.json({ ok: false, message: "Old password incorrect." });
+  try {
+    const users = await User.find({ id: req.params.id });
+    res.send(users);
+  } catch (err) {
+    console.log(err);
+    res.status(400).send("failed to load users.");
   }
 };
 
@@ -73,15 +61,15 @@ const disableUser = async (req, res) => {
       }
     );
     if (forms.modifiedCount > 0) {
-      return res.status(200).json({ ok: true, message: "User Status Changed" });
+      return res.status(200).json({ ok: true, message: "User Status Changed." });
     } else {
       return res
-        .status(200)
-        .json({ ok: false, message: "Failed to change status." });
+        .status(422)
+        .json({ ok: false, message: "Failed to update user status." });
     }
   } catch (err) {
     console.log(err);
-    res.status(200).json({ ok: false, message: "Something went wrong" });
+    res.status(400).json({ ok: false, message: "Something went wrong, try again." });
   }
 };
 
@@ -104,7 +92,7 @@ const userStats = async (req, res) => {
         return res.status(404).send("User not found");
       }
     } catch (err) {
-      return res.status(500).send("Error deleting user");
+      return res.status(400).send("Fail to delete user.");
     }
   }
 

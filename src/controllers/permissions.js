@@ -30,12 +30,12 @@ const createPermission = async (req, res) => {
     try {
       const permissions = await Permissions.deleteOne({ _id: req.params.id });
       if (permissions.deletedCount > 0) {
-        return res.json({ ok: true, message: "Role delete successfully." });
+        return res.status(200).json({ ok: true, message: "Role deleted successfully." });
       }
     } catch (err) {
-      return res.json({
+      return res.status(400).json({
         ok: false,
-        message: "Failed to delete roles & permission",
+        message: "Failed to delete roles & permission.",
       });
     }
   }

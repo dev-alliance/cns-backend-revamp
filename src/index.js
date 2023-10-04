@@ -7,6 +7,7 @@ const sgMail = require("@sendgrid/mail");
 const morgan = require("morgan");
 const cors  = require('cors')
 const app = express();
+const swaggerDocs = require("./utils/swagger")
 
 if (!config.get("jwtPrivateKey")) {
   console.error("FATAL ERROR: jwtPrivateKey is not defined");
@@ -42,8 +43,9 @@ mongoose
   .then(() => console.log("connected"))
   .catch((err) => console.log(err));
 
+  
 app.use("/api/auth", auth);
-app.use("/api/admin", admin);
+app.use("/api/v1/admin", admin);
 app.use('/api/v1/users',users)
 app.use('/api/v1/folders',folders)
 app.use('/api/v1/branches',branches)
@@ -55,4 +57,7 @@ app.use('/api/v1/tags',tags)
 app.use('/api/v1/teams',teams)
 
 
-app.listen(PORT, () => console.log(`server port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`server port ${PORT}`)
+  swaggerDocs(app,PORT)
+});

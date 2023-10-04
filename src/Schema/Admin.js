@@ -1,5 +1,31 @@
 const mongoose = require("mongoose");
 
+/**
+ * @openapi
+ * components:
+ *  schemas:
+ *    Admin:
+ *      type: object
+ *      required:
+ *        - email
+ *        - password
+ *      properties:
+ *        email:
+ *          type: string
+ *          default: jane.doe@example.com
+ *        password:
+ *          type: string
+ *          default: stringPassword123
+ *    AdminResponse:
+ *      type: object
+ *      properties:
+ *        email:
+ *          type: string
+ *        _id:
+ *          type: string
+ *        createdAt:
+ *          type: string
+ */
 const adminSchema = new mongoose.Schema({
   id:String,
   email: {
@@ -17,6 +43,10 @@ const adminSchema = new mongoose.Schema({
   emailVerified: {
     type: Boolean,
     default: false,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
   },
 });
 

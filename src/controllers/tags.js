@@ -5,11 +5,11 @@ const createTag = async (req, res) => {
       const form = new Tag(req.body);
       await form.save();
       return res
-        .status(201)
+        .status(200)
         .json({ ok: true, message: "Tag Created Successfully." });
     } catch (err) {
       console.log(err);
-      return res.status(500).send("Error saving form data");
+      return res.status(400).send("Failed to create tag.");
     }
   }
 

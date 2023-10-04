@@ -9,17 +9,17 @@ const createClauses = async (req, res) => {
       .json({ ok: true, message: "Clauses Created Successfully." });
   } catch (err) {
     console.log(err);
-    return res.status(500).send("Error saving form data");
+    return res.status(500).send("Failed to create clauses.");
   }
 };
 
 const getClausesById = async (req, res) => {
   try {
     const forms = await Clauses.find({ id: req.params.id });
-    res.send(forms);
+    res.status(200).send(forms);
   } catch (err) {
     console.log(err);
-    res.status(500).send("Error retrieving form data");
+    res.status(400).send("Failed to retrieving clauses data.");
   }
 };
 
@@ -27,11 +27,11 @@ const deleteClauses = async (req, res) => {
   try {
     const forms = await Clauses.deleteOne({ _id: req.params.id });
     if (forms.deletedCount > 0) {
-      return res.json({ ok: true, message: "Clause Deleted." });
+      return res.json({ ok: true, message: "Clause Deleted Successfully." });
     }
   } catch (err) {
     console.log(err);
-    res.status(500).send("Error retrieving form data");
+    res.status(400).send("Failed to delete clauses.");
   }
 };
 module.exports = {

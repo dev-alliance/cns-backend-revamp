@@ -1,5 +1,33 @@
 const mongoose = require("mongoose");
 
+/**
+ * @openapi
+ * components:
+ *  schemas:
+ *    Templates:
+ *      type: object
+ *      required:
+ *        - id
+ *        - name
+ *        - file
+ *        - desc
+ *      properties:
+ *        id:
+ *          type: string
+ *        name:
+ *          type: string
+ *        file:
+ *          type: string
+ *        desc:
+ *          type: string
+ *    TemplatesResponse:
+ *      type: object
+ *      properties:
+ *        ok:
+ *          type: boolean
+ *        message:
+ *          type: string
+ */
 const templateSchema = new mongoose.Schema({
   id: String,
   name: {
@@ -8,7 +36,7 @@ const templateSchema = new mongoose.Schema({
   },
   file: String,
   desc:String,
-  timestamp: {
+  createdAt: {
     type: Date,
     default: Date.now,
   },

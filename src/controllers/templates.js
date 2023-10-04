@@ -7,7 +7,7 @@ const createTemplate = async (req, res) => {
       return res.json({ ok: true, message: "Template upload successfully." });
     } catch (err) {
       console.log(err)
-      return res.json({ ok: false, message: "Failed to upload template" });
+      return res.status(400).json({ ok: false, message: "Failed to upload template" });
     }
   }
 
@@ -17,7 +17,7 @@ const createTemplate = async (req, res) => {
       const r = await Templates.find({ id: req.params.id });
       return res.json({ ok: true, data: r });
     } catch (err) {
-      return res.json({ ok: false, message: "Failed to load template" });
+      return res.json({ ok: false, message: "Failed to load template." });
     }
   }
 
@@ -26,12 +26,12 @@ const createTemplate = async (req, res) => {
     try {
       const r = await Templates.deleteOne({ _id: req.params.id });
       if (r.deletedCount > 0) {
-        return res.json({ ok: true, data: r, message: "Template deleted" });
+        return res.json({ ok: true, data: r, message: "Template deleted." });
       } else {
-        return res.json({ ok: false, data: r, message: "Something went wrong" });
+        return res.status(400).json({ ok: false, data: r, message: "Failed to delete template." });
       }
     } catch (err) {
-      return res.json({ ok: false, message: "Failed to load template" });
+      return res.status(400).json({ ok: false, message: "Failed to delete template." });
     }
   }
 

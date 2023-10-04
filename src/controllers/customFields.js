@@ -7,7 +7,7 @@ const createCustomField = async (req, res) => {
       return res.status(201).json({ ok: true, message: "Custom Field Created." });
     } catch (err) {
       console.log(err);
-      return res.status(500).send("Error saving form data");
+      return res.status(400).send("Failed to create custom field");
     }
   }
 
@@ -29,7 +29,7 @@ const createCustomField = async (req, res) => {
       return res.status(200).send({ ok: true, message: "Custom Field Deleted." });
     } catch (err) {
       console.log(err);
-      res.status(500).send("Error retrieving form data");
+      res.status(400).send("Failed to delete custom field");
     }
   }
 

@@ -5,11 +5,11 @@ const createBranch = async (req, res) => {
     const form = new Branch(req.body);
     await form.save();
     return res
-      .status(201)
+      .status(200)
       .json({ ok: true, message: "Branch Created Successfully." });
   } catch (err) {
     console.log(err);
-    return res.status(500).send("Error saving form data");
+    return res.status(400).send("Failed to create branch.");
   }
 };
 
@@ -34,7 +34,7 @@ const deleteBranchById = async (req, res) => {
       }
     );
     if (!form) {
-      res.status(404).send("Form not found");
+      res.status(404).send("Branch not found.");
     } else {
       res
         .status(200)
@@ -46,7 +46,7 @@ const deleteBranchById = async (req, res) => {
     }
   } catch (err) {
     console.log(err);
-    res.status(500).send("Error deleting form data");
+    res.status(400).send("Failed to archive branch");
   }
 };
 
