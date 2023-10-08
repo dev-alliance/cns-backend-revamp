@@ -2,9 +2,9 @@ name: CNS-CI
 
 on:
   push:
-    branches: ["alpha", "staging"]
+    branches: ["alpha", "staging","staging-ts"]
   pull_request:
-    branches: ["alpha", "staging"]
+    branches: ["alpha", "staging","staging-ts"]
 
 jobs:
   build:
