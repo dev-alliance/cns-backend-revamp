@@ -17,8 +17,8 @@ jobs:
           node-version: 18
 
       - name: Installing dependencies
-        run: npm i 
-        
+        run: npm i
+
       - name: Checking code format
         run: npm run format:check
 
