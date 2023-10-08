@@ -11,13 +11,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@staging
-        with:
-          ref: "staging"
 
-      - uses: actions/checkout@staging
-      - uses: actions/setup-node@staging
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
         with:
           node-version: 18
       - run: npm ci
