@@ -1,4 +1,4 @@
-import * as dotenv from 'dotenv';
+import * as dotenv from "dotenv";
 dotenv.config();
 import bodyParser from "body-parser";
 import config from "config";
@@ -22,8 +22,8 @@ import clauses from "./routes/clauses";
 import permisisons from "./routes/permissions";
 import customFields from "./routes/customFields";
 
-const PORT = process.env.PORT || config.get("port");
-const MONGOURI = process.env.MONGOURI || config.get<string>("mongoURI");
+const PORT: number = config.get<number>("port");
+const MONGOURI = config.get<string>("mongoURI");
 sgMail.setApiKey(config.get("sendgridKey"));
 
 const app = express();
