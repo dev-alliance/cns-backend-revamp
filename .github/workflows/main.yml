@@ -11,7 +11,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    
+
+      - uses: actions/checkout@staging
+      - uses: actions/setup-node@staging
+        with:
+          node-version: 18
+      - run: npm ci
+      - run: npm test
       - name: Checking code format
         run: npm run format:check
 
