@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import log from "./logger";
 import swaggerJsDoc from "swagger-jsdoc";
-import swaggerUi from "swagger-ui-express"
+import swaggerUi from "swagger-ui-express";
 
 const options = {
   definition: {

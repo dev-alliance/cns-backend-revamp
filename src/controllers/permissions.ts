@@ -1,8 +1,6 @@
 import { Request, Response } from "express";
 import { Permissions } from "../Schema/Permissions";
 
-
-
 export const createPermission = async (req: Request, res: Response) => {
   try {
     const permissions = new Permissions(req.body);

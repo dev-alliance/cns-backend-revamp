@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { Template } from "../Schema/TemplateSchema";
 
-
 export const createTemplate = async (req: Request, res: Response) => {
   console.log(req.body);
   try {

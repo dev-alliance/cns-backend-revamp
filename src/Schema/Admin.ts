@@ -70,9 +70,7 @@ adminSchema.methods.comparePassword = async function (
 ): Promise<boolean> {
   const admin = this as IAdmin;
 
-  return bcrypt
-    .compare(candidatePassword, admin.password)
-    .catch(() => false);
+  return bcrypt.compare(candidatePassword, admin.password).catch(() => false);
 };
 
 export const validateAdminLogin = (admin: IAdmin) => {

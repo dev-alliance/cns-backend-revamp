@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { Tag } from "../Schema/Tags";
 
-
 export const createTag = async (req: Request, res: Response) => {
   try {
     const form = new Tag(req.body);
