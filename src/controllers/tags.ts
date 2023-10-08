@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
-const { Tag } = require("../schema/Tags");
+import { Tag } from "../Schema/Tags";
+
 
 export const createTag = async (req: Request, res: Response) => {
   try {

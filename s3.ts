@@ -1,12 +1,16 @@
-require("dotenv").config();
-const aws = require('aws-sdk')
-const fs = require("fs")
-const crypto = require('crypto')
-const {promisify} =  require('util')
+import config from 'config' 
+import aws from 'aws-sdk'
+import fs from 'fs'
+import crypto from 'crypto'
 const region = 'ap-south-1'
 const bucketName = 'natmarts'
-const accessKeyId = process.env.ACCESS_KEY_ID
-const secretAccessKey = process.env.SECRET_KEY
+const accessKeyId = config.get<string>("ACCESS_KEY_ID")
+const secretAccessKey = config.get<string>("SECRET_KEY")
+
+type File = {
+    path:string,
+    filename:string
+}
 
 const s3 = new aws.S3({
     region,
@@ -30,8 +34,7 @@ module.exports.generateUploadURL =async  ()=> {
     return url
 }
 
-module.exports.uploadFile = file => {
-    console.log(file)
+export const uploadFile = (file:File) => {
     const fileStream = fs.createReadStream(file.path)
 
     const params = {

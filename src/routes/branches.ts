@@ -1,9 +1,9 @@
-import express from 'express'
+import express from "express";
 import {
   createBranch,
   getBranchById,
   deleteBranchById,
-} from "../controllers/branches"
+} from "../controllers/branches";
 
 const router = express.Router();
 /**

@@ -5,8 +5,6 @@ import {
   login,
   updatePassword,
 } from "../controllers/admin";
-import validate from "../middleware/validateResource";
-import { Admin } from "../Schema/Admin";
 const router = express.Router();
 
 /**

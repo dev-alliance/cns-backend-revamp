@@ -46,7 +46,7 @@ const PermissionSchema = new mongoose.Schema<IPermissions>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // Define the Mongoose model for the form data

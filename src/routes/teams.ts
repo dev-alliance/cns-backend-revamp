@@ -1,8 +1,8 @@
 import express from "express";
 
 import { getTeamsById, updateTeam, createTeam } from "../controllers/teams";
-
 const router = express.Router();
+
 /**
  * @openapi
  * '/api/v1/teams/create-team':

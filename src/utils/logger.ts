@@ -1,16 +1,19 @@
 import logger from "pino";
-import pretty from 'pino-pretty'
+import pretty from "pino-pretty";
 import dayjs from "dayjs";
 
 const stream = pretty({
-    colorize: true
-})
+  colorize: true,
+});
 
-const log = logger({
-  base: {
-    pid: false,
+const log = logger(
+  {
+    base: {
+      pid: false,
+    },
+    timestamp: () => `,"time":"${dayjs().format()}"`,
   },
-  timestamp: () => `,"time":"${dayjs().format()}"`,
-},stream);
+  stream,
+);
 
 export default log;

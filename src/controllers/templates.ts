@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
-const { Templates } = require("../Schema/TemplateSchema");
+import { Template } from "../Schema/TemplateSchema";
+
 
 export const createTemplate = async (req: Request, res: Response) => {
   console.log(req.body);
   try {
-    const r = new Templates(req.body);
+    const r = new Template(req.body);
     await r.save();
     return res.json({ ok: true, message: "Template upload successfully." });
   } catch (err) {
@@ -18,7 +19,7 @@ export const createTemplate = async (req: Request, res: Response) => {
 export const getTemplateById = async (req: Request, res: Response) => {
   console.log(req.body);
   try {
-    const r = await Templates.find({ id: req.params.id });
+    const r = await Template.find({ id: req.params.id });
     return res.json({ ok: true, data: r });
   } catch (err) {
     return res.json({ ok: false, message: "Failed to load template." });
@@ -28,7 +29,7 @@ export const getTemplateById = async (req: Request, res: Response) => {
 export const deleteTemplate = async (req: Request, res: Response) => {
   console.log(req.body);
   try {
-    const r = await Templates.deleteOne({ _id: req.params.id });
+    const r = await Template.deleteOne({ _id: req.params.id });
     if (r.deletedCount > 0) {
       return res.json({ ok: true, data: r, message: "Template deleted." });
     } else {

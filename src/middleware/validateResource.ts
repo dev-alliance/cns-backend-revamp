@@ -1,13 +1,13 @@
 import { Request, Response, NextFunction } from "express";
-import Joi from "joi";
 
-const validate =(schema:any) => (req: Request, res: Response, next: NextFunction) => {
+const validate =
+  (schema: any) => (req: Request, res: Response, next: NextFunction) => {
     try {
       const r = schema.validate(schema);
-      console.log(r)
+      console.log(r);
       next();
     } catch (e: any) {
-      console.log(e)
+      console.log(e);
       return res.status(400).send(e.errors);
     }
   };

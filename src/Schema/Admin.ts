@@ -66,16 +66,16 @@ adminSchema.methods.generateAuthToken = function () {
 };
 
 adminSchema.methods.comparePassword = async function (
-  candidatePassword: string
+  candidatePassword: string,
 ): Promise<boolean> {
   const admin = this as IAdmin;
 
   return bcrypt
     .compare(candidatePassword, admin.password)
-    .catch((e: any) => false);
+    .catch(() => false);
 };
 
-export const validateAdminLogin = (admin: any) => {
+export const validateAdminLogin = (admin: IAdmin) => {
   const schema = Joi.object({
     email: Joi.string().email().required(),
     password: Joi.string().min(10).required(),

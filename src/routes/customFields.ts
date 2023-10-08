@@ -4,7 +4,7 @@ import {
   createCustomField,
   getCustomFieldsById,
   deleteCustomFields,
-} from "../controllers/customFields"
+} from "../controllers/customFields";
 
 const router = express.Router();
 /**

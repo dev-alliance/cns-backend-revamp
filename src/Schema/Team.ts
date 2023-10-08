@@ -1,6 +1,4 @@
-const mongoose = require("mongoose");
-
-
+import mongoose from "mongoose";
 /**
  * @openapi
  * components:
@@ -45,4 +43,3 @@ const TeamSchema = new mongoose.Schema({
 
 // Define the Mongoose model for the form data
 export const Team = mongoose.model("cns.team", TeamSchema);
-

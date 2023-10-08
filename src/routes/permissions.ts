@@ -1,12 +1,11 @@
-import express from "express"
+import express from "express";
 import {
   createPermission,
   getPermissions,
   deletePermissions,
-} from "../controllers/permissions"
+} from "../controllers/permissions";
 
 const router = express.Router();
-
 
 /**
  * @openapi
@@ -83,4 +82,4 @@ router.get("/:id", getPermissions);
  */
 router.delete("/:id", deletePermissions);
 
-export default router
+export default router;

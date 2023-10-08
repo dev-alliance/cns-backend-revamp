@@ -1,6 +1,6 @@
 import { validateAdminLogin } from "./../Schema/Admin";
-var shortUrl = require("node-url-shortener");
-import sgMail from "@sendgrid/mail";
+// const shortUrl = require("node-url-shortener");
+// import sgMail from "@sendgrid/mail";
 import config from "config";
 import { Request, Response } from "express";
 import { UserModel as User } from "../Schema/User";
@@ -9,7 +9,6 @@ import { Admin } from "../Schema/Admin";
 
 export const createAdmin = async (req: Request, res: Response) => {
   const isAdminExists = await Admin.findOne({ email: req.body.email });
-  console.log(isAdminExists);
   if (isAdminExists) {
     return res.json({
       ok: false,
@@ -21,52 +20,51 @@ export const createAdmin = async (req: Request, res: Response) => {
   const salt = await bcrypt.genSalt(config.get<number>("saltRound"));
   admin.password = await bcrypt.hash(admin.password, salt);
 
-  admin.save();
+  await admin.save();
   return res.status(200).json({
     ok: true,
     message: "Account Created Successfully. Please login to continue",
   });
 
-  try {
-    shortUrl.short(
-      `http://localhost:3000/email-verify/${admin._id}`,
-      function (err: any, url: string) {
-        console.log(url);
-        console.log(err);
-        const msg = {
-          to: req.body.email, // Change to your recipient
-          from: "syed@verzotechnologies.com", // Change to your verified sender
-          subject: "ContractnSign Email Verification",
-          html: "Please verify your email address",
-          templateId: "d-dc474d7a24e443b48dcd7c5e8461c306",
-          dynamicTemplateData: {
-            url: url,
-            name: req.body.email,
-          },
-        };
-        sgMail
-          .send(msg)
-          .then(async () => {
-            console.log("Email sent");
-            // Saving the user once email is sent to the user.
-            await admin.save();
-            return res.status(200).json({
-              ok: true,
-              message: "Please check your email to activate your account.",
-            });
-          })
-          .catch((error: any) => {
-            console.error(error.response.body);
-            return res.status(200).json({ ok: false });
-          });
-      }
-    );
-  } catch (err) {
-    console.log(err);
-    return res
-      .status(200)
-      .json({ ok: false, message: "failed to create user" });
-  }
+  // try {
+  //   shortUrl.short(
+  //     `http://localhost:3000/email-verify/${admin._id}`,
+  //     function (err: object, url: string) {
+
+  //       const msg = {
+  //         to: req.body.email, // Change to your recipient
+  //         from: "syed@verzotechnologies.com", // Change to your verified sender
+  //         subject: "ContractnSign Email Verification",
+  //         html: "Please verify your email address",
+  //         templateId: "d-dc474d7a24e443b48dcd7c5e8461c306",
+  //         dynamicTemplateData: {
+  //           url: url,
+  //           name: req.body.email,
+  //         },
+  //       };
+  //       sgMail
+  //         .send(msg)
+  //         .then(async () => {
+  //           console.log("Email sent");
+  //           // Saving the user once email is sent to the user.
+  //           await admin.save();
+  //           return res.status(200).json({
+  //             ok: true,
+  //             message: "Please check your email to activate your account.",
+  //           });
+  //         })
+  //         .catch((error: any) => {
+  //           console.error(error.response.body);
+  //           return res.status(200).json({ ok: false });
+  //         });
+  //     },
+  //   );
+  // } catch (err) {
+  //   console.log(err);
+  //   return res
+  //     .status(200)
+  //     .json({ ok: false, message: "failed to create user" });
+  // }
 };
 
 export const verifyEmail = async (req: Request, res: Response) => {
@@ -76,7 +74,7 @@ export const verifyEmail = async (req: Request, res: Response) => {
       $set: {
         emailVerified: true,
       },
-    }
+    },
   );
   if (usr.modifiedCount > 0) {
     return res.json({
@@ -124,7 +122,7 @@ export const updatePassword = async (req: Request, res: Response) => {
         $set: {
           password: newPassword,
         },
-      }
+      },
     );
     if (w.modifiedCount > 0) {
       return res

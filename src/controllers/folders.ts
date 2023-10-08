@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
+import { Folder } from "../Schema/FolderSchema";
 
-const { Folder } = require("../schema/FolderSchema");
 
 export const createFolder = async (req: Request, res: Response) => {
   const newFolder = new Folder(req.body);
@@ -42,14 +42,14 @@ export const deleteFolder = async (req: Request, res: Response) => {
 export const deleteFile = async (req: Request, res: Response) => {
   const r = await Folder.findOne({ _id: req.params.folderId });
 
-  const result = r.files.filter((file: any) => file._id != req.params.id);
+  const result = r?.files.filter((file: any) => file._id != req.params.id);
   const query = await Folder.updateOne(
     { _id: req.params.folderId },
     {
       $set: {
         files: result,
       },
-    }
+    },
   );
   if (query.modifiedCount > 0) {
     return res.json({ ok: true, message: "File Deleted" });
@@ -66,7 +66,7 @@ export const uploadDocument = async (req: Request, res: Response) => {
         $push: {
           files: req.body.payload,
         },
-      }
+      },
     );
     if (form.modifiedCount < 0) {
       res.status(404).json({ ok: false });

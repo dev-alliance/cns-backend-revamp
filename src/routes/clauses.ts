@@ -1,5 +1,9 @@
 import express from "express";
-import { createClauses, getClausesById, deleteClauses } from "../controllers/clauses"
+import {
+  createClauses,
+  getClausesById,
+  deleteClauses,
+} from "../controllers/clauses";
 
 const router = express.Router();
 /**

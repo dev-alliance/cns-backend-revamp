@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-const { Branch } = require("../schema/BranchSchema");
+import { Branch } from "../Schema/BranchSchema";
 
 export const createBranch = async (req: Request, res: Response) => {
   try {
@@ -32,7 +32,7 @@ export const deleteBranchById = async (req: Request, res: Response) => {
         $set: {
           status: req.body.status,
         },
-      }
+      },
     );
     if (!form) {
       res.status(404).send("Branch not found.");
@@ -42,7 +42,7 @@ export const deleteBranchById = async (req: Request, res: Response) => {
         .send(
           `Branch is ${
             req.body.status ? "Un-archive" : "Archive"
-          } successfully.`
+          } successfully.`,
         );
     }
   } catch (err) {

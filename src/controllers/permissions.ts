@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
+import { Permissions } from "../Schema/Permissions";
 
-const { Permissions } = require("../schema/Permissions");
+
 
 export const createPermission = async (req: Request, res: Response) => {
   try {
@@ -16,7 +17,7 @@ export const getPermissions = async (req: Request, res: Response) => {
   console.log(req.params);
   try {
     const permissions = await Permissions.find({ id: req.params.id }).select(
-      "-permissions"
+      "-permissions",
     );
     return res.json({ ok: true, data: permissions });
   } catch (err) {

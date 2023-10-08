@@ -1,5 +1,9 @@
 import express from "express";
-import { createTemplate, getTemplateById, deleteTemplate } from "../controllers/templates"
+import {
+  createTemplate,
+  getTemplateById,
+  deleteTemplate,
+} from "../controllers/templates";
 
 const router = express.Router();
 
@@ -78,6 +82,6 @@ router.get("/:id", getTemplateById);
  *             "ok": false
  *             "message": "Failed to delete template."
  */
-router.delete("/delete-template/:id",deleteTemplate);
+router.delete("/delete-template/:id", deleteTemplate);
 
 export default router;

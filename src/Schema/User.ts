@@ -1,21 +1,20 @@
 import mongoose from "mongoose";
 
 export interface IUserDocument {
-  id:string,
-  firstName:string,
-  lastName:string,
-  job:string,
-  team:string,
-  landline:string,
-  mobile:string,
-  email:string,
-  password:string,
-  role:number,
-  emailVerified:boolean,
-  image:string,
-  status:boolean,
-  disabled:boolean
-
+  id: string;
+  firstName: string;
+  lastName: string;
+  job: string;
+  team: string;
+  landline: string;
+  mobile: string;
+  email: string;
+  password: string;
+  role: number;
+  emailVerified: boolean;
+  image: string;
+  status: boolean;
+  disabled: boolean;
 }
 
 /**
@@ -113,8 +112,7 @@ const userSchema = new mongoose.Schema<IUserDocument>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 export const UserModel = mongoose.model("cns.users", userSchema);
-

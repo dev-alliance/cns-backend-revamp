@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
-const { CustomField } = require("../schema/customFields");
+import { CustomField } from "../Schema/customFields";
+
 
 export const createCustomField = async (req: Request, res: Response) => {
   try {

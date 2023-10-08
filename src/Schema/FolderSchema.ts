@@ -1,11 +1,10 @@
 import mongoose from "mongoose";
 
 export interface IFolder {
-  modifiedCount: any;
   id: string;
   name: string;
   permissions: [];
-  parent: {};
+  parent: object;
   subFolders: [];
   files: [];
 }
@@ -43,7 +42,7 @@ const folderSchema = new mongoose.Schema<IFolder>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 export const Folder = mongoose.model("cns.folder", folderSchema);

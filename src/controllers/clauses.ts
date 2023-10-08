@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
-
-const { Clauses } = require("../Schema/Clauses");
+import { Clauses } from "../Schema/Clauses";
 
 export const createClauses = async (req: Request, res: Response) => {
   try {
