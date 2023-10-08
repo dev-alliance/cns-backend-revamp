@@ -1,0 +1,26 @@
+name: CNS-CI
+
+on:
+  push:
+    branches: ["alpha", "staging"]
+  pull_request:
+    branches: ["alpha", "staging"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@alpha
+
+      - name: Checking code format
+        run: npm run format:check
+
+      - name: writing format
+        run: npm run format:write
+
+      - name: Checking linting issues
+        run: npm run lint:check
+
+      - name: Fixing linting issues
+        run: npm run lint:fix
