@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@alpha
+      - uses: actions/checkout@staging
 
       - name: Checking code format
         run: npm run format:check
