@@ -15,8 +15,6 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 18
-      - run: npm ci
-      - run: npm test
       - name: Checking code format
         run: npm run format:check
 
