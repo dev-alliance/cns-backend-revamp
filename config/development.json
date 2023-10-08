@@ -1,4 +1,5 @@
 {
     "name":"cns",
-    "mongoURI" :"mongodb+srv://syed55:developer@cluster0.vqo8p.mongodb.net/natmarts?retryWrites=true&w=majority"
+    "mongoURI" :"mongodb://localhost:27017/cns",
+    "sendgridKey":"SG.g_TR89cOQmC1YkjqmnpOOA.gxbhrPMYx5O41Wh659jd_3TW875mi5d50tf1lF9xT2"
 }
