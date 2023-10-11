@@ -6,13 +6,15 @@ import { Request, Response } from "express";
 import { UserModel as User } from "../Schema/User";
 import bcrypt from "bcrypt";
 import { Admin } from "../Schema/Admin";
+import { ERROR_CODES } from "../../constants/errorCodes";
+import { SUCCESS_CODES } from "../../constants/successCode";
 
 export const createAdmin = async (req: Request, res: Response) => {
   const isAdminExists = await Admin.findOne({ email: req.body.email });
   if (isAdminExists) {
     return res.json({
       ok: false,
-      message: "A User with this email already exits.",
+      message: ERROR_CODES.USER.ALREADY_EXISTS,
     });
   }
   const admin = new Admin(req.body);
@@ -23,7 +25,7 @@ export const createAdmin = async (req: Request, res: Response) => {
   await admin.save();
   return res.status(200).json({
     ok: true,
-    message: "Account Created Successfully. Please login to continue",
+    message: SUCCESS_CODES.AUTH.ACCOUNT_CREATED,
   });
 
   // try {
@@ -79,10 +81,13 @@ export const verifyEmail = async (req: Request, res: Response) => {
   if (usr.modifiedCount > 0) {
     return res.json({
       ok: true,
-      message: "Email Verified. Please continue to login.",
+      message: SUCCESS_CODES.AUTH.EMAIL_VERIFICATION_SUCCESS,
     });
   } else {
-    return res.json({ ok: false, message: "Unable to verfiy email address." });
+    return res.json({
+      ok: false,
+      message: ERROR_CODES.COMMON.EMAIL_VERIFICATION,
+    });
   }
 };
 
@@ -95,7 +100,7 @@ export const login = async (req: Request, res: Response) => {
   if (!admin) {
     return res
       .status(400)
-      .json({ ok: false, message: "Invalid username or password." });
+      .json({ ok: false, message: ERROR_CODES.USER.INCORRECT_CREDENTIALS });
   }
   // if (!user.emailVerified) {
   //   return res
@@ -105,7 +110,8 @@ export const login = async (req: Request, res: Response) => {
 
   const isPasswordValid = await admin.comparePassword(req.body.password);
 
-  if (!isPasswordValid) return res.status(400).send("Invalid password");
+  if (!isPasswordValid)
+    return res.status(400).send(ERROR_CODES.AUTH.INVALID_PASSWORD);
 
   const token = admin.generateAuthToken();
 
@@ -125,17 +131,18 @@ export const updatePassword = async (req: Request, res: Response) => {
       },
     );
     if (w.modifiedCount > 0) {
-      return res
-        .status(200)
-        .json({ ok: true, message: "Password changed successfully." });
+      return res.status(200).json({
+        ok: true,
+        message: SUCCESS_CODES.USER.PASSWORD_CHANGED_SUCCESS,
+      });
     } else {
       return res
         .status(400)
-        .json({ ok: false, message: "Failed to change password" });
+        .json({ ok: false, message: ERROR_CODES.USER.PASSWORD_CHANGE_ERROR });
     }
   } else {
     return res
       .status(401)
-      .json({ ok: false, message: "Old password incorrect." });
+      .json({ ok: false, message: ERROR_CODES.USER.PASSWORD_VALIDATION });
   }
 };
