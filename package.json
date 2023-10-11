@@ -1,7 +1,7 @@
 {
-  "name": "natmarts-backend",
+  "name": "ContractnSign",
   "version": "1.0.0",
-  "description": "",
+  "description": "CNS - Backend API's",
   "main": "index.js",
   "scripts": {
     "start": "nodemon ./src/index.js",
