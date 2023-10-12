@@ -21,6 +21,7 @@ import templates from "./routes/templates";
 import clauses from "./routes/clauses";
 import permisisons from "./routes/permissions";
 import customFields from "./routes/customFields";
+import health from "./routes/health";
 
 const PORT: number = config.get<number>("port");
 const MONGOURI = config.get<string>("mongoURI");
@@ -34,6 +35,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors());
 
+app.use("/api/v1/health", health);
 app.use("/api/auth", auth);
 app.use("/api/v1/admin", admin);
 app.use("/api/v1/users", users);
