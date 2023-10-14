@@ -23,8 +23,17 @@ const AUTH = {
   INVALID_PASSWORD: "Invalid Password",
 };
 
+const CONTRACTS = {
+  ERROR_FETCHING_CONTRACT:"Error fetching contracts",
+  ERROR_CREATING_CONTRACT:"Error creating contract",
+  ERROR_UPDATING_CONTRACT:"Error upadating contract",
+  ERROR_DELETING_CONTRACT:"Error deleting contract",
+  NOT_FOUND: "Contract not found",
+}
+
 export const ERROR_CODES = {
   COMMON,
   USER,
   AUTH,
+  CONTRACTS
 };
