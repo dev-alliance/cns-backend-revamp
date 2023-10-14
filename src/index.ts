@@ -22,6 +22,7 @@ import clauses from "./routes/clauses";
 import permisisons from "./routes/permissions";
 import customFields from "./routes/customFields";
 import contracts from "./routes/contracts";
+import categories from "./routes/categories";
 import health from "./routes/health";
 
 const PORT: number = config.get<number>("port");
@@ -49,6 +50,7 @@ app.use("/api/v1/customFields", customFields);
 app.use("/api/v1/tags", tags);
 app.use("/api/v1/teams", teams);
 app.use("/api/v1/contracts", contracts);
+app.use("/api/v1/categories", categories);
 
 if (!config.get("jwtPrivateKey")) {
   log.error("FATAL ERROR: jwtPrivateKey is not defined");

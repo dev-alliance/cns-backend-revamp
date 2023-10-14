@@ -29,6 +29,14 @@ const CONTRACTS = {
   ERROR_UPDATING_CONTRACT: "Error upadating contract",
   ERROR_DELETING_CONTRACT: "Error deleting contract",
   NOT_FOUND: "Contract not found",
+}
+
+const CATEGORIES = {
+  ERROR_CREATING_CATEGORY: "Error creating category",
+  NOT_FOUND: "Category not found",
+  ERROR_UPDATING: "Error updating category",
+  ERROR_DELETING: "Error deleting category",
+  ERROR_DISABLING: "Error disabling category",
 };
 
 export const ERROR_CODES = {
@@ -36,4 +44,5 @@ export const ERROR_CODES = {
   USER,
   AUTH,
   CONTRACTS,
+  CATEGORIES,
 };
