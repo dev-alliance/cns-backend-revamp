@@ -11,8 +11,16 @@ const USER = {
   PASSWORD_CHANGED_SUCCESS: "Password Changed Successfully",
 };
 
+const CATEGORIES = {
+  CATEGORY_CREATED: "Category created",
+  CATEGORY_UPDATED:"Category updated",
+  CATEGORY_DISABLED:"Category disabled",
+  CATEGORY_DELETED:"Category Deleted"
+};
+
 export const SUCCESS_CODES = {
   COMMON,
   AUTH,
   USER,
+  CATEGORIES
 };
