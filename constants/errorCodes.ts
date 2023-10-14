@@ -24,16 +24,16 @@ const AUTH = {
 };
 
 const CATEGORIES = {
-  ERROR_CREATING_CATEGORY:"Error creating category",
-  NOT_FOUND:"Category not found",
-  ERROR_UPDATING:"Error updating category",
-  ERROR_DELETING:"Error deleting category",
-  ERROR_DISABLING:"Error disabling category"
-}
+  ERROR_CREATING_CATEGORY: "Error creating category",
+  NOT_FOUND: "Category not found",
+  ERROR_UPDATING: "Error updating category",
+  ERROR_DELETING: "Error deleting category",
+  ERROR_DISABLING: "Error disabling category",
+};
 
 export const ERROR_CODES = {
   COMMON,
   USER,
   AUTH,
-  CATEGORIES
+  CATEGORIES,
 };

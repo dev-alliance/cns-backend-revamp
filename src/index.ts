@@ -21,9 +21,8 @@ import templates from "./routes/templates";
 import clauses from "./routes/clauses";
 import permisisons from "./routes/permissions";
 import customFields from "./routes/customFields";
-import categories from './routes/categories'
+import categories from "./routes/categories";
 import health from "./routes/health";
-
 
 const PORT: number = config.get<number>("port");
 const MONGOURI = config.get<string>("mongoURI");

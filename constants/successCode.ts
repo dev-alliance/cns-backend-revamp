@@ -13,14 +13,14 @@ const USER = {
 
 const CATEGORIES = {
   CATEGORY_CREATED: "Category created",
-  CATEGORY_UPDATED:"Category updated",
-  CATEGORY_DISABLED:"Category disabled",
-  CATEGORY_DELETED:"Category Deleted"
+  CATEGORY_UPDATED: "Category updated",
+  CATEGORY_DISABLED: "Category disabled",
+  CATEGORY_DELETED: "Category Deleted",
 };
 
 export const SUCCESS_CODES = {
   COMMON,
   AUTH,
   USER,
-  CATEGORIES
+  CATEGORIES,
 };

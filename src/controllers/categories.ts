@@ -48,7 +48,7 @@ export const DisableCategory = async (req: Request, res: Response) => {
     const updatedCategory = await Categories.findByIdAndUpdate(
       id,
       { isDisabled: true },
-      { new: true }
+      { new: true },
     );
     if (!updatedCategory) {
       return res
