@@ -11,6 +11,11 @@ const USER = {
   PASSWORD_CHANGED_SUCCESS: "Password Changed Successfully",
 };
 
+
+const CONTRACTS = {
+  CONTRACT_CREATED: "Contract created",
+}
+
 const CATEGORIES = {
   CATEGORY_CREATED: "Category created",
   CATEGORY_UPDATED: "Category updated",
@@ -22,5 +27,6 @@ export const SUCCESS_CODES = {
   COMMON,
   AUTH,
   USER,
+  CONTRACTS,
   CATEGORIES,
 };
