@@ -67,11 +67,9 @@ export const deleteContract = async (req: Request, res: Response) => {
       res.json(deletedContract);
     }
   } catch (error) {
-    return res
-      .status(500)
-      .json({
-        ok: false,
-        message: ERROR_CODES.CONTRACTS.ERROR_DELETING_CONTRACT,
-      });
+    return res.status(500).json({
+      ok: false,
+      message: ERROR_CODES.CONTRACTS.ERROR_DELETING_CONTRACT,
+    });
   }
 };

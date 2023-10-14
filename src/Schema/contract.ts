@@ -27,7 +27,7 @@ interface Discussions {
 }
 
 interface Contract extends mongoose.Document {
-  userId: {};
+  userId: object;
   overview: Overview;
   lifecycle: Lifecycle;
   discussions: Discussions[];
@@ -65,5 +65,5 @@ const contractSchema = new mongoose.Schema<Contract>({
 
 export const Contract = mongoose.model<Contract>(
   "cns.contracts",
-  contractSchema
+  contractSchema,
 );
