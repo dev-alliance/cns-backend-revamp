@@ -4,6 +4,7 @@ import {
   verifyEmail,
   login,
   updatePassword,
+  verifyOtp,
 } from "../controllers/admin";
 const router = express.Router();
 
@@ -122,5 +123,7 @@ router.post("/login", login);
  *
  */
 router.post("/update-password", updatePassword);
+
+router.post("/verify-otp", verifyOtp);
 
 export default router;

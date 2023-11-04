@@ -10,6 +10,7 @@ export interface IAdmin {
   password: string;
   role: number;
   emailVerified: boolean;
+  otp: number;
   generateAuthToken: () => void;
   comparePassword: (candidatePassword: string) => boolean;
 }
@@ -53,7 +54,12 @@ const adminSchema = new mongoose.Schema<IAdmin>({
   },
   role: {
     type: Number,
-    default: 0, //root
+    default: 0,
+  },
+  otp: {
+    type: Number,
+    default: 0,
+    required: true,
   },
   emailVerified: {
     type: Boolean,
@@ -66,7 +72,7 @@ adminSchema.methods.generateAuthToken = function () {
 };
 
 adminSchema.methods.comparePassword = async function (
-  candidatePassword: string,
+  candidatePassword: string
 ): Promise<boolean> {
   const admin = this as IAdmin;
 

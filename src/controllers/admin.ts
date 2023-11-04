@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { validateAdminLogin } from "./../Schema/Admin";
 // const shortUrl = require("node-url-shortener");
 // import sgMail from "@sendgrid/mail";
@@ -8,6 +9,19 @@ import bcrypt from "bcrypt";
 import { Admin } from "../Schema/Admin";
 import { ERROR_CODES } from "../../constants/errorCodes";
 import { SUCCESS_CODES } from "../../constants/successCode";
+import nodemailer from "nodemailer";
+
+const CLIENT_ID =
+  "515496484897-k1rlv3mba7lm3fb5l3sseku8dkvh2msm.apps.googleusercontent.com";
+const CLIENT_SECRET = "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";
+const REFRESH_TOKEN =
+  "1//04sNLIVBl7eOzCgYIARAAGAQSNgF-L9IrKmeVcawXBE1EA9hM9sN72_PCefp-d1FsWpiDuh02VzxGpdrks5ABfIMXPueZrIG6fQ";
+const USER_EMAIL = "dev.alliancetech@gmail.com"; // This should be the Google user's email
+
+const generateOtp = () => {
+  const otp = Math.floor(10000 + Math.random() * 90000);
+  return otp.toString();
+};
 
 export const createAdmin = async (req: Request, res: Response) => {
   const isAdminExists = await Admin.findOne({ email: req.body.email });
@@ -17,7 +31,48 @@ export const createAdmin = async (req: Request, res: Response) => {
       message: ERROR_CODES.USER.ALREADY_EXISTS,
     });
   }
-  const admin = new Admin(req.body);
+
+  const otp = generateOtp();
+  const admin = new Admin({
+    ...req.body,
+    otp: otp, // Ensure your Admin schema has a field for the OTP
+  });
+
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      type: "OAuth2",
+      user: USER_EMAIL,
+      clientId: CLIENT_ID,
+      clientSecret: CLIENT_SECRET,
+      refreshToken: REFRESH_TOKEN,
+    },
+    tls: {
+      rejectUnauthorized: false,
+    },
+  });
+
+  const mailOptions = {
+    from: USER_EMAIL,
+    to: req.body.email,
+    subject: "Email Verification OTP",
+    html: `
+          <h1>Email Verification</h1>
+          <p>Your OTP for email verification is:</p>
+          <p><b>${otp}</b></p>
+          <p>This OTP is valid for 10 minutes and is to be used for verifying your email address only.</p>
+          <p>If you did not request this verification, please ignore this email.</p>
+        `,
+  };
+
+  // Send Email
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error("Error sending email", error);
+    } else {
+      console.log(`Email sent: ${info.response}`);
+    }
+  });
 
   const salt = await bcrypt.genSalt(config.get<number>("saltRound"));
   admin.password = await bcrypt.hash(admin.password, salt);
@@ -27,46 +82,34 @@ export const createAdmin = async (req: Request, res: Response) => {
     ok: true,
     message: SUCCESS_CODES.AUTH.ACCOUNT_CREATED,
   });
+};
 
-  // try {
-  //   shortUrl.short(
-  //     `http://localhost:3000/email-verify/${admin._id}`,
-  //     function (err: object, url: string) {
+export const verifyOtp = async (req: Request, res: Response) => {
+  const { email, otp } = req.body;
 
-  //       const msg = {
-  //         to: req.body.email, // Change to your recipient
-  //         from: "syed@verzotechnologies.com", // Change to your verified sender
-  //         subject: "ContractnSign Email Verification",
-  //         html: "Please verify your email address",
-  //         templateId: "d-dc474d7a24e443b48dcd7c5e8461c306",
-  //         dynamicTemplateData: {
-  //           url: url,
-  //           name: req.body.email,
-  //         },
-  //       };
-  //       sgMail
-  //         .send(msg)
-  //         .then(async () => {
-  //           console.log("Email sent");
-  //           // Saving the user once email is sent to the user.
-  //           await admin.save();
-  //           return res.status(200).json({
-  //             ok: true,
-  //             message: "Please check your email to activate your account.",
-  //           });
-  //         })
-  //         .catch((error: any) => {
-  //           console.error(error.response.body);
-  //           return res.status(200).json({ ok: false });
-  //         });
-  //     },
-  //   );
-  // } catch (err) {
-  //   console.log(err);
-  //   return res
-  //     .status(200)
-  //     .json({ ok: false, message: "failed to create user" });
-  // }
+  // Find the admin by email
+  const admin = await Admin.findOne({ email });
+  if (!admin) {
+    return res.status(404).json({
+      ok: false,
+      message: ERROR_CODES.USER.NOT_FOUND,
+    });
+  }
+  console.log(otp);
+
+  console.log(admin.otp, "adminssssasasa");
+
+  if (admin.otp == otp) {
+    return res.status(200).json({
+      ok: true,
+      message: SUCCESS_CODES.AUTH.OTP_VERIFIED,
+    });
+  } else {
+    return res.status(400).json({
+      ok: false,
+      message: ERROR_CODES.AUTH.INVALID_OTP,
+    });
+  }
 };
 
 export const verifyEmail = async (req: Request, res: Response) => {
@@ -76,7 +119,7 @@ export const verifyEmail = async (req: Request, res: Response) => {
       $set: {
         emailVerified: true,
       },
-    },
+    }
   );
   if (usr.modifiedCount > 0) {
     return res.json({
@@ -128,7 +171,7 @@ export const updatePassword = async (req: Request, res: Response) => {
         $set: {
           password: newPassword,
         },
-      },
+      }
     );
     if (w.modifiedCount > 0) {
       return res.status(200).json({
