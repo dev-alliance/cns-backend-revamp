@@ -30,12 +30,18 @@ const MONGOURI = config.get<string>("mongoURI");
 sgMail.setApiKey(config.get("sendgridKey"));
 
 const app = express();
+app.use(
+  cors({
+    origin: (origin, callback) => callback(null, origin || "*"),
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    credentials: true,
+  })
+);
 
 app.use("/uploads", express.static("uploads"));
 app.use(morgan("tiny"));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(cors());
 
 app.use("/api/v1/health", health);
 app.use("/api/auth", auth);
