@@ -29,7 +29,7 @@ const CONTRACTS = {
   ERROR_UPDATING_CONTRACT: "Error upadating contract",
   ERROR_DELETING_CONTRACT: "Error deleting contract",
   NOT_FOUND: "Contract not found",
-}
+};
 
 const CATEGORIES = {
   ERROR_CREATING_CATEGORY: "Error creating category",
