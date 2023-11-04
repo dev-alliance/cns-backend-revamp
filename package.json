@@ -2,9 +2,9 @@
   "name": "contractnsign",
   "version": "1.0.0",
   "description": "CNS - Backend API's",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
-    "start": "nodemon ./src/index.js",
+    "start": "nodemon src/index.ts",
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "format:check": "prettier --check .",
     "format:write": "prettier --write .",
@@ -44,7 +44,7 @@
     "nice-invoice": "^1.1.8",
     "node-url-shortener": "^2.0.3",
     "nodejs-file-downloader": "^4.12.1",
-    "nodemailer": "^6.9.4",
+    "nodemailer": "^6.9.7",
     "nodemon": "^2.0.15",
     "order-id": "^2.1.2",
     "pdf-creator-node": "^2.3.4",
@@ -68,14 +68,15 @@
     "@types/lodash": "^4.14.199",
     "@types/nanoid": "^3.0.0",
     "@types/node": "^20.8.3",
+    "@types/nodemailer": "^6.4.13",
     "@types/pino": "^7.0.5",
     "@typescript-eslint/eslint-plugin": "^6.7.4",
     "@typescript-eslint/parser": "^6.7.4",
     "eslint": "^8.51.0",
     "eslint-config-prettier": "^9.0.0",
+    "husky": "^8.0.0",
     "prettier": "^3.0.3",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.2.2",
-    "husky": "^8.0.0"
+    "typescript": "^5.2.2"
   }
 }

@@ -21,6 +21,7 @@ const AUTH = {
   SEND_EMAIL_FAILED: "Fail to sent email",
   INVALID_EMAIL: "Invalid Email",
   INVALID_PASSWORD: "Invalid Password",
+  INVALID_OTP: "Invalid OTP",
 };
 
 const CONTRACTS = {
@@ -37,6 +38,7 @@ const CATEGORIES = {
   ERROR_UPDATING: "Error updating category",
   ERROR_DELETING: "Error deleting category",
   ERROR_DISABLING: "Error disabling category",
+  INVALID_OTP: "Invalid OTP",
 };
 
 export const ERROR_CODES = {
