@@ -5,6 +5,9 @@ import {
   login,
   updatePassword,
   verifyOtp,
+  requestPasswordReset,
+  resetPassword,
+  verifyForgotPasswordOtp,
 } from "../controllers/admin";
 const router = express.Router();
 
@@ -125,5 +128,10 @@ router.post("/login", login);
 router.post("/update-password", updatePassword);
 
 router.post("/verify-otp", verifyOtp);
+
+router.post("/request-password-reset", requestPasswordReset);
+
+router.post("/verify-ForgotPass-otp", verifyForgotPasswordOtp);
+router.post("/reset-password", resetPassword);
 
 export default router;

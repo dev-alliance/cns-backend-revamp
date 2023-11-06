@@ -24,9 +24,11 @@ import customFields from "./routes/customFields";
 import contracts from "./routes/contracts";
 import categories from "./routes/categories";
 import health from "./routes/health";
+import company from "./routes/compony";
 
 const PORT: number = config.get<number>("port");
 const MONGOURI = config.get<string>("mongoURI");
+// const MONGOURI = `mongodb://localhost:27017/cns`;
 sgMail.setApiKey(config.get("sendgridKey"));
 
 const app = express();
@@ -35,7 +37,7 @@ app.use(
     origin: (origin, callback) => callback(null, origin || "*"),
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
-  }),
+  })
 );
 
 app.use("/uploads", express.static("uploads"));
@@ -57,6 +59,7 @@ app.use("/api/v1/tags", tags);
 app.use("/api/v1/teams", teams);
 app.use("/api/v1/contracts", contracts);
 app.use("/api/v1/categories", categories);
+app.use("/api/v1/companies", company);
 
 if (!config.get("jwtPrivateKey")) {
   log.error("FATAL ERROR: jwtPrivateKey is not defined");

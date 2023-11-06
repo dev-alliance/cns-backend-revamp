@@ -13,6 +13,8 @@ export interface IAdmin {
   otp: number;
   generateAuthToken: () => void;
   comparePassword: (candidatePassword: string) => boolean;
+  resetToken?: string;
+  resetTokenExpiry?: number;
 }
 
 /**
@@ -65,6 +67,8 @@ const adminSchema = new mongoose.Schema<IAdmin>({
     type: Boolean,
     default: false,
   },
+  resetToken: { type: String },
+  resetTokenExpiry: { type: Number },
 });
 
 adminSchema.methods.generateAuthToken = function () {
@@ -72,7 +76,7 @@ adminSchema.methods.generateAuthToken = function () {
 };
 
 adminSchema.methods.comparePassword = async function (
-  candidatePassword: string,
+  candidatePassword: string
 ): Promise<boolean> {
   const admin = this as IAdmin;
 

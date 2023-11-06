@@ -95,10 +95,6 @@ export const verifyOtp = async (req: Request, res: Response) => {
       message: ERROR_CODES.USER.NOT_FOUND,
     });
   }
-  console.log(otp);
-
-  console.log(admin.otp, "adminssssasasa");
-
   if (admin.otp == otp) {
     return res.status(200).json({
       ok: true,
@@ -119,7 +115,7 @@ export const verifyEmail = async (req: Request, res: Response) => {
       $set: {
         emailVerified: true,
       },
-    },
+    }
   );
   if (usr.modifiedCount > 0) {
     return res.json({
@@ -160,6 +156,110 @@ export const login = async (req: Request, res: Response) => {
 
   return res.status(200).json({ ok: true, token });
 };
+// ... (other imports)
+
+export const requestPasswordReset = async (req: Request, res: Response) => {
+  const { email } = req.body;
+  const admin = await Admin.findOne({ email });
+
+  if (!admin) {
+    return res.status(404).json({ ok: false, message: "Admin not found" });
+  }
+
+  // Generate an OTP and its expiry time
+  const otp = generateOtp();
+  const otpExpiry = Date.now() + 1000 * 60 * 10; // OTP expires in 10 minutes
+
+  // Update admin with OTP and its expiry time
+  admin.resetToken = otp;
+  admin.resetTokenExpiry = otpExpiry;
+  await admin.save();
+
+  // Setup email transport configuration
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      type: "OAuth2",
+      user: USER_EMAIL,
+      clientId: CLIENT_ID,
+      clientSecret: CLIENT_SECRET,
+      refreshToken: REFRESH_TOKEN,
+    },
+    tls: {
+      rejectUnauthorized: false,
+    },
+  });
+
+  // Email content
+  const mailOptions = {
+    from: USER_EMAIL,
+    to: email,
+    subject: "Password Reset OTP",
+    html: `
+      <h1>Password Reset</h1>
+      <p>Your OTP for password reset is:</p>
+      <p><b>${otp}</b></p>
+      <p>This OTP is valid for 10 minutes and is to be used for resetting your password only.</p>
+      <p>If you did not request a password reset, please ignore this email.</p>
+    `,
+  };
+
+  // Send the email with the OTP
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error("Error sending email", error);
+      return res
+        .status(500)
+        .json({ ok: false, message: "Could not send OTP email" });
+    } else {
+      console.log(`Email sent: ${info.response}`);
+      return res.status(200).json({ ok: true, message: "OTP sent to email" });
+    }
+  });
+};
+
+export const verifyForgotPasswordOtp = async (req: Request, res: Response) => {
+  const { email, otp } = req.body;
+
+  const admin = await Admin.findOne({ email });
+  if (!admin || !admin.resetToken || !admin.resetTokenExpiry) {
+    return res.status(400).json({ ok: false, message: "Invalid request" });
+  }
+
+  // Check if the OTP is valid and not expired
+  const isOtpValid =
+    otp === admin.resetToken && Date.now() <= admin.resetTokenExpiry;
+
+  if (!isOtpValid) {
+    return res
+      .status(400)
+      .json({ ok: false, message: "Invalid or expired OTP" });
+  }
+
+  return res.status(200).json({ ok: true, message: "OTP verified" });
+};
+
+export const resetPassword = async (req: Request, res: Response) => {
+  const { email, newPassword } = req.body;
+
+  const admin = await Admin.findOne({ email });
+
+  if (!admin) {
+    return res.status(404).json({ ok: false, message: "Admin not found" });
+  }
+
+  const salt = await bcrypt.genSalt(config.get<number>("saltRound"));
+  const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+  admin.password = hashedPassword;
+  admin.resetToken = undefined;
+  admin.resetTokenExpiry = undefined;
+  await admin.save();
+
+  return res
+    .status(200)
+    .json({ ok: true, message: "Password reset successfully" });
+};
 
 export const updatePassword = async (req: Request, res: Response) => {
   const { newPassword, old } = req.body;
@@ -171,7 +271,7 @@ export const updatePassword = async (req: Request, res: Response) => {
         $set: {
           password: newPassword,
         },
-      },
+      }
     );
     if (w.modifiedCount > 0) {
       return res.status(200).json({
