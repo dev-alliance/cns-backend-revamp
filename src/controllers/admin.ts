@@ -115,7 +115,7 @@ export const verifyEmail = async (req: Request, res: Response) => {
       $set: {
         emailVerified: true,
       },
-    }
+    },
   );
   if (usr.modifiedCount > 0) {
     return res.json({
@@ -271,7 +271,7 @@ export const updatePassword = async (req: Request, res: Response) => {
         $set: {
           password: newPassword,
         },
-      }
+      },
     );
     if (w.modifiedCount > 0) {
       return res.status(200).json({

@@ -76,7 +76,7 @@ adminSchema.methods.generateAuthToken = function () {
 };
 
 adminSchema.methods.comparePassword = async function (
-  candidatePassword: string
+  candidatePassword: string,
 ): Promise<boolean> {
   const admin = this as IAdmin;
 

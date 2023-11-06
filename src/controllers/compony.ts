@@ -19,13 +19,11 @@ export const createCompany = async (req: Request, res: Response) => {
       .status(201)
       .json({ ok: true, message: "Company created successfully." });
   } catch (error: any) {
-    res
-      .status(400)
-      .json({
-        ok: false,
-        message: "Failed to create company.",
-        error: error.message,
-      });
+    res.status(400).json({
+      ok: false,
+      message: "Failed to create company.",
+      error: error.message,
+    });
   }
 };
 
@@ -34,13 +32,11 @@ export const getAllCompanies = async (req: Request, res: Response) => {
     const companies = await CompanyModel.find({});
     res.status(200).json({ ok: true, data: companies });
   } catch (error: any) {
-    res
-      .status(500)
-      .json({
-        ok: false,
-        message: "Failed to retrieve companies.",
-        error: error.message,
-      });
+    res.status(500).json({
+      ok: false,
+      message: "Failed to retrieve companies.",
+      error: error.message,
+    });
   }
 };
 
@@ -49,28 +45,24 @@ export const updateCompany = async (req: Request, res: Response) => {
     const company = await CompanyModel.findByIdAndUpdate(
       req.params.id,
       req.body,
-      { new: true }
+      { new: true },
     );
 
     if (!company) {
       return res.status(404).json({ ok: false, message: "Company not found." });
     }
 
-    res
-      .status(200)
-      .json({
-        ok: true,
-        message: "Company updated successfully.",
-        data: company,
-      });
+    res.status(200).json({
+      ok: true,
+      message: "Company updated successfully.",
+      data: company,
+    });
   } catch (error: any) {
-    res
-      .status(400)
-      .json({
-        ok: false,
-        message: "Failed to update company.",
-        error: error.message,
-      });
+    res.status(400).json({
+      ok: false,
+      message: "Failed to update company.",
+      error: error.message,
+    });
   }
 };
 
@@ -86,13 +78,11 @@ export const deleteCompany = async (req: Request, res: Response) => {
       res.status(404).json({ ok: false, message: "Company not found." });
     }
   } catch (error: any) {
-    res
-      .status(400)
-      .json({
-        ok: false,
-        message: "Failed to delete company.",
-        error: error.message,
-      });
+    res.status(400).json({
+      ok: false,
+      message: "Failed to delete company.",
+      error: error.message,
+    });
   }
 };
 
@@ -106,12 +96,10 @@ export const getCompanyById = async (req: Request, res: Response) => {
       res.status(200).json({ ok: true, data: company });
     }
   } catch (error: any) {
-    res
-      .status(500)
-      .json({
-        ok: false,
-        message: "Failed to retrieve company.",
-        error: error.message,
-      });
+    res.status(500).json({
+      ok: false,
+      message: "Failed to retrieve company.",
+      error: error.message,
+    });
   }
 };
