@@ -11,8 +11,16 @@ export interface IBranches {
   state: string;
   website: string;
   country: string;
-  year: string;
-  status: boolean;
+  // year: string;
+  status: string;
+  // isGeneralSettings: boolean;
+  // filterSettings: {
+  //   name: boolean;
+  //   manager: boolean;
+  //   status: boolean;
+  //   activeContract: boolean;
+  //   annualValue: boolean;
+  // };
 }
 
 /**
@@ -69,6 +77,7 @@ export interface IBranches {
  */
 const BranchSchema = new mongoose.Schema<IBranches>(
   {
+    id: String,
     branchName: {
       required: true,
       type: String,
@@ -106,22 +115,31 @@ const BranchSchema = new mongoose.Schema<IBranches>(
       type: String,
       unique: true,
     },
-    year: {
-      required: true,
-      type: String,
-    },
+    // year: {
+    //   required: true,
+    //   type: String,
+    // },
     status: {
       required: false,
-      type: Boolean,
-    },
-    id: {
-      required: true,
       type: String,
     },
+    // filterSettings: {
+    //   name: { type: Boolean, default: false },
+    //   manager: { type: Boolean, default: false },
+    //   status: { type: Boolean, default: false },
+    //   activeContract: { type: Boolean, default: false },
+    //   annualValue: { type: Boolean, default: false },
+    // },
+    // isGeneralSettings: {
+    //   type: Boolean,
+    //   default: false,
+    // },
+    // ..
   },
+
   {
     timestamps: true,
-  },
+  }
 );
 
 // Define the Mongoose model for the form data

@@ -36,8 +36,7 @@ const TeamSchema = new mongoose.Schema({
   name: String,
   id: String,
   manager: {},
-
-  status: Boolean,
+  status: String,
   members: [],
 });
 

@@ -5,6 +5,7 @@ import {
   disableUser,
   userStats,
   deleteUser,
+  getAllUsers,
 } from "../controllers/users";
 
 const router = express.Router();
@@ -73,6 +74,8 @@ router.post("/add-user", createUser);
  *             "message": "failed to load users."
  */
 router.get("/users/:id", getUsersById);
+
+router.get("/list-user", getAllUsers);
 
 /**
  * @openapi

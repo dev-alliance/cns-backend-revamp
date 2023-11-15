@@ -16,37 +16,137 @@ export const createBranch = async (req: Request, res: Response) => {
 
 export const getBranchById = async (req: Request, res: Response) => {
   try {
-    const branches = await Branch.find({ id: req.params.id });
-    res.send(branches);
+    // Using _id to find the document
+    const branch = await Branch.findById(req.params.id);
+
+    if (!branch) {
+      return res.status(404).send("Branch not found.");
+    }
+
+    res.status(200).send(branch);
   } catch (err) {
     console.log(err);
-    res.status(500).send("Error retrieving form branches");
+    res.status(500).send("Error retrieving branch");
   }
 };
 
-export const deleteBranchById = async (req: Request, res: Response) => {
+export const updateBranchById = async (req: Request, res: Response) => {
   try {
-    const form = await Branch.updateOne(
-      { _id: req.params.id },
-      {
-        $set: {
-          status: req.body.status,
-        },
-      },
-    );
-    if (!form) {
-      res.status(404).send("Branch not found.");
-    } else {
-      res
-        .status(200)
-        .send(
-          `Branch is ${
-            req.body.status ? "Un-archive" : "Archive"
-          } successfully.`,
-        );
+    const { id } = req.params;
+    const updateData = req.body;
+
+    // Find the document by ID and update it
+    const updatedBranch = await Branch.findByIdAndUpdate(id, updateData, {
+      new: true,
+    });
+
+    if (!updatedBranch) {
+      return res.status(404).send("Branch not found.");
     }
+
+    res.status(200).json({
+      ok: true,
+      message: "Branch updated successfully.",
+      updatedBranch,
+    });
   } catch (err) {
     console.log(err);
-    res.status(400).send("Failed to archive branch");
+    res.status(500).send("Error updating branch.");
   }
 };
+
+export const getAllBranch = async (req: Request, res: Response) => {
+  try {
+    const branches = await Branch.find({});
+    res.send(branches);
+    // res.status(200).json({ ok: true, data: branches });
+  } catch (error: any) {
+    res.status(500).json({
+      ok: false,
+      message: "Failed to retrieve branch.",
+      error: error.message,
+    });
+  }
+};
+
+export const archiveBranchById = async (req: Request, res: Response) => {
+  try {
+    const branchId = req.params.id;
+    const newStatus = req.body.status;
+
+    console.log(`Updating status for Branch ID: ${branchId} to ${newStatus}`);
+
+    if (!branchId || newStatus === undefined) {
+      return res.status(400).send({ ok: false, message: "Invalid input data" });
+    }
+
+    const updateResult = await Branch.updateOne(
+      { _id: branchId },
+      { $set: { status: newStatus } }
+    );
+
+    if (updateResult.matchedCount === 0) {
+      return res.status(404).send({ ok: false, message: "Branch not found." });
+    } else if (updateResult.modifiedCount === 0) {
+      return res
+        .status(200)
+        .send({ ok: true, message: "No changes made to the branch." });
+    } else {
+      return res.status(200).send({
+        ok: true,
+        message: `Branch is ${
+          newStatus ? "archived" : "unarchived"
+        } successfully.`,
+      });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ ok: false, message: "Failed to archive branch" });
+  }
+};
+
+export const deleteBranch = async (req: Request, res: Response) => {
+  try {
+    const result = await Branch.deleteOne({ _id: req.params.id });
+    if (result.deletedCount > 0) {
+      res
+        .status(200)
+        .json({ ok: true, message: "Branch deleted successfully." });
+    } else {
+      res.status(404).json({ ok: false, message: "Branch not found." });
+    }
+  } catch (error: any) {
+    res.status(400).json({
+      ok: false,
+      message: "Failed to delete Branch.",
+      error: error.message,
+    });
+  }
+};
+
+// export const updateGeneralFilterSettings = async (
+//   req: Request,
+//   res: Response
+// ) => {
+//   try {
+//     const updateData = req.body.filterSettings;
+
+//     const updatedSettings = await Branch.findOneAndUpdate(
+//       { isGeneralSettings: true },
+//       { filterSettings: updateData },
+//       { new: true, upsert: true }
+//     );
+
+//     if (!updatedSettings) {
+//       return res.status(404).send("General settings not found.");
+//     }
+
+//     res.status(200).json({
+//       ok: true,
+//       message: "General settings updated successfully.",
+//       updatedSettings,
+//     });
+//   } catch (err) {
+//     res.status(500).send("Error updating general settings.");
+//   }
+// };

@@ -2,7 +2,11 @@ import express from "express";
 import {
   createBranch,
   getBranchById,
-  deleteBranchById,
+  archiveBranchById,
+  getAllBranch,
+  deleteBranch,
+  updateBranchById,
+  // updateGeneralFilterSettings,
 } from "../controllers/branches";
 
 const router = express.Router();
@@ -36,6 +40,8 @@ const router = express.Router();
  *             "message": "Failed to create branch."
  */
 router.post("/create-branch", createBranch);
+
+router.get("/list-branch", getAllBranch);
 /**
  * @openapi
  * /api/v1/branches/{id}:
@@ -53,7 +59,9 @@ router.post("/create-branch", createBranch);
  *             "ok": true
  *             "branches": []
  */
-router.get("/branch/:id", getBranchById);
+router.get("/:id", getBranchById);
+
+router.put("/upadte/:id", updateBranchById);
 /**
  * @openapi
  * '/api/v1/branches/archive/{branchId}':
@@ -83,6 +91,8 @@ router.get("/branch/:id", getBranchById);
  *           example:
  *             "message": "Failed to archive branch."
  */
-router.post("/archive/:id", deleteBranchById);
+router.patch("/archive/:id", archiveBranchById);
 
+router.delete("/:id", deleteBranch);
+// router.post("/update-general-settings", updateGeneralFilterSettings);
 export default router;

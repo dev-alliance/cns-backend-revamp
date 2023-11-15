@@ -1,6 +1,14 @@
 import express from "express";
 
-import { getTeamsById, updateTeam, createTeam } from "../controllers/teams";
+import {
+  getTeamsById,
+  updateTeam,
+  createTeam,
+  getAllTeam,
+  deleteTeam,
+  updateTeamById,
+  archiveTeamById,
+} from "../controllers/teams";
 const router = express.Router();
 
 /**
@@ -50,7 +58,10 @@ router.post("/create-team", createTeam);
  *             "ok": true
  *             "teams": []
  */
-router.get("/teams/:id", getTeamsById);
+
+router.get("/list-teams", getAllTeam);
+
+router.get("/:id", getTeamsById);
 
 /**
  * @openapi
@@ -91,5 +102,8 @@ router.get("/teams/:id", getTeamsById);
  *             "message": "Team not found"
  */
 router.post("/team/:id", updateTeam);
+router.put("/update/:id", updateTeamById);
+router.delete("/:id", deleteTeam);
+router.patch("/archive/:id", archiveTeamById);
 
 export default router;

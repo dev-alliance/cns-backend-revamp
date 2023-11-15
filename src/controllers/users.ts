@@ -21,7 +21,7 @@ export const createUser = async (req: Request, res: Response) => {
           $push: {
             members: user,
           },
-        },
+        }
       );
 
       if (team.modifiedCount > 0) {
@@ -54,6 +54,15 @@ export const getUsersById = async (req: Request, res: Response) => {
   }
 };
 
+export const getAllUsers = async (req: Request, res: Response) => {
+  try {
+    const users = await User.find({});
+    res.send(users);
+  } catch (err) {
+    console.log(err);
+    res.status(400).send("Failed to load users.");
+  }
+};
 export const disableUser = async (req: Request, res: Response) => {
   try {
     const forms = await User.updateOne(
@@ -62,7 +71,7 @@ export const disableUser = async (req: Request, res: Response) => {
         $set: {
           status: req.params.status,
         },
-      },
+      }
     );
     if (forms.modifiedCount > 0) {
       return res
