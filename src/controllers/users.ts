@@ -21,7 +21,7 @@ export const createUser = async (req: Request, res: Response) => {
           $push: {
             members: user,
           },
-        }
+        },
       );
 
       if (team.modifiedCount > 0) {
@@ -71,7 +71,7 @@ export const disableUser = async (req: Request, res: Response) => {
         $set: {
           status: req.params.status,
         },
-      }
+      },
     );
     if (forms.modifiedCount > 0) {
       return res
