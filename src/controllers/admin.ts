@@ -16,7 +16,7 @@ const CLIENT_ID =
 const CLIENT_SECRET = "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";
 const REFRESH_TOKEN =
   "1//04sNLIVBl7eOzCgYIARAAGAQSNgF-L9IrKmeVcawXBE1EA9hM9sN72_PCefp-d1FsWpiDuh02VzxGpdrks5ABfIMXPueZrIG6fQ";
-const USER_EMAIL = "dev.alliancetech@gmail.com"; // This should be the Google user's email
+const USER_EMAIL = "dev.alliancetech@gmail.com";
 
 const generateOtp = () => {
   const otp = Math.floor(10000 + Math.random() * 90000);
@@ -55,18 +55,18 @@ export const createAdmin = async (req: Request, res: Response) => {
   const mailOptions = {
     from: USER_EMAIL,
     to: req.body.email,
-    subject: "Email Verification OTP",
+    subject: "Email Verification Cpde",
     html: `
           <h1>Email Verification</h1>
-          <p>Your OTP for email verification is:</p>
+          <p>Your Code for email verification is:</p>
           <p><b>${otp}</b></p>
-          <p>This OTP is valid for 10 minutes and is to be used for verifying your email address only.</p>
+          <p>This Verification code is to be used for verifying your email address only.</p>
           <p>If you did not request this verification, please ignore this email.</p>
         `,
   };
 
   // Send Email
-  transporter.sendMail(mailOptions, (error, info) => {
+  transporter.sendMail(mailOptions, (error: any, info: any) => {
     if (error) {
       console.error("Error sending email", error);
     } else {
@@ -115,7 +115,7 @@ export const verifyEmail = async (req: Request, res: Response) => {
       $set: {
         emailVerified: true,
       },
-    },
+    }
   );
   if (usr.modifiedCount > 0) {
     return res.json({
@@ -141,11 +141,6 @@ export const login = async (req: Request, res: Response) => {
       .status(400)
       .json({ ok: false, message: ERROR_CODES.USER.INCORRECT_CREDENTIALS });
   }
-  // if (!user.emailVerified) {
-  //   return res
-  //     .status(401)
-  //     .json({ ok: false, message: "Please verify Email address." });
-  // }
 
   const isPasswordValid = await admin.comparePassword(req.body.password);
 
@@ -194,26 +189,29 @@ export const requestPasswordReset = async (req: Request, res: Response) => {
   const mailOptions = {
     from: USER_EMAIL,
     to: email,
-    subject: "Password Reset OTP",
+    subject: "Password Reset verification code",
     html: `
       <h1>Password Reset</h1>
-      <p>Your OTP for password reset is:</p>
+      <p>Your password reset verification code is:</p>
       <p><b>${otp}</b></p>
-      <p>This OTP is valid for 10 minutes and is to be used for resetting your password only.</p>
+      <p>This verification code is valid for 10 minutes and only for resetting your password.
       <p>If you did not request a password reset, please ignore this email.</p>
     `,
   };
 
   // Send the email with the OTP
-  transporter.sendMail(mailOptions, (error, info) => {
+  transporter.sendMail(mailOptions, (error: any, info: any) => {
     if (error) {
       console.error("Error sending email", error);
-      return res
-        .status(500)
-        .json({ ok: false, message: "Could not send OTP email" });
+      return res.status(500).json({
+        ok: false,
+        message: "Could not send Verfication code to email",
+      });
     } else {
       console.log(`Email sent: ${info.response}`);
-      return res.status(200).json({ ok: true, message: "OTP sent to email" });
+      return res
+        .status(200)
+        .json({ ok: true, message: "Verfication code sent" });
     }
   });
 };
@@ -271,7 +269,7 @@ export const updatePassword = async (req: Request, res: Response) => {
         $set: {
           password: newPassword,
         },
-      },
+      }
     );
     if (w.modifiedCount > 0) {
       return res.status(200).json({

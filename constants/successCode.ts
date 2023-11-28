@@ -4,7 +4,7 @@ const AUTH = {
   EMAIL_SENT: "Please verify your email address ",
   EMAIL_VERIFICATION_SUCCESS: "Email Verified. Please continue to login.",
   ACCOUNT_CREATED: "Account Created Successfully. Please login to continue",
-  OTP_VERIFIED: "OTP Verified",
+  OTP_VERIFIED: "Email  Verified",
 };
 
 const USER = {

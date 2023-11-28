@@ -7,7 +7,7 @@ export interface IBranches {
   address: string;
   pinCode: string;
   contact: string;
-  manager: string;
+  manager: mongoose.Schema.Types.ObjectId;
   state: string;
   website: string;
   country: string;
@@ -95,8 +95,8 @@ const BranchSchema = new mongoose.Schema<IBranches>(
       type: String,
     },
     manager: {
-      required: false,
-      type: String,
+      ref: "cns.users",
+      type: mongoose.Schema.Types.ObjectId,
     },
     state: {
       required: true,
@@ -139,7 +139,7 @@ const BranchSchema = new mongoose.Schema<IBranches>(
 
   {
     timestamps: true,
-  },
+  }
 );
 
 // Define the Mongoose model for the form data

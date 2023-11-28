@@ -35,7 +35,10 @@ import mongoose from "mongoose";
 const TeamSchema = new mongoose.Schema({
   name: String,
   id: String,
-  manager: {},
+  manager: {
+    ref: "cns.users",
+    type: mongoose.Schema.Types.ObjectId,
+  },
   status: String,
   members: [],
 });

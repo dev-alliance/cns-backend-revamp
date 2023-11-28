@@ -45,11 +45,11 @@ export const updateCompany = async (req: Request, res: Response) => {
     const company = await CompanyModel.findByIdAndUpdate(
       req.params.id,
       req.body,
-      { new: true },
+      { new: true }
     );
 
     if (!company) {
-      return res.status(404).json({ ok: false, message: "Company not found." });
+      return res.status(400).send("Company not found");
     }
 
     res.status(200).json({
