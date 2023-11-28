@@ -83,7 +83,7 @@ export const archiveBranchById = async (req: Request, res: Response) => {
 
     const updateResult = await Branch.updateOne(
       { _id: branchId },
-      { $set: { status: newStatus } }
+      { $set: { status: newStatus } },
     );
 
     if (updateResult.matchedCount === 0) {

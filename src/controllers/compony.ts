@@ -45,7 +45,7 @@ export const updateCompany = async (req: Request, res: Response) => {
     const company = await CompanyModel.findByIdAndUpdate(
       req.params.id,
       req.body,
-      { new: true }
+      { new: true },
     );
 
     if (!company) {

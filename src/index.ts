@@ -37,7 +37,7 @@ app.use(
     origin: (origin, callback) => callback(null, origin || "*"),
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     credentials: true,
-  })
+  }),
 );
 
 app.use("/uploads", express.static("uploads"));

@@ -13,7 +13,7 @@ export interface ModifiedRequest extends Request {
 export const auth = (
   req: ModifiedRequest,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const token = req.header("x-auth-token");
   if (!token) return res.status(401).send(ERROR_CODES.AUTH.ACCESS_TOKEN);
@@ -35,14 +35,14 @@ export const isAuthenticated = catchAsyncErrors(
       return next(createError("Unauthorized User, please login first!", 401));
     const decodeData: any = await jwt.verify(
       access_token,
-      process.env.JWT_SECRET as string
+      process.env.JWT_SECRET as string,
     );
     if (!decodeData) return next(createError("Access Token in Invalid!", 401));
     // const user = await User.findById(decodeData._id);
     // if (!user) return next(createError("User not found!", 404));
     req.user = decodeData;
     return next();
-  }
+  },
 );
 
 export const validateUserRole = (...roles: string[]) => {
@@ -51,8 +51,8 @@ export const validateUserRole = (...roles: string[]) => {
       return next(
         createError(
           `Role: ${req.user.role} is not allowed to access this resourse!`,
-          400
-        )
+          400,
+        ),
       );
 
     next();
