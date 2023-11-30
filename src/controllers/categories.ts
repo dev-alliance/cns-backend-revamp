@@ -71,7 +71,7 @@ export const DisableCategory = async (req: Request, res: Response) => {
     const updatedCategory = await Categories.findByIdAndUpdate(
       id,
       { status: status }, // Update the status with the provided value
-      { new: true }
+      { new: true },
     );
 
     if (!updatedCategory) {
@@ -126,7 +126,7 @@ export const deleteSubCategory = async (req: Request, res: Response) => {
 
     // Remove the subcategory from the array
     category.subCategories = category.subCategories.filter(
-      (subCat: any) => subCat.id !== subcategoryId
+      (subCat: any) => subCat.id !== subcategoryId,
     );
 
     await category.save();
