@@ -7,6 +7,7 @@ interface SubCategory {
 interface Category extends Document {
   id: string;
   name: string;
+  status: string;
   subCategories: SubCategory[];
 }
 
@@ -17,6 +18,7 @@ const subCategorySchema = new mongoose.Schema<SubCategory>({
 const categorySchema = new mongoose.Schema<Category>({
   id: String,
   name: String,
+  status: { type: String, default: "active" },
   subCategories: [subCategorySchema],
 });
 

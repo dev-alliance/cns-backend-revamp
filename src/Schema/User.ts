@@ -13,7 +13,7 @@ export interface IUserDocument {
   firstName: string;
   lastName: string;
   job: string;
-  team: string;
+  team: mongoose.Schema.Types.ObjectId;
   landline: string;
   mobile: string;
   email: string;
@@ -25,7 +25,7 @@ export interface IUserDocument {
   loginHistory: [IHistory];
   disabled: boolean;
   twoFactorAuth: boolean;
-  branch: string;
+  branch: mongoose.Schema.Types.ObjectId;
   failedLoginAttempts: number;
   lockUntil: Date;
   resetPasswordToken: string;
@@ -38,7 +38,7 @@ const loginHistorySchema = new mongoose.Schema<IHistory>(
       type: Date,
     },
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 /**
@@ -117,7 +117,10 @@ const userSchema = new mongoose.Schema<IUserDocument>(
     job: {
       type: String,
     },
-    team: {},
+    team: {
+      ref: "cns.team",
+      type: mongoose.Schema.Types.ObjectId,
+    },
     landline: String,
     mobile: String,
     email: {
@@ -134,7 +137,7 @@ const userSchema = new mongoose.Schema<IUserDocument>(
     },
     password: {
       type: String,
-      minLength: [10, "Password should be greater then 10 character"],
+      minLength: [8, "Password should be greater then 10 character"],
       select: false,
     },
     loginHistory: {
@@ -163,7 +166,8 @@ const userSchema = new mongoose.Schema<IUserDocument>(
     },
 
     branch: {
-      type: String,
+      ref: "cns.branch",
+      type: mongoose.Schema.Types.ObjectId,
     },
     failedLoginAttempts: {
       type: Number,
@@ -177,7 +181,7 @@ const userSchema = new mongoose.Schema<IUserDocument>(
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 //converting Email to LowerCase
@@ -198,7 +202,7 @@ userSchema.methods.getJWTToken = function () {
     process.env.JWT_SECRET!,
     {
       expiresIn: process.env.JWT_EXPIRE,
-    },
+    }
   );
 };
 

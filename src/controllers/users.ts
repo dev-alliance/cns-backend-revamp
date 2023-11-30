@@ -38,11 +38,11 @@ const s3 = new AWS.S3();
 async function uploadBase64ImageToS3(
   base64Image: string,
   bucketName: string,
-  imageName: string,
+  imageName: string
 ): Promise<string> {
   const buffer = Buffer.from(
     base64Image.replace(/^data:image\/\w+;base64,/, ""),
-    "base64",
+    "base64"
   );
 
   const uploadParams: AWS.S3.PutObjectRequest = {
@@ -86,7 +86,7 @@ export const createUser = catchAsyncErrors(
       imageUrl = await uploadBase64ImageToS3(
         req.body.image,
         "your-s3-bucket-name",
-        imageName,
+        imageName
       );
     }
 
@@ -107,7 +107,7 @@ export const createUser = catchAsyncErrors(
             $push: {
               members: user,
             },
-          },
+          }
         );
       } catch (error) {
         console.log(error);
@@ -175,7 +175,7 @@ export const createUser = catchAsyncErrors(
             $pull: {
               members: user,
             },
-          },
+          }
         );
       }
 
@@ -183,7 +183,7 @@ export const createUser = catchAsyncErrors(
         .status(400)
         .json({ ok: false, message: "Fail to create user." });
     }
-  },
+  }
 );
 // controllers/users.ts
 
@@ -202,7 +202,7 @@ export const updateUser = catchAsyncErrors(
         imageUrl = await uploadBase64ImageToS3(
           req.body.image,
           "your-s3-bucket-name",
-          imageName,
+          imageName
         );
         console.log(imageUrl);
 
@@ -223,7 +223,7 @@ export const updateUser = catchAsyncErrors(
         .status(500)
         .json({ ok: false, message: "Internal Server Error." });
     }
-  },
+  }
 );
 
 // add first time
@@ -337,7 +337,7 @@ export const createPassword = catchAsyncErrors(
         .status(500)
         .json({ ok: false, message: "internal server error." });
     }
-  },
+  }
 );
 
 export const loginUser = catchAsyncErrors(
@@ -431,7 +431,7 @@ export const loginUser = catchAsyncErrors(
       });
       console.log(pass);
     }
-  },
+  }
 );
 
 export const getUserLoginHistoryById = catchAsyncErrors(
@@ -443,7 +443,7 @@ export const getUserLoginHistoryById = catchAsyncErrors(
     }
 
     const user = await User.findById(req.params.id).select(
-      "loginHistory firstName lastName",
+      "loginHistory firstName lastName"
     );
 
     if (!user)
@@ -452,19 +452,22 @@ export const getUserLoginHistoryById = catchAsyncErrors(
     // Sort loginHistory in descending order based on the 'createdAt' field
     user.loginHistory.sort(
       (a: any, b: any) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
 
     res.status(200).json({
       ok: true,
       user,
     });
-  },
+  }
 );
 
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
-    const users = await User.find({}).sort({ createdAt: -1 });
+    const users = await User.find({})
+      .sort({ createdAt: -1 })
+      .populate("branch", "branchName -_id")
+      .populate("team", "name -_id");
     res.send(users);
   } catch (err) {
     console.log(err);
@@ -491,7 +494,7 @@ export const disableUser = async (req: Request, res: Response) => {
         $set: {
           status: req.body.status,
         },
-      },
+      }
     );
     if (forms.modifiedCount > 0) {
       return res
@@ -510,29 +513,6 @@ export const disableUser = async (req: Request, res: Response) => {
   }
 };
 
-// export const disableUser = catchAsyncErrors(
-//   async (req: Request, res: Response, next: NextFunction) => {
-//     const isValidId = await validateMongooseId(req.params.id);
-//     if (!isValidId) return next(createError("Invalid user id.", 400));
-//     const user: any = await User.updateOne(
-//       { _id: req.params.id },
-//       {
-//         $set: {
-//           status: req.params.status,
-//         },
-//       }
-//     );
-//     if (user.matchedCount === 0) {
-//       return next(createError("User not found.", 404));
-//     }
-//     if (user.modifiedCount > 0) {
-//       return sendResponse("User Status Changed.", 200, res);
-//     } else {
-//       return next(createError("Failed to update user status.", 422));
-//     }
-//   }
-// );
-
 export const getSingleUserByID = catchAsyncErrors(
   async (req: Request, res: Response, next: NextFunction) => {
     const isValidId = await validateMongooseId(req.params.id);
@@ -545,17 +525,15 @@ export const getSingleUserByID = catchAsyncErrors(
       ok: true,
       user,
     });
-  },
+  }
 );
-//Login History
-//Pending
 
 export const editUser = catchAsyncErrors(
   async (req: Request, res: Response, next: NextFunction) => {
     const isValidId = await validateMongooseId(req.params.id);
     if (!isValidId) return next(createError("Invalid user id.", 400));
     const user: any = await User.findOne({ _id: req.params.id }).select(
-      "+password",
+      "+password"
     );
     if (!user) {
       return next(createError("user not found", 404));
@@ -569,10 +547,10 @@ export const editUser = catchAsyncErrors(
         team: user?.team,
         branch: user?.branch,
         password: user?.password,
-      },
+      }
     );
     sendResponse("profile updated successfully", 200, res);
-  },
+  }
 );
 
 export const changePassword = catchAsyncErrors(
@@ -597,7 +575,7 @@ export const changePassword = catchAsyncErrors(
     user.resetPasswordExpire = undefined;
     await user.save();
     sendResponse("Password updated.", 200, res);
-  },
+  }
 );
 
 export const forgetPassword = catchAsyncErrors(
@@ -617,7 +595,7 @@ export const forgetPassword = catchAsyncErrors(
     await user.save({ validateBeforeSave: false });
 
     const resetPasswordUrl = `${req.protocol}://${req.get(
-      "host",
+      "host"
     )}/password/reset/${resetToken}`;
 
     const message = `Your password recovery link :- \n\n ${resetPasswordUrl} \n\nIf your have not requested this email then please ignore it`;
@@ -629,7 +607,7 @@ export const forgetPassword = catchAsyncErrors(
     });
 
     sendResponse("Password recovery link has been sent.", 200, res);
-  },
+  }
 );
 
 export const deleteUser = async (req: Request, res: Response) => {
@@ -783,7 +761,7 @@ export const verifyOtp = async (req: Request, res: Response) => {
   if (!isOtpValid) {
     return res
       .status(400)
-      .json({ ok: false, message: "Invalid or expired OTP" });
+      .json({ ok: false, message: "Invalid or expired Verfication code" });
   }
   const { accessToken } = await setAccessToken(user, res);
   const { password: pass, ...otherDetails } = user._doc;
@@ -794,7 +772,7 @@ export const verifyOtp = async (req: Request, res: Response) => {
     await user.save();
     return res
       .status(200)
-      .json({ ok: true, message: "OTP verified and updated twoFactorAuth " });
+      .json({ ok: true, message: "Verified code sent and updated 2FA " });
   } else {
     console.log(req.body.twoFactorloginAuth);
     if (req.body.twoFactorloginAuth === true) {
@@ -851,7 +829,7 @@ export const updatePassword = async (req: Request, res: Response) => {
         $set: {
           password: newPassword,
         },
-      },
+      }
     );
     if (w.modifiedCount > 0) {
       return res.status(200).json({
