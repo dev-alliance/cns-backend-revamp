@@ -2,8 +2,8 @@ const COMMON = {};
 
 const AUTH = {
   EMAIL_SENT: "Please verify your email address ",
-  EMAIL_VERIFICATION_SUCCESS: "Email Verified. Please continue to login.",
-  ACCOUNT_CREATED: "Account Created Successfully. Please login to continue",
+  EMAIL_VERIFICATION_SUCCESS: "Email Verified. Please Continue To Login.",
+  ACCOUNT_CREATED: "Account Created Successfully. Please Verifiy Your Email",
   OTP_VERIFIED: "Email  Verified",
 };
 

@@ -38,11 +38,11 @@ const s3 = new AWS.S3();
 async function uploadBase64ImageToS3(
   base64Image: string,
   bucketName: string,
-  imageName: string,
+  imageName: string
 ): Promise<string> {
   const buffer = Buffer.from(
     base64Image.replace(/^data:image\/\w+;base64,/, ""),
-    "base64",
+    "base64"
   );
 
   const uploadParams: AWS.S3.PutObjectRequest = {
@@ -63,9 +63,8 @@ async function uploadBase64ImageToS3(
 }
 export const createUser = catchAsyncErrors(
   async (req: Request, res: Response) => {
-    const { email, job, lastName, firstName } = req.body;
-
-    if (!email || !job || !firstName || !lastName)
+    const { email, lastName, firstName } = req.body;
+    if (!email || !firstName || !lastName)
       return res
         .status(400)
         .json({ ok: false, message: "Missing required fields." });
@@ -86,11 +85,9 @@ export const createUser = catchAsyncErrors(
       imageUrl = await uploadBase64ImageToS3(
         req.body.image,
         "your-s3-bucket-name",
-        imageName,
+        imageName
       );
     }
-
-    // Create user with image URL
     console.log(imageUrl);
 
     const userData = {
@@ -107,7 +104,7 @@ export const createUser = catchAsyncErrors(
             $push: {
               members: user,
             },
-          },
+          }
         );
       } catch (error) {
         console.log(error);
@@ -116,7 +113,6 @@ export const createUser = catchAsyncErrors(
     }
     try {
       const resetToken = crypto.randomBytes(20).toString("hex");
-
       const resetPasswordUrl = `http://127.0.0.1:3000/dashboard/create-password/${resetToken}`;
       const otpExpiry = Date.now() + 1000 * 60 * 10;
       user.resetPasswordToken = resetToken;
@@ -143,7 +139,7 @@ export const createUser = catchAsyncErrors(
         to: user.email,
         subject: "Create a password for your Account",
         html: `
-          <h1>Password Reset</h1>
+          <h1> Create Password</h1>
           <p>Please click the link below to create a new password:</p>
           <a href="${resetPasswordUrl}">${resetPasswordUrl}</a>
           <p>This link is valid for a limited time only. If you did not request a password reset, please ignore this email.</p>
@@ -175,7 +171,7 @@ export const createUser = catchAsyncErrors(
             $pull: {
               members: user,
             },
-          },
+          }
         );
       }
 
@@ -183,7 +179,7 @@ export const createUser = catchAsyncErrors(
         .status(400)
         .json({ ok: false, message: "Fail to create user." });
     }
-  },
+  }
 );
 // controllers/users.ts
 
@@ -202,7 +198,7 @@ export const updateUser = catchAsyncErrors(
         imageUrl = await uploadBase64ImageToS3(
           req.body.image,
           "your-s3-bucket-name",
-          imageName,
+          imageName
         );
         console.log(imageUrl);
 
@@ -223,7 +219,7 @@ export const updateUser = catchAsyncErrors(
         .status(500)
         .json({ ok: false, message: "Internal Server Error." });
     }
-  },
+  }
 );
 
 // add first time
@@ -337,7 +333,7 @@ export const createPassword = catchAsyncErrors(
         .status(500)
         .json({ ok: false, message: "internal server error." });
     }
-  },
+  }
 );
 
 export const loginUser = catchAsyncErrors(
@@ -431,7 +427,7 @@ export const loginUser = catchAsyncErrors(
       });
       console.log(pass);
     }
-  },
+  }
 );
 
 export const getUserLoginHistoryById = catchAsyncErrors(
@@ -443,7 +439,7 @@ export const getUserLoginHistoryById = catchAsyncErrors(
     }
 
     const user = await User.findById(req.params.id).select(
-      "loginHistory firstName lastName",
+      "loginHistory firstName lastName"
     );
 
     if (!user)
@@ -452,14 +448,14 @@ export const getUserLoginHistoryById = catchAsyncErrors(
     // Sort loginHistory in descending order based on the 'createdAt' field
     user.loginHistory.sort(
       (a: any, b: any) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
 
     res.status(200).json({
       ok: true,
       user,
     });
-  },
+  }
 );
 
 export const getAllUsers = async (req: Request, res: Response) => {
@@ -494,7 +490,7 @@ export const disableUser = async (req: Request, res: Response) => {
         $set: {
           status: req.body.status,
         },
-      },
+      }
     );
     if (forms.modifiedCount > 0) {
       return res
@@ -525,7 +521,7 @@ export const getSingleUserByID = catchAsyncErrors(
       ok: true,
       user,
     });
-  },
+  }
 );
 
 export const editUser = catchAsyncErrors(
@@ -533,7 +529,7 @@ export const editUser = catchAsyncErrors(
     const isValidId = await validateMongooseId(req.params.id);
     if (!isValidId) return next(createError("Invalid user id.", 400));
     const user: any = await User.findOne({ _id: req.params.id }).select(
-      "+password",
+      "+password"
     );
     if (!user) {
       return next(createError("user not found", 404));
@@ -547,10 +543,10 @@ export const editUser = catchAsyncErrors(
         team: user?.team,
         branch: user?.branch,
         password: user?.password,
-      },
+      }
     );
     sendResponse("profile updated successfully", 200, res);
-  },
+  }
 );
 
 export const changePassword = catchAsyncErrors(
@@ -575,7 +571,7 @@ export const changePassword = catchAsyncErrors(
     user.resetPasswordExpire = undefined;
     await user.save();
     sendResponse("Password updated.", 200, res);
-  },
+  }
 );
 
 export const forgetPassword = catchAsyncErrors(
@@ -595,7 +591,7 @@ export const forgetPassword = catchAsyncErrors(
     await user.save({ validateBeforeSave: false });
 
     const resetPasswordUrl = `${req.protocol}://${req.get(
-      "host",
+      "host"
     )}/password/reset/${resetToken}`;
 
     const message = `Your password recovery link :- \n\n ${resetPasswordUrl} \n\nIf your have not requested this email then please ignore it`;
@@ -607,7 +603,7 @@ export const forgetPassword = catchAsyncErrors(
     });
 
     sendResponse("Password recovery link has been sent.", 200, res);
-  },
+  }
 );
 
 export const deleteUser = async (req: Request, res: Response) => {
@@ -829,7 +825,7 @@ export const updatePassword = async (req: Request, res: Response) => {
         $set: {
           password: newPassword,
         },
-      },
+      }
     );
     if (w.modifiedCount > 0) {
       return res.status(200).json({

@@ -81,6 +81,7 @@ const BranchSchema = new mongoose.Schema<IBranches>(
     branchName: {
       required: true,
       type: String,
+      unique: true,
     },
     address: {
       required: false,
@@ -139,7 +140,7 @@ const BranchSchema = new mongoose.Schema<IBranches>(
 
   {
     timestamps: true,
-  },
+  }
 );
 
 // Define the Mongoose model for the form data
