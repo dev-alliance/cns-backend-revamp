@@ -18,7 +18,7 @@ const subCategorySchema = new mongoose.Schema<SubCategory>({
 const categorySchema = new mongoose.Schema<Category>({
   id: String,
   name: String,
-  status: { type: String, default: "active" },
+  status: { type: String, default: "Active" },
   subCategories: [subCategorySchema],
 });
 
