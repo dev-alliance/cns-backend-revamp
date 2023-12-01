@@ -38,7 +38,7 @@ const loginHistorySchema = new mongoose.Schema<IHistory>(
       type: Date,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 /**
@@ -184,7 +184,7 @@ const userSchema = new mongoose.Schema<IUserDocument>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 //converting Email to LowerCase
@@ -205,7 +205,7 @@ userSchema.methods.getJWTToken = function () {
     process.env.JWT_SECRET!,
     {
       expiresIn: process.env.JWT_EXPIRE,
-    }
+    },
   );
 };
 
