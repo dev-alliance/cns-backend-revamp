@@ -31,7 +31,7 @@ const s3 = new AWS.S3();
 async function uploadFileToS3(
   fileBuffer: Buffer,
   bucketName: string,
-  fileName: string
+  fileName: string,
 ): Promise<string> {
   const contentType = getContentTypeByFile(fileName);
 
@@ -57,7 +57,7 @@ export const uploadDocument = async (req: Request, res: Response) => {
     const fileUrl = await uploadFileToS3(
       file.buffer,
       "cns-images-kyc",
-      file.originalname
+      file.originalname,
     );
     console.log(fileUrl);
 
@@ -73,7 +73,7 @@ export const uploadDocument = async (req: Request, res: Response) => {
           },
         },
       },
-      { new: true }
+      { new: true },
     );
 
     if (updatedFolder) {

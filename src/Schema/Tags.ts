@@ -39,7 +39,7 @@ const TagSchema = new mongoose.Schema<ITag>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // Define the Mongoose model for the form data

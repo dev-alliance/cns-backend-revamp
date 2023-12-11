@@ -27,10 +27,10 @@ const companySchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 export const CompanyModel = mongoose.model<ICompanyDocument>(
   "Company",
-  companySchema
+  companySchema,
 );
