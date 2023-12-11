@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 export interface ITag {
   id: string;
   name: string;
+  status: string;
 }
 
 /**
@@ -31,10 +32,14 @@ const TagSchema = new mongoose.Schema<ITag>(
   {
     id: String,
     name: String,
+    status: {
+      type: String,
+      default: "Active",
+    },
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 // Define the Mongoose model for the form data

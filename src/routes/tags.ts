@@ -1,5 +1,12 @@
 import express from "express";
-import { createTag, getTags } from "../controllers/tags";
+import {
+  DeleteTags,
+  EditTags,
+  changeStatus,
+  createTag,
+  findOneById,
+  getAllTags,
+} from "../controllers/tags";
 
 const router = express.Router();
 
@@ -32,21 +39,16 @@ const router = express.Router();
  *           example:
  *             "message": "Failed to create tag."
  */
-router.post("/create-tag", createTag);
+router.post("/create", createTag);
 
-/**
- * @openapi
- * /api/v1/tags/tag/{id}:
- *  get:
- *     tags:
- *     - Tags
- *     description: Retruns tags associated with id
- *     responses:
- *       200:
- *         example:
- *            "ok": true
- *            "tags": []
- */
-router.get("/tag/:id", getTags);
+router.put("/update/:id", EditTags);
+
+router.delete("/:id", DeleteTags);
+
+router.patch("/updte-status/:id", changeStatus);
+
+router.get("/list-tags", getAllTags);
+
+router.get("/:id", findOneById);
 
 export default router;

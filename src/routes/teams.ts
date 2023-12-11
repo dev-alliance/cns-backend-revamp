@@ -59,7 +59,7 @@ router.post("/create-team", createTeam);
  *             "teams": []
  */
 
-router.get("/list-teams", getAllTeam);
+router.get("/list-teams/:id", getAllTeam);
 
 router.get("/:id", getTeamsById);
 

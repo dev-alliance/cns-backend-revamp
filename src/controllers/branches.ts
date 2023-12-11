@@ -57,7 +57,13 @@ export const updateBranchById = async (req: Request, res: Response) => {
 
 export const getAllBranch = async (req: Request, res: Response) => {
   try {
-    const branches = await Branch.find({}).populate("manager", "firstName _id");
+    const userId = req.params.id;
+    console.log(userId, "id");
+
+    const branches = await Branch.find({ id: userId }).populate(
+      "manager",
+      "firstName _id"
+    );
     // .select("branchName manager status");
     res.send(branches);
     // res.status(200).json({ ok: true, data: branches });
@@ -83,7 +89,7 @@ export const archiveBranchById = async (req: Request, res: Response) => {
 
     const updateResult = await Branch.updateOne(
       { _id: branchId },
-      { $set: { status: newStatus } },
+      { $set: { status: newStatus } }
     );
 
     if (updateResult.matchedCount === 0) {

@@ -4,6 +4,7 @@ export interface IClauses {
   id: string;
   name: string;
   content: string;
+  status: string;
 }
 
 /**
@@ -39,10 +40,11 @@ const ClausesSchema = new mongoose.Schema<IClauses>(
     id: String,
     name: String,
     content: String,
+    status: { type: String, default: "Active" },
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 // Define the Mongoose model for the form data

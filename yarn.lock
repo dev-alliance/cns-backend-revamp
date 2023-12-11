@@ -342,6 +342,13 @@
   dependencies:
     "@types/node" "*"
 
+"@types/multer@^1.4.11":
+  "integrity" "sha512-svK240gr6LVWvv3YGyhLlA+6LRRWA4mnGIU7RcNmgjBYFl6665wcXrRfxGp5tEPVHUNm5FMcmq7too9bxCwX/w=="
+  "resolved" "https://registry.npmjs.org/@types/multer/-/multer-1.4.11.tgz"
+  "version" "1.4.11"
+  dependencies:
+    "@types/express" "*"
+
 "@types/nanoid@^3.0.0":
   "integrity" "sha512-UXitWSmXCwhDmAKe7D3hNQtQaHeHt5L8LO1CB8GF8jlYVzOv5cBWDNqiJ+oPEWrWei3i3dkZtHY/bUtd0R/uOQ=="
   "resolved" "https://registry.npmjs.org/@types/nanoid/-/nanoid-3.0.0.tgz"

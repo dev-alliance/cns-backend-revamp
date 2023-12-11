@@ -1,8 +1,11 @@
 import express from "express";
 import {
   createClauses,
-  getClausesById,
   deleteClauses,
+  changeStatus,
+  getAllClauses,
+  findOneById,
+  EditClauses,
 } from "../controllers/clauses";
 
 const router = express.Router();
@@ -35,7 +38,7 @@ const router = express.Router();
  *           example:
  *             "message": "Failed to create clauses."
  */
-router.post("/create-clauses", createClauses);
+router.post("/create", createClauses);
 /**
  * @openapi
  * /api/v1/clauses/{id}:
@@ -53,7 +56,13 @@ router.post("/create-clauses", createClauses);
  *             "ok": true
  *             "clauses": []
  */
-router.get("/:id", getClausesById);
+router.put("/update/:id", EditClauses);
+
+router.patch("/updte-status/:id", changeStatus);
+
+router.get("/list-clauses", getAllClauses);
+
+router.get("/:id", findOneById);
 /**
  * @openapi
  * /api/v1/clauses/{id}:

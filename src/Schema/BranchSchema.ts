@@ -78,6 +78,7 @@ export interface IBranches {
 const BranchSchema = new mongoose.Schema<IBranches>(
   {
     id: String,
+
     branchName: {
       required: true,
       type: String,
@@ -140,7 +141,7 @@ const BranchSchema = new mongoose.Schema<IBranches>(
 
   {
     timestamps: true,
-  },
+  }
 );
 
 // Define the Mongoose model for the form data

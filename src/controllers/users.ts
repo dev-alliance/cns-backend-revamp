@@ -38,11 +38,11 @@ const s3 = new AWS.S3();
 async function uploadBase64ImageToS3(
   base64Image: string,
   bucketName: string,
-  imageName: string,
+  imageName: string
 ): Promise<string> {
   const buffer = Buffer.from(
     base64Image.replace(/^data:image\/\w+;base64,/, ""),
-    "base64",
+    "base64"
   );
 
   const uploadParams: AWS.S3.PutObjectRequest = {
@@ -61,6 +61,7 @@ async function uploadBase64ImageToS3(
     throw error;
   }
 }
+
 export const createUser = catchAsyncErrors(
   async (req: Request, res: Response) => {
     const { email, lastName, firstName } = req.body;
@@ -79,13 +80,14 @@ export const createUser = catchAsyncErrors(
         .json({ ok: false, message: "User already exits." });
     }
     // Image Upload
+
     let imageUrl;
     if (req.body.image) {
       const imageName = `user-images/${Date.now()}.jpg`;
       imageUrl = await uploadBase64ImageToS3(
         req.body.image,
         "your-s3-bucket-name",
-        imageName,
+        imageName
       );
     }
     console.log(imageUrl);
@@ -104,7 +106,7 @@ export const createUser = catchAsyncErrors(
             $push: {
               members: user,
             },
-          },
+          }
         );
       } catch (error) {
         console.log(error);
@@ -172,7 +174,7 @@ export const createUser = catchAsyncErrors(
             $pull: {
               members: user,
             },
-          },
+          }
         );
       }
 
@@ -180,7 +182,7 @@ export const createUser = catchAsyncErrors(
         .status(400)
         .json({ ok: false, message: "Fail to create user." });
     }
-  },
+  }
 );
 // controllers/users.ts
 
@@ -199,9 +201,8 @@ export const updateUser = catchAsyncErrors(
         imageUrl = await uploadBase64ImageToS3(
           req.body.image,
           "your-s3-bucket-name",
-          imageName,
+          imageName
         );
-        console.log(imageUrl);
 
         req.body.image = imageUrl;
       }
@@ -220,7 +221,7 @@ export const updateUser = catchAsyncErrors(
         .status(500)
         .json({ ok: false, message: "Internal Server Error." });
     }
-  },
+  }
 );
 
 // add first time
@@ -284,6 +285,7 @@ export const createAdmin = async (req: Request, res: Response) => {
   return res.status(200).json({
     ok: true,
     message: SUCCESS_CODES.AUTH.ACCOUNT_CREATED,
+    admin,
   });
 };
 
@@ -334,7 +336,7 @@ export const createPassword = catchAsyncErrors(
         .status(500)
         .json({ ok: false, message: "internal server error." });
     }
-  },
+  }
 );
 
 export const loginUser = catchAsyncErrors(
@@ -428,7 +430,7 @@ export const loginUser = catchAsyncErrors(
       });
       console.log(pass);
     }
-  },
+  }
 );
 
 export const getUserLoginHistoryById = catchAsyncErrors(
@@ -440,7 +442,7 @@ export const getUserLoginHistoryById = catchAsyncErrors(
     }
 
     const user = await User.findById(req.params.id).select(
-      "loginHistory firstName lastName",
+      "loginHistory firstName lastName"
     );
 
     if (!user)
@@ -449,22 +451,24 @@ export const getUserLoginHistoryById = catchAsyncErrors(
     // Sort loginHistory in descending order based on the 'createdAt' field
     user.loginHistory.sort(
       (a: any, b: any) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
 
     res.status(200).json({
       ok: true,
       user,
     });
-  },
+  }
 );
 
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
-    const users = await User.find({})
+    const userId = req.params.id;
+    const users = await User.find({ id: userId })
       .sort({ createdAt: -1 })
       .populate("branch", "branchName -_id")
       .populate("team", "name -_id");
+
     res.send(users);
   } catch (err) {
     console.log(err);
@@ -473,7 +477,8 @@ export const getAllUsers = async (req: Request, res: Response) => {
 };
 export const getAllUsersNameID = async (req: Request, res: Response) => {
   try {
-    const users = await User.find({})
+    const userId = req.params.id;
+    const users = await User.find({ id: userId })
       .sort({ createdAt: -1 })
       .select("_id firstName lastName ");
     res.send(users);
@@ -491,7 +496,7 @@ export const disableUser = async (req: Request, res: Response) => {
         $set: {
           status: req.body.status,
         },
-      },
+      }
     );
     if (forms.modifiedCount > 0) {
       return res
@@ -522,7 +527,7 @@ export const getSingleUserByID = catchAsyncErrors(
       ok: true,
       user,
     });
-  },
+  }
 );
 
 export const editUser = catchAsyncErrors(
@@ -530,7 +535,7 @@ export const editUser = catchAsyncErrors(
     const isValidId = await validateMongooseId(req.params.id);
     if (!isValidId) return next(createError("Invalid user id.", 400));
     const user: any = await User.findOne({ _id: req.params.id }).select(
-      "+password",
+      "+password"
     );
     if (!user) {
       return next(createError("user not found", 404));
@@ -544,10 +549,10 @@ export const editUser = catchAsyncErrors(
         team: user?.team,
         branch: user?.branch,
         password: user?.password,
-      },
+      }
     );
     sendResponse("profile updated successfully", 200, res);
-  },
+  }
 );
 
 export const changePassword = catchAsyncErrors(
@@ -572,7 +577,7 @@ export const changePassword = catchAsyncErrors(
     user.resetPasswordExpire = undefined;
     await user.save();
     sendResponse("Password updated.", 200, res);
-  },
+  }
 );
 
 export const forgetPassword = catchAsyncErrors(
@@ -592,7 +597,7 @@ export const forgetPassword = catchAsyncErrors(
     await user.save({ validateBeforeSave: false });
 
     const resetPasswordUrl = `${req.protocol}://${req.get(
-      "host",
+      "host"
     )}/password/reset/${resetToken}`;
 
     const message = `Your password recovery link :- \n\n ${resetPasswordUrl} \n\nIf your have not requested this email then please ignore it`;
@@ -604,7 +609,7 @@ export const forgetPassword = catchAsyncErrors(
     });
 
     sendResponse("Password recovery link has been sent.", 200, res);
-  },
+  }
 );
 
 export const deleteUser = async (req: Request, res: Response) => {
@@ -826,7 +831,7 @@ export const updatePassword = async (req: Request, res: Response) => {
         $set: {
           password: newPassword,
         },
-      },
+      }
     );
     if (w.modifiedCount > 0) {
       return res.status(200).json({

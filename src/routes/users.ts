@@ -91,9 +91,9 @@ router.post("/login-history/:id", loginUser);
  *           example:
  *             "message": "failed to load users."
  */
-router.get("/list-user", getAllUsers);
+router.get("/list-user/:id", getAllUsers);
 
-router.get("/list-userIDName", getAllUsersNameID);
+router.get("/list-userIDName/:id", getAllUsersNameID);
 /**
  * @openapi
  * /api/v1/users/disable-user/{id}/{status}:

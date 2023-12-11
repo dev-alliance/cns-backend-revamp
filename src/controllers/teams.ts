@@ -16,7 +16,8 @@ export const createTeam = async (req: Request, res: Response) => {
 
 export const getAllTeam = async (req: Request, res: Response) => {
   try {
-    const teams = await Team.find({}).populate("manager");
+    const userId = req.params.id;
+    const teams = await Team.find({ id: userId }).populate("manager");
     res.send(teams);
     // res.status(200).json({ ok: true, data: teams });
   } catch (error: any) {
@@ -67,13 +68,13 @@ export const updateTeam = async (req: Request, res: Response) => {
         $set: {
           status: req.body.status,
         },
-      },
+      }
     );
     if (form.modifiedCount > 0) {
       return res
         .status(200)
         .send(
-          `Team ${req.body.status ? "Un-archive" : "Archive"} successfully.`,
+          `Team ${req.body.status ? "Un-archive" : "Archive"} successfully.`
         );
     } else {
       return res.status(404).send("Team not found.");
@@ -97,7 +98,7 @@ export const archiveTeamById = async (req: Request, res: Response) => {
 
     const updateResult = await Team.updateOne(
       { _id: teamId },
-      { $set: { status: newStatus } },
+      { $set: { status: newStatus } }
     );
 
     if (updateResult.matchedCount === 0) {

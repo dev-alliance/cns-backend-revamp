@@ -41,7 +41,7 @@ const router = express.Router();
  */
 router.post("/create-branch", createBranch);
 
-router.get("/list-branch", getAllBranch);
+router.get("/list-branch/:id", getAllBranch);
 /**
  * @openapi
  * /api/v1/branches/{id}:

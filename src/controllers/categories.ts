@@ -19,7 +19,8 @@ export const create = async (req: Request, res: Response) => {
 };
 export const getAllCategory = async (req: Request, res: Response) => {
   try {
-    const category = await Categories.find({});
+    // const userId = req.params.id;
+    const category = await Categories.find();
 
     res.send(category);
     // res.status(200).json({ ok: true, data: category });
@@ -29,6 +30,43 @@ export const getAllCategory = async (req: Request, res: Response) => {
       message: "Failed to retrieve branch.",
       error: error.message,
     });
+  }
+};
+
+export const findOneById = async (req: Request, res: Response) => {
+  try {
+    const teams = await Categories.findById(req.params.id);
+    res.send(teams);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Error retrieving teams data");
+  }
+};
+
+export const changeStatus = async (req: Request, res: Response) => {
+  try {
+    const category = await Categories.findByIdAndUpdate(
+      req.params.id,
+      { $set: { status: req.body.status } },
+      { new: true }
+    );
+
+    if (category) {
+      return res.status(200).json({
+        ok: true,
+        message: "Category status updated successfully",
+      });
+    } else {
+      return res.status(422).json({
+        ok: false,
+        message: "Failed to update Category status. Category not found.",
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    res
+      .status(400)
+      .json({ ok: false, message: "Something went wrong, try again." });
   }
 };
 // Edit a category by ID
@@ -71,7 +109,7 @@ export const DisableCategory = async (req: Request, res: Response) => {
     const updatedCategory = await Categories.findByIdAndUpdate(
       id,
       { status: status }, // Update the status with the provided value
-      { new: true },
+      { new: true }
     );
 
     if (!updatedCategory) {
@@ -118,23 +156,24 @@ export const deleteSubCategory = async (req: Request, res: Response) => {
   try {
     const { categoryId, subcategoryId } = req.params;
 
+    console.log(req.params, "categoryId");
+
     const category = await Categories.findById(categoryId);
 
     if (!category) {
       return res.status(404).json({ message: "Category not found" });
     }
 
-    // Remove the subcategory from the array
     category.subCategories = category.subCategories.filter(
-      (subCat: any) => subCat.id !== subcategoryId,
+      (subCat: any) => subCat.id !== subcategoryId
     );
-
     await category.save();
-
     return res
       .status(200)
-      .json({ message: "Subcategory deleted successfully" });
+      .json({ ok: true, message: "Subcategory deleted successfully" });
   } catch (error) {
-    return res.status(500).json({ message: "Error deleting subcategory" });
+    return res
+      .status(500)
+      .json({ ok: false, message: "Error deleting subcategory" });
   }
 };
