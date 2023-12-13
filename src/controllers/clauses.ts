@@ -75,7 +75,7 @@ export const changeStatus = async (req: Request, res: Response) => {
         $set: {
           status: req.body.status,
         },
-      }
+      },
     );
     if (forms.modifiedCount > 0) {
       return res
