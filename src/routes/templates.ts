@@ -1,11 +1,15 @@
 import express from "express";
 import {
+  EditTemplate,
+  archiveTempById,
   createTemplate,
-  getTemplateById,
   deleteTemplate,
+  findOneById,
+  getAllTemp,
 } from "../controllers/templates";
-
+import multer from "multer";
 const router = express.Router();
+const upload = multer();
 
 /**
  * @openapi
@@ -36,8 +40,9 @@ const router = express.Router();
  *           example:
  *             "message": "Failed to upload template."
  */
-router.post("/create-template", createTemplate);
 
+router.post("/create-template", upload.single("file"), createTemplate);
+router.get("/list", getAllTemp);
 /**
  * @openapi
  * /api/v1/templates/{id}:
@@ -55,8 +60,9 @@ router.post("/create-template", createTemplate);
  *             "ok": true
  *             "templates": []
  */
-router.get("/:id", getTemplateById);
+router.get("/:id", findOneById);
 
+router.put("/update/:id", upload.single("file"), EditTemplate);
 /**
  * @openapi
  * /api/v1/templates/delete-template/{id}:
@@ -82,6 +88,7 @@ router.get("/:id", getTemplateById);
  *             "ok": false
  *             "message": "Failed to delete template."
  */
-router.delete("/delete-template/:id", deleteTemplate);
+router.delete("/:id", deleteTemplate);
+router.patch("/archive/:id", archiveTempById);
 
 export default router;

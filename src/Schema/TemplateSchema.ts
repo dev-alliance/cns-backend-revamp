@@ -5,6 +5,8 @@ export interface ITemplate {
   name: string;
   file: string;
   description: string;
+  uploaded_by: string;
+  status: string;
 }
 
 /**
@@ -44,10 +46,12 @@ const templateSchema = new mongoose.Schema<ITemplate>(
     },
     file: String,
     description: String,
+    uploaded_by: String,
+    status: { type: String, default: "Active" },
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 export const Template = mongoose.model("cns.templates", templateSchema);

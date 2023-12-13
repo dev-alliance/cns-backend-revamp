@@ -36,10 +36,10 @@ export const findOneById = async (req: Request, res: Response) => {
 export const getAllClauses = async (req: Request, res: Response) => {
   try {
     // const userId = req.params.id;
-    const category = await Clauses.find();
+    const clauses = await Clauses.find();
 
-    res.send(category);
-    // res.status(200).json({ ok: true, data: category });
+    res.send(clauses);
+    // res.status(200).json({ ok: true, data: clauses });
   } catch (error: any) {
     res.status(500).json({
       ok: false,
@@ -75,7 +75,7 @@ export const changeStatus = async (req: Request, res: Response) => {
         $set: {
           status: req.body.status,
         },
-      },
+      }
     );
     if (forms.modifiedCount > 0) {
       return res
