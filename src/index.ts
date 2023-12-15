@@ -25,6 +25,7 @@ import contracts from "./routes/contracts";
 import categories from "./routes/categories";
 import health from "./routes/health";
 import company from "./routes/compony";
+import approval from "./routes/approval";
 
 const PORT: number = config.get<number>("port");
 const MONGOURI = config.get<string>("mongoURI");
@@ -37,7 +38,7 @@ app.use(
     origin: (origin, callback) => callback(null, origin || "*"),
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     credentials: true,
-  }),
+  })
 );
 
 app.use("/uploads", express.static("uploads"));
@@ -60,6 +61,7 @@ app.use("/api/v1/teams", teams);
 app.use("/api/v1/contracts", contracts);
 app.use("/api/v1/categories", categories);
 app.use("/api/v1/companies", company);
+app.use("/api/v1/approvals", approval);
 
 if (!config.get("jwtPrivateKey")) {
   log.error("FATAL ERROR: jwtPrivateKey is not defined");

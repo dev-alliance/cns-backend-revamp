@@ -12,6 +12,49 @@ export const createCustomField = async (req: Request, res: Response) => {
   }
 };
 
+export const getAllFeild = async (req: Request, res: Response) => {
+  try {
+    // const userId = req.params.id;
+    const custoFeild = await CustomField.find();
+
+    res.send(custoFeild);
+    // res.status(200).json({ ok: true, data: custoFeild });
+  } catch (error: any) {
+    res.status(500).json({
+      ok: false,
+      message: "Failed to retrieve custoFeild.",
+      error: error.message,
+    });
+  }
+};
+
+export const updateField = async (req: Request, res: Response) => {
+  const fieldId = req.params.id; // Assumes the ID is passed as a URL parameter
+  const updateData = req.body;
+
+  try {
+    const updatedFolder = await CustomField.findByIdAndUpdate(
+      fieldId,
+      updateData,
+      {
+        new: true,
+      }
+    );
+
+    if (updatedFolder) {
+      res.status(200).json({
+        ok: true,
+        message: "Field name updated successfully ",
+        updatedFolder,
+      });
+    } else {
+      res.status(404).json({ ok: false, message: "Custom Field not found." });
+    }
+  } catch (err: any) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
 export const getCustomFieldsById = async (req: Request, res: Response) => {
   try {
     const forms = await CustomField.find({ id: req.params.id });

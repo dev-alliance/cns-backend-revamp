@@ -3,7 +3,8 @@ import mongoose from "mongoose";
 export interface ICustomField {
   id: string;
   name: string;
-  type: string;
+  uploaded_by: string;
+  value: string;
 }
 
 /**
@@ -32,15 +33,16 @@ const CustomFieldSchema = new mongoose.Schema<ICustomField>(
   {
     id: String,
     name: String,
-    type: String,
+    uploaded_by: String,
+    value: String,
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 // Define the Mongoose model for the form data
 export const CustomField = mongoose.model(
   "cns.customFields",
-  CustomFieldSchema,
+  CustomFieldSchema
 );

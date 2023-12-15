@@ -4,6 +4,8 @@ import {
   createCustomField,
   getCustomFieldsById,
   deleteCustomFields,
+  getAllFeild,
+  updateField,
 } from "../controllers/customFields";
 
 const router = express.Router();
@@ -36,8 +38,8 @@ const router = express.Router();
  *           example:
  *             "message": "Failed to create custom field."
  */
-router.post("/create-custom-field", createCustomField);
-
+router.post("/create", createCustomField);
+router.get("/list", getAllFeild);
 /**
  * @openapi
  * /api/v1/customFields/custom-field/{id}:
@@ -56,6 +58,7 @@ router.post("/create-custom-field", createCustomField);
  *             "clauses": []
  */
 router.get("/custom-field/:id", getCustomFieldsById);
+router.put("/update/:id", updateField);
 
 /**
  * @openapi

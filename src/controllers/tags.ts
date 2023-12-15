@@ -20,7 +20,7 @@ export const findOneById = async (req: Request, res: Response) => {
     res.send(teams);
   } catch (err) {
     console.log(err);
-    res.status(500).send("Error retrieving teams data");
+    res.status(500).send("Error retrieving tags data");
   }
 };
 
@@ -66,7 +66,7 @@ export const changeStatus = async (req: Request, res: Response) => {
         $set: {
           status: req.body.status,
         },
-      },
+      }
     );
     if (forms.modifiedCount > 0) {
       return res

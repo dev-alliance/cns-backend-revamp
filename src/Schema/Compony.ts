@@ -22,15 +22,16 @@ const companySchema = new mongoose.Schema(
     phoneNumber: { type: String, required: true },
     industry: { type: String, required: true },
     websiteUrl: { type: String, required: true },
+    billing_email: { type: String, required: true },
     image: String,
     status: { type: String, default: "Active" },
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 export const CompanyModel = mongoose.model<ICompanyDocument>(
   "Company",
-  companySchema,
+  companySchema
 );
