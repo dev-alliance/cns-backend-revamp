@@ -38,11 +38,11 @@ const CustomFieldSchema = new mongoose.Schema<ICustomField>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // Define the Mongoose model for the form data
 export const CustomField = mongoose.model(
   "cns.customFields",
-  CustomFieldSchema
+  CustomFieldSchema,
 );
