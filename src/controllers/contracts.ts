@@ -33,7 +33,23 @@ export const createContract = async (req: Request, res: Response) => {
     });
   }
 };
+export const getAllContract = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.id;
+    console.log(userId, "id");
 
+    const contract = await Contract.find({ id: userId });
+    // .select("branchName manager status");
+    res.send(contract);
+    // res.status(200).json({ ok: true, data: contract });
+  } catch (error: any) {
+    res.status(500).json({
+      ok: false,
+      message: "Failed to retrieve branch.",
+      error: error.message,
+    });
+  }
+};
 export const updateContract = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;

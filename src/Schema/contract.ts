@@ -10,6 +10,7 @@ interface Overview {
   branch: string;
   team: string;
   contractType: string;
+  status: string;
 }
 
 interface Lifecycle {
@@ -51,6 +52,7 @@ const contractSchema = new mongoose.Schema<Contract>({
     branch: String,
     team: String,
     contractType: String,
+    status: String,
   },
   lifecycle: {
     startDate: Date,
@@ -65,5 +67,5 @@ const contractSchema = new mongoose.Schema<Contract>({
 
 export const Contract = mongoose.model<Contract>(
   "cns.contracts",
-  contractSchema,
+  contractSchema
 );
