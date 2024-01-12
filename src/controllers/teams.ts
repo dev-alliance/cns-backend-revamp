@@ -8,9 +8,15 @@ export const createTeam = async (req: Request, res: Response) => {
     return res
       .status(200)
       .json({ ok: true, message: "Team Created Successfully." });
-  } catch (err) {
+  } catch (err: any) {
     console.log(err);
-    return res.status(400).send("Failed to create team.");
+    if (err.code === 11000) {
+      return res.status(409).json({
+        ok: false,
+        message: "A Team with this name already exists.",
+      });
+    }
+    return res.status(500).send("Failed to create team.");
   }
 };
 
@@ -68,13 +74,13 @@ export const updateTeam = async (req: Request, res: Response) => {
         $set: {
           status: req.body.status,
         },
-      },
+      }
     );
     if (form.modifiedCount > 0) {
       return res
         .status(200)
         .send(
-          `Team ${req.body.status ? "Un-archive" : "Archive"} successfully.`,
+          `Team ${req.body.status ? "Un-archive" : "Archive"} successfully.`
         );
     } else {
       return res.status(404).send("Team not found.");
@@ -98,7 +104,7 @@ export const archiveTeamById = async (req: Request, res: Response) => {
 
     const updateResult = await Team.updateOne(
       { _id: teamId },
-      { $set: { status: newStatus } },
+      { $set: { status: newStatus } }
     );
 
     if (updateResult.matchedCount === 0) {

@@ -18,10 +18,10 @@ const subCategorySchema = new mongoose.Schema<SubCategory>({
 
 const categorySchema = new mongoose.Schema<Category>({
   id: String,
-  name: String,
+  name: { type: String, unique: true },
   createdByName: String,
   status: { type: String, default: "Active" },
   subCategories: [subCategorySchema],
 });
 
-export const Categories = mongoose.model("cns.categories", categorySchema);
+export const Categories = mongoose.model("categories", categorySchema);

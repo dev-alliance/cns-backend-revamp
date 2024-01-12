@@ -8,9 +8,15 @@ export const createBranch = async (req: Request, res: Response) => {
     return res
       .status(200)
       .json({ ok: true, message: "Branch Created Successfully." });
-  } catch (err) {
+  } catch (err: any) {
     console.log(err);
-    return res.status(400).send("Failed to create branch.");
+    if (err.code === 11000) {
+      return res.status(409).json({
+        ok: false,
+        message: "A branch with this name already exists.",
+      });
+    }
+    return res.status(500).send("Failed to create branch.");
   }
 };
 
@@ -62,7 +68,7 @@ export const getAllBranch = async (req: Request, res: Response) => {
 
     const branches = await Branch.find({ id: userId }).populate(
       "manager",
-      "firstName _id",
+      "firstName _id"
     );
     // .select("branchName manager status");
     res.send(branches);
@@ -89,7 +95,7 @@ export const archiveBranchById = async (req: Request, res: Response) => {
 
     const updateResult = await Branch.updateOne(
       { _id: branchId },
-      { $set: { status: newStatus } },
+      { $set: { status: newStatus } }
     );
 
     if (updateResult.matchedCount === 0) {

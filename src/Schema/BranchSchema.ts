@@ -11,8 +11,8 @@ export interface IBranches {
   state: string;
   website: string;
   country: string;
-  // year: string;
   status: string;
+  createdByName: string;
   // isGeneralSettings: boolean;
   // filterSettings: {
   //   name: boolean;
@@ -125,6 +125,7 @@ const BranchSchema = new mongoose.Schema<IBranches>(
       required: false,
       type: String,
     },
+    createdByName: String,
     // filterSettings: {
     //   name: { type: Boolean, default: false },
     //   manager: { type: Boolean, default: false },
@@ -141,7 +142,7 @@ const BranchSchema = new mongoose.Schema<IBranches>(
 
   {
     timestamps: true,
-  },
+  }
 );
 
 // Define the Mongoose model for the form data

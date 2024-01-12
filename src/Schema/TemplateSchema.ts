@@ -40,6 +40,7 @@ export interface ITemplate {
 const templateSchema = new mongoose.Schema<ITemplate>(
   {
     id: String,
+    // createdByName: String,
     name: {
       type: String,
       required: true,
@@ -51,7 +52,7 @@ const templateSchema = new mongoose.Schema<ITemplate>(
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 export const Template = mongoose.model("cns.templates", templateSchema);

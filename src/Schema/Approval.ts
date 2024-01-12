@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const ApprovalSchema = new mongoose.Schema(
   {
-    name: String,
+    name: { type: String, unique: true },
     id: String,
     approver: [
       {
@@ -11,11 +11,12 @@ const ApprovalSchema = new mongoose.Schema(
       },
     ],
     description: String,
+    createdByName: String,
     type: String,
   },
   {
     timestamps: true, // This adds createdAt and updatedAt fields
-  },
+  }
 );
 
-export const Approval = mongoose.model("cns.approval", ApprovalSchema);
+export const Approval = mongoose.model("approval", ApprovalSchema);

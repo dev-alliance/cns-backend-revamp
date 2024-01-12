@@ -33,8 +33,9 @@ import mongoose from "mongoose";
  *          type: string
  */
 const TeamSchema = new mongoose.Schema({
-  name: String,
+  name: { type: String, unique: [true, "this name already exists"] },
   id: String,
+  createdByName: String,
   manager: {
     ref: "cns.users",
     type: mongoose.Schema.Types.ObjectId,
@@ -44,4 +45,4 @@ const TeamSchema = new mongoose.Schema({
 });
 
 // Define the Mongoose model for the form data
-export const Team = mongoose.model("cns.team", TeamSchema);
+export const Team = mongoose.model("team", TeamSchema);

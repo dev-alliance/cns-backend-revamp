@@ -17,6 +17,7 @@ const fileSchema = new mongoose.Schema<IFile>({
 export interface IFolder {
   id: string;
   name: string;
+  createdByName: string;
   permissions: [];
   parent: object;
   subFolders: [];
@@ -26,6 +27,7 @@ export interface IFolder {
 const folderSchema = new mongoose.Schema<IFolder>(
   {
     id: String,
+    createdByName: String,
     name: {
       type: String,
       required: true,
@@ -34,7 +36,7 @@ const folderSchema = new mongoose.Schema<IFolder>(
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 export const Folder = mongoose.model("cns.folder", folderSchema);

@@ -2,9 +2,10 @@ import mongoose from "mongoose";
 
 export interface ICustomField {
   id: string;
-  name: string;
+  name: any;
   uploaded_by: string;
   value: string;
+  createdByName: string;
 }
 
 /**
@@ -32,17 +33,18 @@ export interface ICustomField {
 const CustomFieldSchema = new mongoose.Schema<ICustomField>(
   {
     id: String,
-    name: String,
+    name: { type: String, unique: [true, "this name already exists"] },
     uploaded_by: String,
+    createdByName: String,
     value: String,
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 // Define the Mongoose model for the form data
 export const CustomField = mongoose.model(
   "cns.customFields",
-  CustomFieldSchema,
+  CustomFieldSchema
 );

@@ -8,9 +8,21 @@ export const createClauses = async (req: Request, res: Response) => {
     return res
       .status(201)
       .json({ ok: true, message: "Clauses Created Successfully." });
-  } catch (err) {
+  } catch (err: any) {
     console.log(err);
-    return res.status(500).send("Failed to create clauses.");
+
+    // Check if the error is a MongoDB duplicate key error
+    if (err.code === 11000) {
+      return res.status(409).json({
+        ok: false,
+        message: "A clause with this name already exists.",
+      });
+    }
+
+    return res.status(500).json({
+      ok: false,
+      message: "Failed to create clauses.",
+    });
   }
 };
 
@@ -75,7 +87,7 @@ export const changeStatus = async (req: Request, res: Response) => {
         $set: {
           status: req.body.status,
         },
-      },
+      }
     );
     if (forms.modifiedCount > 0) {
       return res

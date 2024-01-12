@@ -10,6 +10,7 @@ interface IHistory {
 
 export interface IUserDocument {
   id: string;
+  createdByName: string;
   firstName: string;
   lastName: string;
   job: string;
@@ -38,12 +39,13 @@ const loginHistorySchema = new mongoose.Schema<IHistory>(
       type: Date,
     },
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 const userSchema = new mongoose.Schema<IUserDocument>(
   {
     id: String,
+    createdByName: String,
     firstName: {
       type: String,
       // required: [true, "PLease Enter Your Name"],
@@ -60,7 +62,7 @@ const userSchema = new mongoose.Schema<IUserDocument>(
       type: String,
     },
     team: {
-      ref: "cns.team",
+      ref: "team",
       type: mongoose.Schema.Types.ObjectId,
       required: false,
     },
@@ -121,12 +123,13 @@ const userSchema = new mongoose.Schema<IUserDocument>(
     lockUntil: {
       type: Date,
     },
+
     resetPasswordToken: String,
     resetPasswordExpire: Date,
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 //converting Email to LowerCase
@@ -147,7 +150,7 @@ userSchema.methods.getJWTToken = function () {
     process.env.JWT_SECRET!,
     {
       expiresIn: process.env.JWT_EXPIRE,
-    },
+    }
   );
 };
 

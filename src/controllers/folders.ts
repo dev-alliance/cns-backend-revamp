@@ -31,7 +31,7 @@ const s3 = new AWS.S3();
 async function uploadFileToS3(
   fileBuffer: Buffer,
   bucketName: string,
-  fileName: string,
+  fileName: string
 ): Promise<string> {
   const contentType = getContentTypeByFile(fileName);
 
@@ -57,7 +57,7 @@ export const uploadDocument = async (req: Request, res: Response) => {
     const fileUrl = await uploadFileToS3(
       file.buffer,
       "cns-images-kyc",
-      file.originalname,
+      file.originalname
     );
     console.log(fileUrl);
 
@@ -73,7 +73,7 @@ export const uploadDocument = async (req: Request, res: Response) => {
           },
         },
       },
-      { new: true },
+      { new: true }
     );
 
     if (updatedFolder) {
@@ -87,7 +87,7 @@ export const uploadDocument = async (req: Request, res: Response) => {
     }
   } catch (err) {
     console.error(err);
-    res.status(500).send("Error uploading file");
+    res.status(500).send("Upload document to save");
   }
 };
 
@@ -97,7 +97,13 @@ export const createFolder = async (req: Request, res: Response) => {
     await newFolder.save();
     res.status(200).json({ ok: true, message: "Folder Created." });
   } catch (err: any) {
-    res.status(400).json({ message: err.message });
+    if (err.code === 11000) {
+      return res.status(409).json({
+        ok: false,
+        message: "A Folder with this name already exists.",
+      });
+    }
+    return res.status(500).send("Failed to create folder.");
   }
 };
 export const updateFolder = async (req: Request, res: Response) => {

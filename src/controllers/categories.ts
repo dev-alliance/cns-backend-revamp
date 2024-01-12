@@ -10,7 +10,13 @@ export const create = async (req: Request, res: Response) => {
     return res
       .status(201)
       .json({ ok: true, message: SUCCESS_CODES.CATEGORIES.CATEGORY_CREATED });
-  } catch (error) {
+  } catch (err: any) {
+    if (err.code === 11000) {
+      return res.status(409).json({
+        ok: false,
+        message: "A category with this name already exists.",
+      });
+    }
     return res.status(500).json({
       ok: false,
       message: ERROR_CODES.CATEGORIES.ERROR_CREATING_CATEGORY,
@@ -48,7 +54,7 @@ export const changeStatus = async (req: Request, res: Response) => {
     const category = await Categories.findByIdAndUpdate(
       req.params.id,
       { $set: { status: req.body.status } },
-      { new: true },
+      { new: true }
     );
 
     if (category) {
@@ -109,7 +115,7 @@ export const DisableCategory = async (req: Request, res: Response) => {
     const updatedCategory = await Categories.findByIdAndUpdate(
       id,
       { status: status }, // Update the status with the provided value
-      { new: true },
+      { new: true }
     );
 
     if (!updatedCategory) {
@@ -165,7 +171,7 @@ export const deleteSubCategory = async (req: Request, res: Response) => {
     }
 
     category.subCategories = category.subCategories.filter(
-      (subCat: any) => subCat.id !== subcategoryId,
+      (subCat: any) => subCat.id !== subcategoryId
     );
     await category.save();
     return res

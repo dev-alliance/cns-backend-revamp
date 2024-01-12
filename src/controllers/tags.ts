@@ -8,8 +8,14 @@ export const createTag = async (req: Request, res: Response) => {
     return res
       .status(200)
       .json({ ok: true, message: "Tag Created Successfully." });
-  } catch (err) {
+  } catch (err: any) {
     console.log(err);
+    if (err.code === 11000) {
+      return res.status(409).json({
+        ok: false,
+        message: "A Tag with this name already exists.",
+      });
+    }
     return res.status(400).send("Failed to create tag.");
   }
 };
@@ -66,12 +72,12 @@ export const changeStatus = async (req: Request, res: Response) => {
         $set: {
           status: req.body.status,
         },
-      },
+      }
     );
     if (forms.modifiedCount > 0) {
       return res
         .status(200)
-        .json({ ok: true, message: "tags status updated successfully" });
+        .json({ ok: true, message: "tag status updated successfully" });
     } else {
       return res
         .status(422)

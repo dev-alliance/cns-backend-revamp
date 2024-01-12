@@ -6,8 +6,14 @@ export const createCustomField = async (req: Request, res: Response) => {
     const form = new CustomField(req.body);
     await form.save();
     return res.status(201).json({ ok: true, message: "Custom Field Created." });
-  } catch (err) {
+  } catch (err: any) {
     console.log(err);
+    if (err.code === 11000) {
+      return res.status(409).json({
+        ok: false,
+        message: "A Field with this name already exists.",
+      });
+    }
     return res.status(400).send("Failed to create custom field");
   }
 };
@@ -38,7 +44,7 @@ export const updateField = async (req: Request, res: Response) => {
       updateData,
       {
         new: true,
-      },
+      }
     );
 
     if (updatedFolder) {

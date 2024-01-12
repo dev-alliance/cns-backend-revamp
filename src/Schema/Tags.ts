@@ -2,8 +2,9 @@ import mongoose from "mongoose";
 
 export interface ITag {
   id: string;
-  name: string;
+  name: any;
   status: string;
+  createdByName: string;
 }
 
 /**
@@ -31,7 +32,8 @@ export interface ITag {
 const TagSchema = new mongoose.Schema<ITag>(
   {
     id: String,
-    name: String,
+    createdByName: String,
+    name: { type: String, unique: [true] },
     status: {
       type: String,
       default: "Active",
@@ -39,8 +41,8 @@ const TagSchema = new mongoose.Schema<ITag>(
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 // Define the Mongoose model for the form data
-export const Tag = mongoose.model("cns.tags", TagSchema);
+export const Tag = mongoose.model("tags", TagSchema);

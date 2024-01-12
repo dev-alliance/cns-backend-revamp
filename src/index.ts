@@ -38,7 +38,7 @@ app.use(
     origin: (origin, callback) => callback(null, origin || "*"),
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     credentials: true,
-  }),
+  })
 );
 
 app.use("/uploads", express.static("uploads"));
@@ -69,7 +69,7 @@ if (!config.get("jwtPrivateKey")) {
 }
 
 mongoose
-  .connect(MONGOURI)
+  .connect(MONGOURI, { autoIndex: true })
   .then(() => {
     app.listen(PORT, () => {
       log.info(`server port ${PORT}`);
