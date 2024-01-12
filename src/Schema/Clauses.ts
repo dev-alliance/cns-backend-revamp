@@ -46,7 +46,7 @@ const ClausesSchema = new mongoose.Schema<IClauses>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // Define the Mongoose model for the form data

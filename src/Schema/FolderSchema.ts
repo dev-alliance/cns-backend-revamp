@@ -36,7 +36,7 @@ const folderSchema = new mongoose.Schema<IFolder>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 export const Folder = mongoose.model("cns.folder", folderSchema);

@@ -16,7 +16,7 @@ const ApprovalSchema = new mongoose.Schema(
   },
   {
     timestamps: true, // This adds createdAt and updatedAt fields
-  }
+  },
 );
 
 export const Approval = mongoose.model("approval", ApprovalSchema);

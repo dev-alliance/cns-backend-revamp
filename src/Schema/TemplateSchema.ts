@@ -52,7 +52,7 @@ const templateSchema = new mongoose.Schema<ITemplate>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 export const Template = mongoose.model("cns.templates", templateSchema);

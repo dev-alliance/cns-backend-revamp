@@ -74,13 +74,13 @@ export const updateTeam = async (req: Request, res: Response) => {
         $set: {
           status: req.body.status,
         },
-      }
+      },
     );
     if (form.modifiedCount > 0) {
       return res
         .status(200)
         .send(
-          `Team ${req.body.status ? "Un-archive" : "Archive"} successfully.`
+          `Team ${req.body.status ? "Un-archive" : "Archive"} successfully.`,
         );
     } else {
       return res.status(404).send("Team not found.");
@@ -104,7 +104,7 @@ export const archiveTeamById = async (req: Request, res: Response) => {
 
     const updateResult = await Team.updateOne(
       { _id: teamId },
-      { $set: { status: newStatus } }
+      { $set: { status: newStatus } },
     );
 
     if (updateResult.matchedCount === 0) {
