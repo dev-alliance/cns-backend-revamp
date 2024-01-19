@@ -38,11 +38,11 @@ const s3 = new AWS.S3();
 async function uploadBase64ImageToS3(
   base64Image: string,
   bucketName: string,
-  imageName: string,
+  imageName: string
 ): Promise<string> {
   const buffer = Buffer.from(
     base64Image.replace(/^data:image\/\w+;base64,/, ""),
-    "base64",
+    "base64"
   );
 
   const uploadParams: AWS.S3.PutObjectRequest = {
@@ -68,16 +68,14 @@ export const createUser = catchAsyncErrors(
     if (!email || !firstName || !lastName)
       return res
         .status(400)
-        .json({ ok: false, message: "Missing required fields." });
+        .json({ ok: false, message: "Missing required fields" });
 
     const userExists = await User.findOne({ email: req.body.email }).where({
       id: req.body.id,
     });
 
     if (userExists) {
-      return res
-        .status(422)
-        .json({ ok: false, message: "User already exits." });
+      return res.status(422).json({ ok: false, message: "User already exits" });
     }
     // Image Upload
 
@@ -87,7 +85,7 @@ export const createUser = catchAsyncErrors(
       imageUrl = await uploadBase64ImageToS3(
         req.body.image,
         "your-s3-bucket-name",
-        imageName,
+        imageName
       );
     }
     console.log(imageUrl);
@@ -106,11 +104,11 @@ export const createUser = catchAsyncErrors(
             $push: {
               members: user,
             },
-          },
+          }
         );
       } catch (error) {
         console.log(error);
-        return res.json({ ok: false, message: "Fail to create  team user." });
+        return res.json({ ok: false, message: "Failed to create team user" });
       }
     }
     try {
@@ -173,15 +171,15 @@ export const createUser = catchAsyncErrors(
             $pull: {
               members: user,
             },
-          },
+          }
         );
       }
 
       return res
         .status(400)
-        .json({ ok: false, message: "Fail to create user." });
+        .json({ ok: false, message: "Failed to create user" });
     }
-  },
+  }
 );
 // controllers/users.ts
 
@@ -200,7 +198,7 @@ export const updateUser = catchAsyncErrors(
         imageUrl = await uploadBase64ImageToS3(
           req.body.image,
           "your-s3-bucket-name",
-          imageName,
+          imageName
         );
 
         req.body.image = imageUrl;
@@ -208,19 +206,19 @@ export const updateUser = catchAsyncErrors(
       const result = await User.updateOne({ _id: id }, { $set: req.body });
 
       if (result.modifiedCount === 0) {
-        return res.status(404).json({ ok: false, message: "User not found." });
+        return res.status(404).json({ ok: false, message: "User not found" });
       }
 
       return res
         .status(200)
-        .json({ ok: true, message: "User updated successfully." });
+        .json({ ok: true, message: "User updated successfully" });
     } catch (error) {
       console.error(error);
       return res
         .status(500)
-        .json({ ok: false, message: "Internal Server Error." });
+        .json({ ok: false, message: "Internal Server Error" });
     }
-  },
+  }
 );
 
 // add first time
@@ -335,20 +333,22 @@ export const createPassword = catchAsyncErrors(
         .status(500)
         .json({ ok: false, message: "internal server error." });
     }
-  },
+  }
 );
 
-export const loginUser = catchAsyncErrors(
-  async (req: Request, res: Response) => {
+export const loginUser = async (req: Request, res: Response) => {
+  try {
     const { email, password } = req.body;
 
     if (!email || !password) {
       return res
         .status(400)
-        .json({ ok: false, message: "Email & Password is required." });
+        .json({ ok: false, message: "Email & Password is required" });
     }
 
-    const user: any = await User.findOne({ email }).select("+password");
+    const user: any = await User.findOne({ email })
+      .populate("role", "-desc")
+      .select("+password");
 
     if (!user) {
       return res.status(400).send(ERROR_CODES.AUTH.INVALID_EMAIL);
@@ -357,7 +357,7 @@ export const loginUser = catchAsyncErrors(
     if (user.lockUntil && user.lockUntil > Date.now()) {
       return res
         .status(403)
-        .json({ ok: false, message: "Account is temporarily locked." });
+        .json({ ok: false, message: "Account is temporarily locked" });
     }
 
     const isMatchedPassword = await user.comparePassword(password);
@@ -375,8 +375,8 @@ export const loginUser = catchAsyncErrors(
         ok: false,
         message:
           user.failedLoginAttempts >= 3
-            ? "Account locked due to multiple failed login attempts. Please reset your password."
-            : "Invalid password.",
+            ? "Account locked due to multiple failed login attempts. Please reset your password"
+            : "Incorrect username or password",
         shouldNavigate: user.failedLoginAttempts >= 3, // This flag can be used in frontend to navigate
       });
     }
@@ -411,7 +411,7 @@ export const loginUser = catchAsyncErrors(
         return res.status(500).json({
           ok: false,
 
-          message: "Could not send Verification code to email",
+          message: "Could not send verification code to email",
         });
       }
       return res
@@ -423,14 +423,17 @@ export const loginUser = catchAsyncErrors(
 
       return res.json({
         ok: true,
-        message: "Login Sucessfuly.",
+        message: "Login Sucessfully",
         accessToken,
         user: otherDetails,
       });
       console.log(pass);
     }
-  },
-);
+  } catch (error) {
+    console.log(error);
+    res.status(400).send("Failed to login user");
+  }
+};
 
 export const getUserLoginHistoryById = catchAsyncErrors(
   async (req: Request, res: Response) => {
@@ -441,7 +444,7 @@ export const getUserLoginHistoryById = catchAsyncErrors(
     }
 
     const user = await User.findById(req.params.id).select(
-      "loginHistory firstName lastName",
+      "loginHistory firstName lastName"
     );
 
     if (!user)
@@ -450,14 +453,14 @@ export const getUserLoginHistoryById = catchAsyncErrors(
     // Sort loginHistory in descending order based on the 'createdAt' field
     user.loginHistory.sort(
       (a: any, b: any) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
 
     res.status(200).json({
       ok: true,
       user,
     });
-  },
+  }
 );
 
 export const getAllUsers = async (req: Request, res: Response) => {
@@ -471,7 +474,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
     res.send(users);
   } catch (err) {
     console.log(err);
-    res.status(400).send("Failed to load users.");
+    res.status(400).send("Failed to load users");
   }
 };
 export const getAllUsersNameID = async (req: Request, res: Response) => {
@@ -483,7 +486,7 @@ export const getAllUsersNameID = async (req: Request, res: Response) => {
     res.send(users);
   } catch (err) {
     console.log(err);
-    res.status(400).send("Failed to load users.");
+    res.status(400).send("Failed to load users");
   }
 };
 
@@ -495,7 +498,7 @@ export const disableUser = async (req: Request, res: Response) => {
         $set: {
           status: req.body.status,
         },
-      },
+      }
     );
     if (forms.modifiedCount > 0) {
       return res
@@ -526,7 +529,7 @@ export const getSingleUserByID = catchAsyncErrors(
       ok: true,
       user,
     });
-  },
+  }
 );
 
 export const editUser = catchAsyncErrors(
@@ -534,7 +537,7 @@ export const editUser = catchAsyncErrors(
     const isValidId = await validateMongooseId(req.params.id);
     if (!isValidId) return next(createError("Invalid user id.", 400));
     const user: any = await User.findOne({ _id: req.params.id }).select(
-      "+password",
+      "+password"
     );
     if (!user) {
       return next(createError("user not found", 404));
@@ -548,10 +551,10 @@ export const editUser = catchAsyncErrors(
         team: user?.team,
         branch: user?.branch,
         password: user?.password,
-      },
+      }
     );
     sendResponse("profile updated successfully", 200, res);
-  },
+  }
 );
 
 export const changePassword = catchAsyncErrors(
@@ -559,7 +562,7 @@ export const changePassword = catchAsyncErrors(
     const { currentPassword, newPassword } = req.body;
 
     if (!currentPassword || !newPassword) {
-      return res.status(400).send("Missing required fields.");
+      return res.status(400).send("Missing required fields");
     }
 
     const user: any = await User.findById(req?.params?.id).select("+password");
@@ -575,17 +578,17 @@ export const changePassword = catchAsyncErrors(
     user.resetPasswordToken = undefined;
     user.resetPasswordExpire = undefined;
     await user.save();
-    sendResponse("Password updated.", 200, res);
-  },
+    sendResponse("Password updated", 200, res);
+  }
 );
 
 export const forgetPassword = catchAsyncErrors(
   async (req: Request, res: Response, next: NextFunction) => {
-    if (!req.params.email) return next(createError("Email is required.", 400));
+    if (!req.params.email) return next(createError("Email is required", 400));
 
     const isValidEmail = await emailRegexPattern.test(String(req.params.email));
 
-    if (!isValidEmail) return next(createError("Invalid email address..", 400));
+    if (!isValidEmail) return next(createError("Invalid email address", 400));
 
     const user: any = await User.findOne({ email: req.params.email });
 
@@ -596,7 +599,7 @@ export const forgetPassword = catchAsyncErrors(
     await user.save({ validateBeforeSave: false });
 
     const resetPasswordUrl = `${req.protocol}://${req.get(
-      "host",
+      "host"
     )}/password/reset/${resetToken}`;
 
     const message = `Your password recovery link :- \n\n ${resetPasswordUrl} \n\nIf your have not requested this email then please ignore it`;
@@ -608,7 +611,7 @@ export const forgetPassword = catchAsyncErrors(
     });
 
     sendResponse("Password recovery link has been sent.", 200, res);
-  },
+  }
 );
 
 export const deleteUser = async (req: Request, res: Response) => {
@@ -619,12 +622,14 @@ export const deleteUser = async (req: Request, res: Response) => {
     if (form.deletedCount > 0) {
       return res
         .status(200)
-        .send({ ok: true, message: `User Deleted Sucessfuly.` });
+        .send({ ok: true, message: `User deleted sucessfuly.` });
     } else {
       return res.status(404).send({ ok: false, message: "User not found" });
     }
   } catch (err) {
-    return res.status(400).send({ ok: false, message: "Fail to delete user." });
+    return res
+      .status(400)
+      .send({ ok: false, message: "Failed to delete user." });
   }
 };
 
@@ -682,7 +687,7 @@ export const requestPasswordReset = async (req: Request, res: Response) => {
       console.error("Error sending email", error);
       return res.status(500).json({
         ok: false,
-        message: "Could not send Verfication code to email",
+        message: "Could not send verfication code to email",
       });
     } else {
       console.log(`Email sent: ${info.response}`);
@@ -762,7 +767,7 @@ export const verifyOtp = async (req: Request, res: Response) => {
   if (!isOtpValid) {
     return res
       .status(400)
-      .json({ ok: false, message: "Invalid or expired Verfication code" });
+      .json({ ok: false, message: "Invalid or expired verfication code" });
   }
   const { accessToken } = await setAccessToken(user, res);
   const { password: pass, ...otherDetails } = user._doc;
@@ -782,7 +787,7 @@ export const verifyOtp = async (req: Request, res: Response) => {
       await user.save();
       return res.json({
         ok: true,
-        message: "Login Sucessfuly.",
+        message: "Login Sucessfully",
         accessToken,
         user: otherDetails,
       });
@@ -791,7 +796,9 @@ export const verifyOtp = async (req: Request, res: Response) => {
       user.resetPasswordToken = undefined;
       user.resetPasswordExpire = undefined;
       await user.save();
-      return res.status(200).json({ ok: true, message: "OTP verified" });
+      return res
+        .status(200)
+        .json({ ok: true, message: "Code verified sucessfully" });
     }
   }
 };
@@ -830,7 +837,7 @@ export const updatePassword = async (req: Request, res: Response) => {
         $set: {
           password: newPassword,
         },
-      },
+      }
     );
     if (w.modifiedCount > 0) {
       return res.status(200).json({

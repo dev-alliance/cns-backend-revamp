@@ -19,13 +19,13 @@ import admin from "./routes/admin";
 import users from "./routes/users";
 import templates from "./routes/templates";
 import clauses from "./routes/clauses";
-import permisisons from "./routes/permissions";
 import customFields from "./routes/customFields";
 import contracts from "./routes/contracts";
 import categories from "./routes/categories";
 import health from "./routes/health";
 import company from "./routes/compony";
 import approval from "./routes/approval";
+import role from "./routes/role";
 
 const PORT: number = config.get<number>("port");
 const MONGOURI = config.get<string>("mongoURI");
@@ -38,7 +38,7 @@ app.use(
     origin: (origin, callback) => callback(null, origin || "*"),
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     credentials: true,
-  }),
+  })
 );
 
 app.use("/uploads", express.static("uploads"));
@@ -54,7 +54,6 @@ app.use("/api/v1/folders", folders);
 app.use("/api/v1/branches", branches);
 app.use("/api/v1/templates", templates);
 app.use("/api/v1/clauses", clauses);
-app.use("/api/v1/permissions", permisisons);
 app.use("/api/v1/customFields", customFields);
 app.use("/api/v1/tags", tags);
 app.use("/api/v1/teams", teams);
@@ -62,6 +61,7 @@ app.use("/api/v1/contracts", contracts);
 app.use("/api/v1/categories", categories);
 app.use("/api/v1/companies", company);
 app.use("/api/v1/approvals", approval);
+app.use("/api/v1/role", role);
 
 if (!config.get("jwtPrivateKey")) {
   log.error("FATAL ERROR: jwtPrivateKey is not defined");

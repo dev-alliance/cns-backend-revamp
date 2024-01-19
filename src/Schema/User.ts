@@ -19,7 +19,7 @@ export interface IUserDocument {
   mobile: string;
   email: string;
   password: string;
-  role: number;
+  role: mongoose.Schema.Types.ObjectId;
   emailVerified: boolean;
   image: string;
   status: string;
@@ -39,7 +39,7 @@ const loginHistorySchema = new mongoose.Schema<IHistory>(
       type: Date,
     },
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 const userSchema = new mongoose.Schema<IUserDocument>(
@@ -90,8 +90,9 @@ const userSchema = new mongoose.Schema<IUserDocument>(
       default: () => [],
     },
     role: {
-      type: Number,
-      default: 0, //root
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Role",
+      required: false,
     },
     emailVerified: {
       type: Boolean,
@@ -129,7 +130,7 @@ const userSchema = new mongoose.Schema<IUserDocument>(
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 //converting Email to LowerCase
@@ -143,14 +144,12 @@ userSchema.pre("save", async function (next) {
 
 //JWT TOKEN
 userSchema.methods.getJWTToken = function () {
-  console.log("test");
-
   return jwt.sign(
     { _id: this._id, role: this.role, email: this.email },
     process.env.JWT_SECRET!,
     {
       expiresIn: process.env.JWT_EXPIRE,
-    },
+    }
   );
 };
 
