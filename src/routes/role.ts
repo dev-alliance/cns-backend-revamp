@@ -23,7 +23,7 @@ router.post("/createOrUpdateRole", async (req, res) => {
       name,
       createdByName,
       permissions,
-      req.body.desc
+      req.body.desc,
     );
 
     // Send a success response
