@@ -14,11 +14,11 @@ const s3 = new AWS.S3();
 async function uploadBase64ImageToS3(
   base64Image: string,
   bucketName: string,
-  imageName: string,
+  imageName: string
 ): Promise<string> {
   const buffer = Buffer.from(
     base64Image.replace(/^data:image\/\w+;base64,/, ""),
-    "base64",
+    "base64"
   );
 
   const uploadParams: AWS.S3.PutObjectRequest = {
@@ -86,12 +86,12 @@ export const changeStatus = async (req: Request, res: Response) => {
         $set: {
           status: req.body.status,
         },
-      },
+      }
     );
     if (forms.modifiedCount > 0) {
       return res
         .status(200)
-        .json({ ok: true, message: "compony status updated successfully" });
+        .json({ ok: true, message: "Company status changed  successfully" });
     } else {
       return res
         .status(422)
@@ -117,7 +117,7 @@ export const updateCompany = async (req: Request, res: Response) => {
       imageUrl = await uploadBase64ImageToS3(
         req.body.image,
         "your-s3-bucket-name",
-        imageName,
+        imageName
       );
 
       req.body.image = imageUrl;
@@ -128,7 +128,7 @@ export const updateCompany = async (req: Request, res: Response) => {
     const company = await CompanyModel.findOneAndUpdate(
       { id: req.params.id },
       req.body,
-      { new: true },
+      { new: true }
     );
     if (!company) {
       return res.status(400).send("Company not found");

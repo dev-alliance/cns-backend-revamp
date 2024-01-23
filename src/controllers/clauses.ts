@@ -87,12 +87,12 @@ export const changeStatus = async (req: Request, res: Response) => {
         $set: {
           status: req.body.status,
         },
-      },
+      }
     );
     if (forms.modifiedCount > 0) {
       return res
         .status(200)
-        .json({ ok: true, message: "Clauses status updated successfully" });
+        .json({ ok: true, message: "Clauses status changed  successfully" });
     } else {
       return res
         .status(422)

@@ -72,12 +72,12 @@ export const changeStatus = async (req: Request, res: Response) => {
         $set: {
           status: req.body.status,
         },
-      },
+      }
     );
     if (forms.modifiedCount > 0) {
       return res
         .status(200)
-        .json({ ok: true, message: "tag status updated successfully" });
+        .json({ ok: true, message: "Tag status changed successfully" });
     } else {
       return res
         .status(422)

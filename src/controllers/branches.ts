@@ -68,7 +68,7 @@ export const getAllBranch = async (req: Request, res: Response) => {
 
     const branches = await Branch.find({ id: userId }).populate(
       "manager",
-      "firstName _id",
+      "firstName _id"
     );
     // .select("branchName manager status");
     res.send(branches);
@@ -95,7 +95,7 @@ export const archiveBranchById = async (req: Request, res: Response) => {
 
     const updateResult = await Branch.updateOne(
       { _id: branchId },
-      { $set: { status: newStatus } },
+      { $set: { status: newStatus } }
     );
 
     if (updateResult.matchedCount === 0) {
@@ -107,9 +107,10 @@ export const archiveBranchById = async (req: Request, res: Response) => {
     } else {
       return res.status(200).send({
         ok: true,
-        message: `Branch is ${
-          newStatus ? "archived" : "unarchived"
-        } successfully.`,
+        // message: `Branch is ${
+        //   newStatus ? "archived" : "unarchived"
+        // } successfully.`,
+        message: "Branch status changed successfully",
       });
     }
   } catch (err) {

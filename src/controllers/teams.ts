@@ -74,14 +74,13 @@ export const updateTeam = async (req: Request, res: Response) => {
         $set: {
           status: req.body.status,
         },
-      },
+      }
     );
     if (form.modifiedCount > 0) {
-      return res
-        .status(200)
-        .send(
-          `Team ${req.body.status ? "Un-archive" : "Archive"} successfully.`,
-        );
+      return res.status(200).send(
+        // `Team ${req.body.status ? "Un-archive" : "Archive"} successfully.`,
+        `Team status changed successfully`
+      );
     } else {
       return res.status(404).send("Team not found.");
     }
@@ -96,15 +95,13 @@ export const archiveTeamById = async (req: Request, res: Response) => {
     const teamId = req.params.id;
     const newStatus = req.body.status;
 
-    console.log(`Updating status for Branch ID: ${teamId} to ${newStatus}`);
-
     if (!teamId || newStatus === undefined) {
       return res.status(400).send({ ok: false, message: "Invalid input data" });
     }
 
     const updateResult = await Team.updateOne(
       { _id: teamId },
-      { $set: { status: newStatus } },
+      { $set: { status: newStatus } }
     );
 
     if (updateResult.matchedCount === 0) {
@@ -116,9 +113,10 @@ export const archiveTeamById = async (req: Request, res: Response) => {
     } else {
       return res.status(200).send({
         ok: true,
-        message: `This team ${
-          newStatus ? "archived" : "unarchived"
-        } successfully.`,
+        // message: `This team ${
+        //   newStatus ? "archived" : "unarchived"
+        // } successfully.`,
+        message: "Team status changed successfully",
       });
     }
   } catch (err) {
@@ -132,7 +130,7 @@ export const deleteTeam = async (req: Request, res: Response) => {
     const result = await Team.deleteOne({ _id: req.params.id });
 
     if (result.deletedCount > 0) {
-      res.status(200).json({ ok: true, message: "team deleted successfully." });
+      res.status(200).json({ ok: true, message: "Team deleted successfully." });
     } else {
       res.status(404).json({ ok: false, message: "team not found." });
     }
