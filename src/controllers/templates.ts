@@ -31,7 +31,7 @@ const s3 = new AWS.S3();
 async function uploadFileToS3(
   fileBuffer: Buffer,
   bucketName: string,
-  fileName: string
+  fileName: string,
 ): Promise<string> {
   const contentType = getContentTypeByFile(fileName);
 
@@ -59,7 +59,7 @@ export const createTemplate = async (req: Request, res: Response) => {
       const fileUrl = await uploadFileToS3(
         file.buffer,
         "cns-images-kyc",
-        file.originalname
+        file.originalname,
       );
       console.log(fileUrl);
       req.body.file = fileUrl;
@@ -112,7 +112,7 @@ export const EditTemplate = async (req: Request, res: Response) => {
       const fileUrl = await uploadFileToS3(
         file.buffer,
         "cns-images-kyc",
-        file.originalname
+        file.originalname,
       );
       console.log(fileUrl);
       req.body.file = fileUrl;
@@ -160,7 +160,7 @@ export const archiveTempById = async (req: Request, res: Response) => {
 
     const updateResult = await Template.updateOne(
       { _id: temId },
-      { $set: { status: newStatus } }
+      { $set: { status: newStatus } },
     );
 
     if (updateResult.matchedCount === 0) {
