@@ -14,7 +14,7 @@ export const create = async (req: Request, res: Response) => {
     if (err.code === 11000) {
       return res.status(409).json({
         ok: false,
-        message: "A category with this name already exists.",
+        message: "A category with this name already exists",
       });
     }
     return res.status(500).json({
@@ -33,7 +33,7 @@ export const getAllCategory = async (req: Request, res: Response) => {
   } catch (error: any) {
     res.status(500).json({
       ok: false,
-      message: "Failed to retrieve branch.",
+      message: "Failed to retrieve branch",
       error: error.message,
     });
   }
@@ -54,7 +54,7 @@ export const changeStatus = async (req: Request, res: Response) => {
     const category = await Categories.findByIdAndUpdate(
       req.params.id,
       { $set: { status: req.body.status } },
-      { new: true },
+      { new: true }
     );
 
     if (category) {
@@ -65,14 +65,14 @@ export const changeStatus = async (req: Request, res: Response) => {
     } else {
       return res.status(422).json({
         ok: false,
-        message: "Failed to update Category status. Category not found.",
+        message: "Failed to update Category status. category not found",
       });
     }
   } catch (err) {
     console.log(err);
     res
       .status(400)
-      .json({ ok: false, message: "Something went wrong, try again." });
+      .json({ ok: false, message: "Something went wrong, try again" });
   }
 };
 // Edit a category by ID
@@ -108,14 +108,14 @@ export const DisableCategory = async (req: Request, res: Response) => {
     if (!status) {
       return res.status(400).json({
         ok: false,
-        message: "Status value is required.",
+        message: "Status value is required",
       });
     }
 
     const updatedCategory = await Categories.findByIdAndUpdate(
       id,
       { status: status }, // Update the status with the provided value
-      { new: true },
+      { new: true }
     );
 
     if (!updatedCategory) {
@@ -126,7 +126,7 @@ export const DisableCategory = async (req: Request, res: Response) => {
     } else {
       return res.status(200).json({
         ok: true,
-        message: "Category status changed  successfully.",
+        message: "Category status changed  successfully",
       });
     }
   } catch (error) {
@@ -171,7 +171,7 @@ export const deleteSubCategory = async (req: Request, res: Response) => {
     }
 
     category.subCategories = category.subCategories.filter(
-      (subCat: any) => subCat.id !== subcategoryId,
+      (subCat: any) => subCat.id !== subcategoryId
     );
     await category.save();
     return res

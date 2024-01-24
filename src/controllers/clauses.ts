@@ -7,7 +7,7 @@ export const createClauses = async (req: Request, res: Response) => {
     await form.save();
     return res
       .status(201)
-      .json({ ok: true, message: "Clauses Created Successfully." });
+      .json({ ok: true, message: "Clauses created successfully" });
   } catch (err: any) {
     console.log(err);
 
@@ -15,13 +15,13 @@ export const createClauses = async (req: Request, res: Response) => {
     if (err.code === 11000) {
       return res.status(409).json({
         ok: false,
-        message: "A clause with this name already exists.",
+        message: "A clause with this name already exists",
       });
     }
 
     return res.status(500).json({
       ok: false,
-      message: "Failed to create clauses.",
+      message: "Failed to create clauses",
     });
   }
 };
@@ -32,7 +32,7 @@ export const getClausesById = async (req: Request, res: Response) => {
     res.status(200).send(forms);
   } catch (err) {
     console.log(err);
-    res.status(400).send("Failed to retrieving clauses data.");
+    res.status(400).send("Failed to retrieving clauses data");
   }
 };
 export const findOneById = async (req: Request, res: Response) => {
@@ -55,7 +55,7 @@ export const getAllClauses = async (req: Request, res: Response) => {
   } catch (error: any) {
     res.status(500).json({
       ok: false,
-      message: "Failed to retrieve Clauses.",
+      message: "Failed to retrieve Clauses",
       error: error.message,
     });
   }
@@ -71,12 +71,12 @@ export const EditClauses = async (req: Request, res: Response) => {
     } else {
       return res
         .status(200)
-        .json({ ok: true, message: "Clauses Updated Successfully  " });
+        .json({ ok: true, message: "Clauses Updated successfully  " });
     }
   } catch (error) {
     return res
       .status(500)
-      .json({ ok: false, message: "Something went wrong, try again." });
+      .json({ ok: false, message: "Something went wrong, try again" });
   }
 };
 export const changeStatus = async (req: Request, res: Response) => {
@@ -87,7 +87,7 @@ export const changeStatus = async (req: Request, res: Response) => {
         $set: {
           status: req.body.status,
         },
-      },
+      }
     );
     if (forms.modifiedCount > 0) {
       return res
@@ -96,13 +96,13 @@ export const changeStatus = async (req: Request, res: Response) => {
     } else {
       return res
         .status(422)
-        .json({ ok: false, message: "Failed to update Clauses status." });
+        .json({ ok: false, message: "Failed to update Clauses status" });
     }
   } catch (err) {
     console.log(err);
     res
       .status(400)
-      .json({ ok: false, message: "Something went wrong, try again." });
+      .json({ ok: false, message: "Something went wrong, try again" });
   }
 };
 
@@ -110,10 +110,10 @@ export const deleteClauses = async (req: Request, res: Response) => {
   try {
     const forms = await Clauses.deleteOne({ _id: req.params.id });
     if (forms.deletedCount > 0) {
-      return res.json({ ok: true, message: "Clause Deleted Successfully." });
+      return res.json({ ok: true, message: "Clause deleted successfully" });
     }
   } catch (err) {
     console.log(err);
-    res.status(400).send("Failed to delete clauses.");
+    res.status(400).send("Failed to delete clauses");
   }
 };

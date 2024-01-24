@@ -9,7 +9,7 @@ export const createOrUpdateRole = async (
   name: string,
   createdByName: string,
   permissions: { [key: string]: boolean },
-  desc: string,
+  desc: string
 ): Promise<void> => {
   let role: any;
 
@@ -55,7 +55,7 @@ export const getAllRole = async (req: Request, res: Response) => {
   } catch (error: any) {
     res.status(500).json({
       ok: false,
-      message: "Failed to retrieve role.",
+      message: "Failed to retrieve role",
       error: error.message,
     });
   }
@@ -65,7 +65,7 @@ export const getRoleById = async (req: Request, res: Response) => {
   try {
     const role = await Role.findById(req.params.id);
     if (!role) {
-      return res.status(404).send("Role not found.");
+      return res.status(404).send("Role not found");
     }
 
     res.status(200).send(role);
@@ -78,10 +78,10 @@ export const deleteRole = async (req: Request, res: Response) => {
   try {
     const forms = await Role.deleteOne({ _id: req.params.id });
     if (forms.deletedCount > 0) {
-      return res.json({ ok: true, message: "role Deleted Successfully." });
+      return res.json({ ok: true, message: "role deleted successfully" });
     }
   } catch (err) {
     console.log(err);
-    res.status(400).send("Failed to delete role.");
+    res.status(400).send("Failed to delete role");
   }
 };

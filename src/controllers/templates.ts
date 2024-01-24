@@ -3,7 +3,7 @@ import { Template } from "../Schema/TemplateSchema";
 import AWS from "aws-sdk";
 
 function getContentTypeByFile(fileName: string) {
-  const ext = fileName.toLowerCase().split(".").pop();
+  const ext = fileName.toLowerCase().split("").pop();
 
   switch (ext) {
     case "pdf":
@@ -31,7 +31,7 @@ const s3 = new AWS.S3();
 async function uploadFileToS3(
   fileBuffer: Buffer,
   bucketName: string,
-  fileName: string,
+  fileName: string
 ): Promise<string> {
   const contentType = getContentTypeByFile(fileName);
 
@@ -59,7 +59,7 @@ export const createTemplate = async (req: Request, res: Response) => {
       const fileUrl = await uploadFileToS3(
         file.buffer,
         "cns-images-kyc",
-        file.originalname,
+        file.originalname
       );
       console.log(fileUrl);
       req.body.file = fileUrl;
@@ -88,7 +88,7 @@ export const getAllTemp = async (req: Request, res: Response) => {
   } catch (error: any) {
     res.status(500).json({
       ok: false,
-      message: "Failed to retrieve folder.",
+      message: "Failed to retrieve folder",
       error: error.message,
     });
   }
@@ -112,7 +112,7 @@ export const EditTemplate = async (req: Request, res: Response) => {
       const fileUrl = await uploadFileToS3(
         file.buffer,
         "cns-images-kyc",
-        file.originalname,
+        file.originalname
       );
       console.log(fileUrl);
       req.body.file = fileUrl;
@@ -132,7 +132,7 @@ export const EditTemplate = async (req: Request, res: Response) => {
   } catch (error) {
     return res
       .status(500)
-      .json({ ok: false, message: "Something went wrong, try again." });
+      .json({ ok: false, message: "Something went wrong, try again" });
   }
 };
 export const deleteTemplate = async (req: Request, res: Response) => {
@@ -140,16 +140,16 @@ export const deleteTemplate = async (req: Request, res: Response) => {
   try {
     const r = await Template.deleteOne({ _id: req.params.id });
     if (r.deletedCount > 0) {
-      return res.json({ ok: true, data: r, message: "Template deleted." });
+      return res.json({ ok: true, data: r, message: "Template deleted" });
     } else {
       return res
         .status(400)
-        .json({ ok: false, data: r, message: "Failed to delete template." });
+        .json({ ok: false, data: r, message: "Failed to delete template" });
     }
   } catch (err) {
     return res
       .status(400)
-      .json({ ok: false, message: "Failed to delete template." });
+      .json({ ok: false, message: "Failed to delete template" });
   }
 };
 
@@ -160,17 +160,15 @@ export const archiveTempById = async (req: Request, res: Response) => {
 
     const updateResult = await Template.updateOne(
       { _id: temId },
-      { $set: { status: newStatus } },
+      { $set: { status: newStatus } }
     );
 
     if (updateResult.matchedCount === 0) {
-      return res
-        .status(404)
-        .send({ ok: false, message: "template not found." });
+      return res.status(404).send({ ok: false, message: "template not found" });
     } else if (updateResult.modifiedCount === 0) {
       return res
         .status(200)
-        .send({ ok: true, message: "No changes made to the template." });
+        .send({ ok: true, message: "No changes made to the template" });
     } else {
       return res.status(200).send({
         ok: true,

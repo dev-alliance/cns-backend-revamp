@@ -7,16 +7,16 @@ export const createTag = async (req: Request, res: Response) => {
     await form.save();
     return res
       .status(200)
-      .json({ ok: true, message: "Tag Created Successfully." });
+      .json({ ok: true, message: "Tag created successfully" });
   } catch (err: any) {
     console.log(err);
     if (err.code === 11000) {
       return res.status(409).json({
         ok: false,
-        message: "A Tag with this name already exists.",
+        message: "A Tag with this name already exists",
       });
     }
-    return res.status(400).send("Failed to create tag.");
+    return res.status(400).send("Failed to create tag");
   }
 };
 
@@ -40,7 +40,7 @@ export const getAllTags = async (req: Request, res: Response) => {
   } catch (error: any) {
     res.status(500).json({
       ok: false,
-      message: "Failed to retrieve tags.",
+      message: "Failed to retrieve tags",
       error: error.message,
     });
   }
@@ -61,7 +61,7 @@ export const EditTags = async (req: Request, res: Response) => {
   } catch (error) {
     return res
       .status(500)
-      .json({ ok: false, message: "Something went wrong, try again." });
+      .json({ ok: false, message: "Something went wrong, try again" });
   }
 };
 export const changeStatus = async (req: Request, res: Response) => {
@@ -72,7 +72,7 @@ export const changeStatus = async (req: Request, res: Response) => {
         $set: {
           status: req.body.status,
         },
-      },
+      }
     );
     if (forms.modifiedCount > 0) {
       return res
@@ -81,13 +81,13 @@ export const changeStatus = async (req: Request, res: Response) => {
     } else {
       return res
         .status(422)
-        .json({ ok: false, message: "Failed to update tags status." });
+        .json({ ok: false, message: "Failed to update tags status" });
     }
   } catch (err) {
     console.log(err);
     res
       .status(400)
-      .json({ ok: false, message: "Something went wrong, try again." });
+      .json({ ok: false, message: "Something went wrong, try again" });
   }
 };
 
@@ -105,6 +105,6 @@ export const DeleteTags = async (req: Request, res: Response) => {
   } catch (error) {
     return res
       .status(500)
-      .json({ ok: false, message: "Something went wrong, try again." });
+      .json({ ok: false, message: "Something went wrong, try again" });
   }
 };

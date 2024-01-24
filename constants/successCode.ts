@@ -9,7 +9,7 @@ const AUTH = {
 
 const USER = {
   PROFILE_UDPATE_SUCCESS: "Profile Updated",
-  PASSWORD_CHANGED_SUCCESS: "Password Changed Successfully",
+  PASSWORD_CHANGED_SUCCESS: "Password Changed successfully",
 };
 
 const CONTRACTS = {
@@ -17,8 +17,8 @@ const CONTRACTS = {
 };
 
 const CATEGORIES = {
-  CATEGORY_CREATED: "Category created",
-  CATEGORY_UPDATED: "Category updated",
+  CATEGORY_CREATED: "Category created successfully",
+  CATEGORY_UPDATED: "Category updated successfully",
   CATEGORY_DISABLED: "Category disabled",
   CATEGORY_DELETED: "Category Deleted",
 };

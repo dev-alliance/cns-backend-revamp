@@ -7,16 +7,16 @@ export const createTeam = async (req: Request, res: Response) => {
     await form.save();
     return res
       .status(200)
-      .json({ ok: true, message: "Team Created Successfully." });
+      .json({ ok: true, message: "Team created successfully" });
   } catch (err: any) {
     console.log(err);
     if (err.code === 11000) {
       return res.status(409).json({
         ok: false,
-        message: "A Team with this name already exists.",
+        message: "A Team with this name already exists",
       });
     }
-    return res.status(500).send("Failed to create team.");
+    return res.status(500).send("Failed to create team");
   }
 };
 
@@ -29,7 +29,7 @@ export const getAllTeam = async (req: Request, res: Response) => {
   } catch (error: any) {
     res.status(500).json({
       ok: false,
-      message: "Failed to retrieve branch.",
+      message: "Failed to retrieve branch",
       error: error.message,
     });
   }
@@ -57,7 +57,7 @@ export const updateTeamById = async (req: Request, res: Response) => {
     }
     res.status(200).json({
       ok: true,
-      message: "Team updated successfully.",
+      message: "Team updated successfully",
       updateTeams,
     });
   } catch (error) {
@@ -74,15 +74,15 @@ export const updateTeam = async (req: Request, res: Response) => {
         $set: {
           status: req.body.status,
         },
-      },
+      }
     );
     if (form.modifiedCount > 0) {
       return res.status(200).send(
         // `Team ${req.body.status ? "Un-archive" : "Archive"} successfully.`,
-        `Team status changed successfully`,
+        `Team status changed successfully`
       );
     } else {
-      return res.status(404).send("Team not found.");
+      return res.status(404).send("Team not found");
     }
   } catch (err) {
     return res
@@ -101,15 +101,15 @@ export const archiveTeamById = async (req: Request, res: Response) => {
 
     const updateResult = await Team.updateOne(
       { _id: teamId },
-      { $set: { status: newStatus } },
+      { $set: { status: newStatus } }
     );
 
     if (updateResult.matchedCount === 0) {
-      return res.status(404).send({ ok: false, message: "Team not found." });
+      return res.status(404).send({ ok: false, message: "Team not found" });
     } else if (updateResult.modifiedCount === 0) {
       return res
         .status(200)
-        .send({ ok: true, message: "No changes made to the Team." });
+        .send({ ok: true, message: "No changes made to the team" });
     } else {
       return res.status(200).send({
         ok: true,
@@ -130,14 +130,14 @@ export const deleteTeam = async (req: Request, res: Response) => {
     const result = await Team.deleteOne({ _id: req.params.id });
 
     if (result.deletedCount > 0) {
-      res.status(200).json({ ok: true, message: "Team deleted successfully." });
+      res.status(200).json({ ok: true, message: "Team deleted successfully" });
     } else {
-      res.status(404).json({ ok: false, message: "team not found." });
+      res.status(404).json({ ok: false, message: "Team not found" });
     }
   } catch (error: any) {
     res.status(400).json({
       ok: false,
-      message: "Failed to delete team.",
+      message: "Failed to delete team",
       error: error.message,
     });
   }

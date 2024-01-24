@@ -7,16 +7,16 @@ export const createBranch = async (req: Request, res: Response) => {
     await form.save();
     return res
       .status(200)
-      .json({ ok: true, message: "Branch Created Successfully." });
+      .json({ ok: true, message: "Branch created successfully" });
   } catch (err: any) {
     console.log(err);
     if (err.code === 11000) {
       return res.status(409).json({
         ok: false,
-        message: "A branch with this name already exists.",
+        message: "A branch with this name already exists",
       });
     }
-    return res.status(500).send("Failed to create branch.");
+    return res.status(500).send("Failed to create branch");
   }
 };
 
@@ -26,7 +26,7 @@ export const getBranchById = async (req: Request, res: Response) => {
     const branch = await Branch.findById(req.params.id);
 
     if (!branch) {
-      return res.status(404).send("Branch not found.");
+      return res.status(404).send("Branch not found");
     }
 
     res.status(200).send(branch);
@@ -47,17 +47,17 @@ export const updateBranchById = async (req: Request, res: Response) => {
     });
 
     if (!updatedBranch) {
-      return res.status(404).send("Branch not found.");
+      return res.status(404).send("Branch not found");
     }
 
     res.status(200).json({
       ok: true,
-      message: "Branch updated successfully.",
+      message: "Branch updated successfully",
       updatedBranch,
     });
   } catch (err) {
     console.log(err);
-    res.status(500).send("Error updating branch.");
+    res.status(500).send("Error updating branch");
   }
 };
 
@@ -68,7 +68,7 @@ export const getAllBranch = async (req: Request, res: Response) => {
 
     const branches = await Branch.find({ id: userId }).populate(
       "manager",
-      "firstName _id",
+      "firstName _id"
     );
     // .select("branchName manager status");
     res.send(branches);
@@ -76,7 +76,7 @@ export const getAllBranch = async (req: Request, res: Response) => {
   } catch (error: any) {
     res.status(500).json({
       ok: false,
-      message: "Failed to retrieve branch.",
+      message: "Failed to retrieve branch",
       error: error.message,
     });
   }
@@ -95,15 +95,15 @@ export const archiveBranchById = async (req: Request, res: Response) => {
 
     const updateResult = await Branch.updateOne(
       { _id: branchId },
-      { $set: { status: newStatus } },
+      { $set: { status: newStatus } }
     );
 
     if (updateResult.matchedCount === 0) {
-      return res.status(404).send({ ok: false, message: "Branch not found." });
+      return res.status(404).send({ ok: false, message: "Branch not found" });
     } else if (updateResult.modifiedCount === 0) {
       return res
         .status(200)
-        .send({ ok: true, message: "No changes made to the branch." });
+        .send({ ok: true, message: "No changes made to the branch" });
     } else {
       return res.status(200).send({
         ok: true,
@@ -125,14 +125,14 @@ export const deleteBranch = async (req: Request, res: Response) => {
     if (result.deletedCount > 0) {
       res
         .status(200)
-        .json({ ok: true, message: "Branch deleted successfully." });
+        .json({ ok: true, message: "Branch deleted successfully" });
     } else {
-      res.status(404).json({ ok: false, message: "Branch not found." });
+      res.status(404).json({ ok: false, message: "Branch not found" });
     }
   } catch (error: any) {
     res.status(400).json({
       ok: false,
-      message: "Failed to delete Branch.",
+      message: "Failed to delete Branch",
       error: error.message,
     });
   }
@@ -152,15 +152,15 @@ export const deleteBranch = async (req: Request, res: Response) => {
 //     );
 
 //     if (!updatedSettings) {
-//       return res.status(404).send("General settings not found.");
+//       return res.status(404).send("General settings not found");
 //     }
 
 //     res.status(200).json({
 //       ok: true,
-//       message: "General settings updated successfully.",
+//       message: "General settings updated successfully",
 //       updatedSettings,
 //     });
 //   } catch (err) {
-//     res.status(500).send("Error updating general settings.");
+//     res.status(500).send("Error updating general settings");
 //   }
 // };

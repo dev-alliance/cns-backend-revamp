@@ -14,11 +14,11 @@ const s3 = new AWS.S3();
 async function uploadBase64ImageToS3(
   base64Image: string,
   bucketName: string,
-  imageName: string,
+  imageName: string
 ): Promise<string> {
   const buffer = Buffer.from(
     base64Image.replace(/^data:image\/\w+;base64,/, ""),
-    "base64",
+    "base64"
   );
 
   const uploadParams: AWS.S3.PutObjectRequest = {
@@ -46,18 +46,16 @@ export const createCompany = async (req: Request, res: Response) => {
     if (existingCompany) {
       return res
         .status(422)
-        .json({ ok: false, message: "Company already exists." });
+        .json({ ok: false, message: "Company already exists" });
     }
 
     const company = new CompanyModel(req.body);
     await company.save();
-    res
-      .status(201)
-      .json({ ok: true, message: "Company created successfully." });
+    res.status(201).json({ ok: true, message: "Company created successfully" });
   } catch (error: any) {
     res.status(400).json({
       ok: false,
-      message: "Failed to create company.",
+      message: "Failed to create company",
       error: error.message,
     });
   }
@@ -72,7 +70,7 @@ export const getAllCompanies = async (req: Request, res: Response) => {
   } catch (error: any) {
     res.status(500).json({
       ok: false,
-      message: "Failed to retrieve compony.",
+      message: "Failed to retrieve compony",
       error: error.message,
     });
   }
@@ -86,7 +84,7 @@ export const changeStatus = async (req: Request, res: Response) => {
         $set: {
           status: req.body.status,
         },
-      },
+      }
     );
     if (forms.modifiedCount > 0) {
       return res
@@ -95,13 +93,13 @@ export const changeStatus = async (req: Request, res: Response) => {
     } else {
       return res
         .status(422)
-        .json({ ok: false, message: "Failed to update compony status." });
+        .json({ ok: false, message: "Failed to update compony status" });
     }
   } catch (err) {
     console.log(err);
     res
       .status(400)
-      .json({ ok: false, message: "Something went wrong, try again." });
+      .json({ ok: false, message: "Something went wrong, try again" });
   }
 };
 
@@ -117,7 +115,7 @@ export const updateCompany = async (req: Request, res: Response) => {
       imageUrl = await uploadBase64ImageToS3(
         req.body.image,
         "your-s3-bucket-name",
-        imageName,
+        imageName
       );
 
       req.body.image = imageUrl;
@@ -128,7 +126,7 @@ export const updateCompany = async (req: Request, res: Response) => {
     const company = await CompanyModel.findOneAndUpdate(
       { id: req.params.id },
       req.body,
-      { new: true },
+      { new: true }
     );
     if (!company) {
       return res.status(400).send("Company not found");
@@ -140,7 +138,7 @@ export const updateCompany = async (req: Request, res: Response) => {
   } catch (error: any) {
     res.status(400).json({
       ok: false,
-      message: "Failed to update company.",
+      message: "Failed to update company",
       error: error.message,
     });
   }
@@ -153,14 +151,14 @@ export const deleteCompany = async (req: Request, res: Response) => {
     if (result.deletedCount > 0) {
       res
         .status(200)
-        .json({ ok: true, message: "Company deleted successfully." });
+        .json({ ok: true, message: "Company deleted successfully" });
     } else {
-      res.status(404).json({ ok: false, message: "Company not found." });
+      res.status(404).json({ ok: false, message: "Company not found" });
     }
   } catch (error: any) {
     res.status(400).json({
       ok: false,
-      message: "Failed to delete company.",
+      message: "Failed to delete company",
       error: error.message,
     });
   }
@@ -172,14 +170,14 @@ export const getCompanyById = async (req: Request, res: Response) => {
     const company = await CompanyModel.findOne({ id: companyId });
 
     if (!company) {
-      res.status(404).json({ ok: false, message: "Company not found." });
+      res.status(404).json({ ok: false, message: "Company not found" });
     } else {
       res.status(200).json({ ok: true, data: company });
     }
   } catch (error: any) {
     res.status(500).json({
       ok: false,
-      message: "Failed to retrieve company.",
+      message: "Failed to retrieve company",
       error: error.message,
     });
   }

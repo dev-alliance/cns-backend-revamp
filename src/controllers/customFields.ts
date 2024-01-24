@@ -5,7 +5,9 @@ export const createCustomField = async (req: Request, res: Response) => {
   try {
     const form = new CustomField(req.body);
     await form.save();
-    return res.status(201).json({ ok: true, message: "Custom Field Created." });
+    return res
+      .status(201)
+      .json({ ok: true, message: "Custom field created successfully" });
   } catch (err: any) {
     console.log(err);
     if (err.code === 11000) {
@@ -44,7 +46,7 @@ export const updateField = async (req: Request, res: Response) => {
       updateData,
       {
         new: true,
-      },
+      }
     );
 
     if (updatedFolder) {
@@ -54,7 +56,7 @@ export const updateField = async (req: Request, res: Response) => {
         updatedFolder,
       });
     } else {
-      res.status(404).json({ ok: false, message: "Custom Field not found." });
+      res.status(404).json({ ok: false, message: "Custom field not found" });
     }
   } catch (err: any) {
     res.status(400).json({ message: err.message });
@@ -75,7 +77,7 @@ export const deleteCustomFields = async (req: Request, res: Response) => {
   console.log(req.params.id);
   try {
     await CustomField.deleteOne({ _id: req.params.id });
-    return res.status(200).send({ ok: true, message: "Custom Field Deleted." });
+    return res.status(200).send({ ok: true, message: "Custom field deleted" });
   } catch (err) {
     console.log(err);
     res.status(400).send("Failed to delete custom field");

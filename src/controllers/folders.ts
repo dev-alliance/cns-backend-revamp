@@ -3,7 +3,7 @@ import { Folder } from "../Schema/FolderSchema";
 import AWS from "aws-sdk";
 
 function getContentTypeByFile(fileName: string) {
-  const ext = fileName.toLowerCase().split(".").pop();
+  const ext = fileName.toLowerCase().split("").pop();
 
   switch (ext) {
     case "pdf":
@@ -31,7 +31,7 @@ const s3 = new AWS.S3();
 async function uploadFileToS3(
   fileBuffer: Buffer,
   bucketName: string,
-  fileName: string,
+  fileName: string
 ): Promise<string> {
   const contentType = getContentTypeByFile(fileName);
 
@@ -57,7 +57,7 @@ export const uploadDocument = async (req: Request, res: Response) => {
     const fileUrl = await uploadFileToS3(
       file.buffer,
       "cns-images-kyc",
-      file.originalname,
+      file.originalname
     );
     console.log(fileUrl);
 
@@ -73,13 +73,13 @@ export const uploadDocument = async (req: Request, res: Response) => {
           },
         },
       },
-      { new: true },
+      { new: true }
     );
 
     if (updatedFolder) {
       res.status(200).json({
         ok: true,
-        message: "File uploaded successfully.",
+        message: "File uploaded successfully",
         updatedFolder,
       });
     } else {
@@ -95,15 +95,15 @@ export const createFolder = async (req: Request, res: Response) => {
   const newFolder = new Folder(req.body);
   try {
     await newFolder.save();
-    res.status(200).json({ ok: true, message: "Folder created successfully." });
+    res.status(200).json({ ok: true, message: "Folder created successfully" });
   } catch (err: any) {
     if (err.code === 11000) {
       return res.status(409).json({
         ok: false,
-        message: "A Folder with this name already exists.",
+        message: "A Folder with this name already exists",
       });
     }
-    return res.status(500).send("Failed to create folder.");
+    return res.status(500).send("Failed to create folder");
   }
 };
 export const updateFolder = async (req: Request, res: Response) => {
@@ -118,11 +118,11 @@ export const updateFolder = async (req: Request, res: Response) => {
     if (updatedFolder) {
       res.status(200).json({
         ok: true,
-        message: "Folder updated successfully.",
+        message: "Folder updated successfully",
         updatedFolder,
       });
     } else {
-      res.status(404).json({ ok: false, message: "Folder not found." });
+      res.status(404).json({ ok: false, message: "Folder not found" });
     }
   } catch (err: any) {
     res.status(400).json({ message: err.message });
@@ -139,7 +139,7 @@ export const getAllFolders = async (req: Request, res: Response) => {
   } catch (error: any) {
     res.status(500).json({
       ok: false,
-      message: "Failed to retrieve folder.",
+      message: "Failed to retrieve folder",
       error: error.message,
     });
   }
@@ -165,7 +165,7 @@ export const getoFolderContent = async (req: Request, res: Response) => {
 export const deleteFolder = async (req: Request, res: Response) => {
   const r = await Folder.deleteOne({ _id: req.params.id });
   if (r.deletedCount > 0) {
-    return res.json({ ok: true, message: "Folder Deleted." });
+    return res.json({ ok: true, message: "Folder deleted" });
   } else {
     res.json({ ok: false, message: "Failed to delete folder" });
   }
@@ -187,7 +187,7 @@ export const deleteFile = async (req: Request, res: Response) => {
     await folder.save();
     return res
       .status(200)
-      .json({ ok: true, message: "file deleted successfully" });
+      .json({ ok: true, message: "File deleted successfully" });
   } catch (error) {
     return res.status(500).json({ ok: false, message: "Error deleting file" });
   }
