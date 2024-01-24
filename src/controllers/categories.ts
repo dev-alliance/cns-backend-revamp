@@ -54,7 +54,7 @@ export const changeStatus = async (req: Request, res: Response) => {
     const category = await Categories.findByIdAndUpdate(
       req.params.id,
       { $set: { status: req.body.status } },
-      { new: true }
+      { new: true },
     );
 
     if (category) {
@@ -115,7 +115,7 @@ export const DisableCategory = async (req: Request, res: Response) => {
     const updatedCategory = await Categories.findByIdAndUpdate(
       id,
       { status: status }, // Update the status with the provided value
-      { new: true }
+      { new: true },
     );
 
     if (!updatedCategory) {
@@ -171,7 +171,7 @@ export const deleteSubCategory = async (req: Request, res: Response) => {
     }
 
     category.subCategories = category.subCategories.filter(
-      (subCat: any) => subCat.id !== subcategoryId
+      (subCat: any) => subCat.id !== subcategoryId,
     );
     await category.save();
     return res

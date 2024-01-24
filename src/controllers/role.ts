@@ -9,7 +9,7 @@ export const createOrUpdateRole = async (
   name: string,
   createdByName: string,
   permissions: { [key: string]: boolean },
-  desc: string
+  desc: string,
 ): Promise<void> => {
   let role: any;
 
