@@ -32,5 +32,5 @@ jobs:
             pwd
             git pull origin main
             npm install
-            pm2 stop name npm || true
+            pm2 stop 0
             pm2 start npm -- start
