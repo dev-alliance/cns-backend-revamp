@@ -41,8 +41,8 @@ const TagSchema = new mongoose.Schema<ITag>(
   },
   {
     timestamps: true,
-  },
+  }
 );
 
-// Define the Mongoose model for the form data
+// Define the Mongoose model for the form data add sonme
 export const Tag = mongoose.model("tags", TagSchema);
