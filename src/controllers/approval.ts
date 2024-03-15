@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
 import { Approval } from "../Schema/Approval";
-// Replace with the correct path to your Approval model
+// Replace with the correct path to your Approval modelll
 
 // Create Approval
 export const createApproval = async (
   req: Request,
-  res: Response,
+  res: Response
 ): Promise<Response> => {
   try {
     const approval = new Approval(req.body);
@@ -30,13 +30,13 @@ export const createApproval = async (
 // Update Approval
 export const updateApproval = async (
   req: Request,
-  res: Response,
+  res: Response
 ): Promise<Response> => {
   try {
     const updatedApproval = await Approval.findByIdAndUpdate(
       req.params.id,
       req.body,
-      { new: true },
+      { new: true }
     );
     return res.status(200).json({
       ok: true,
@@ -91,7 +91,7 @@ export const findAllApprovals = async (req: Request, res: Response) => {
 // Delete Approval
 export const deleteApproval = async (
   req: Request,
-  res: Response,
+  res: Response
 ): Promise<Response> => {
   try {
     await Approval.findByIdAndDelete(req.params.id);
