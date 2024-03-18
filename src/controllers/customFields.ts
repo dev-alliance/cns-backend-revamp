@@ -46,7 +46,7 @@ export const updateField = async (req: Request, res: Response) => {
       updateData,
       {
         new: true,
-      },
+      }
     );
 
     if (updatedFolder) {
