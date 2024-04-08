@@ -69,5 +69,5 @@ const contractSchema = new mongoose.Schema<Contract>({
 
 export const Contract = mongoose.model<Contract>(
   "cns.contracts",
-  contractSchema
+  contractSchema,
 );
