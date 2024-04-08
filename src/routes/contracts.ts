@@ -4,15 +4,15 @@ import {
   deleteContract,
   getAllContract,
   getContractsByUserId,
-  updateContract,
+  createOrUpdateContract,
 } from "../controllers/contracts";
 
 const router = express.Router();
 
-router.get("/:userId", getContractsByUserId);
+router.get("/:id", getContractsByUserId);
 router.post("/create", createContract);
 router.get("/list-contract/:id", getAllContract);
-router.put("/:id", updateContract);
+router.patch("/createUpdate/:id", createOrUpdateContract);
 router.delete("/:id", deleteContract);
 
 export default router;

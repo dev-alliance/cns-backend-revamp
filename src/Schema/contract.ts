@@ -34,13 +34,14 @@ interface Contract extends mongoose.Document {
   discussions: Discussions[];
   attachments: string[];
   shareWith: string[];
+  signature: mongoose.Schema.Types.Mixed[];
 }
 
 const contractSchema = new mongoose.Schema<Contract>({
   userId: {
     type: Schema.Types.ObjectId,
     ref: "User", // Reference to the User schema
-    required: true,
+    // required: true,
   },
   overview: {
     name: String,
@@ -63,9 +64,10 @@ const contractSchema = new mongoose.Schema<Contract>({
   discussions: [Schema.Types.Mixed],
   attachments: [String],
   shareWith: [String],
+  signature: [Schema.Types.Mixed],
 });
 
 export const Contract = mongoose.model<Contract>(
   "cns.contracts",
-  contractSchema,
+  contractSchema
 );

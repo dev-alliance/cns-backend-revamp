@@ -5,12 +5,9 @@ import { ERROR_CODES } from "../../constants/errorCodes";
 
 export const getContractsByUserId = async (req: Request, res: Response) => {
   try {
-    const { userId } = req.params;
-    const contracts = await Contract.find({ userId });
-    return res.status(201).json({
-      ok: true,
-      contracts,
-    });
+    const contracts = await Contract.findById(req.params.id);
+
+    res.status(200).send(contracts);
   } catch (error) {
     return res.status(500).json({
       ok: false,
@@ -50,23 +47,31 @@ export const getAllContract = async (req: Request, res: Response) => {
     });
   }
 };
-export const updateContract = async (req: Request, res: Response) => {
+export const createOrUpdateContract = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const updatedContract = await Contract.findByIdAndUpdate(id, req.body, {
-      new: true,
-    });
-    if (!updatedContract) {
-      return res
-        .status(404)
-        .json({ ok: false, message: ERROR_CODES.CONTRACTS.NOT_FOUND });
-    } else {
-      return res.json(updatedContract);
-    }
+    console.log(req.body);
+
+    const { recipient } = req.body; // The new array of signatures to be set
+
+    const updatedContract = await Contract.findOneAndUpdate(
+      { _id: id }, // Find a contract by its id
+      {
+        $set: { signature: recipient }, // Replace the signature array with the new one
+      },
+      {
+        new: true, // Return the updated document
+        upsert: true, // Create a new document if one doesn't exist
+      }
+    );
+
+    return res.json(updatedContract);
   } catch (error) {
+    console.log(error);
+
     return res.status(500).json({
       ok: false,
-      message: ERROR_CODES.CONTRACTS.ERROR_UPDATING_CONTRACT,
+      message: "Error updating or creating contract.",
     });
   }
 };
