@@ -69,7 +69,7 @@ export const createOrUpdateContract = async (req: Request, res: Response) => {
       {
         new: true, // Return the updated document
         upsert: true, // Create a new document if one doesn't exist
-      }
+      },
     );
 
     return res.json(updatedContract);
