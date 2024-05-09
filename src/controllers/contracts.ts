@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Request, Response } from "express";
 import { Contract } from "../Schema/contract";
 import { SUCCESS_CODES } from "../../constants/successCode";
@@ -18,15 +19,21 @@ export const getContractsByUserId = async (req: Request, res: Response) => {
 
 export const createContract = async (req: Request, res: Response) => {
   try {
-    const newContract = req.body;
-    await Contract.create(newContract);
-    return res
-      .status(201)
-      .json({ ok: true, message: SUCCESS_CODES.CONTRACTS.CONTRACT_CREATED });
-  } catch (error) {
-    return res.status(500).json({
+    const contractData = req.body; // No specific type, as overview can be anything
+
+    // Create the contract
+    const newContract = await Contract.create(contractData);
+
+    return res.status(201).json({
+      ok: true,
+      message: "Contract created successfully",
+      contract: newContract,
+    });
+  } catch (error: any) {
+    res.status(500).json({
       ok: false,
-      message: ERROR_CODES.CONTRACTS.ERROR_CREATING_CONTRACT,
+      message: "Error creating the contract",
+      error: error.message,
     });
   }
 };
@@ -62,7 +69,7 @@ export const createOrUpdateContract = async (req: Request, res: Response) => {
       {
         new: true, // Return the updated document
         upsert: true, // Create a new document if one doesn't exist
-      },
+      }
     );
 
     return res.json(updatedContract);
