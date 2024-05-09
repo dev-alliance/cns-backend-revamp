@@ -26,13 +26,13 @@ export const createContract = async (req: Request, res: Response) => {
 
     return res.status(201).json({
       ok: true,
-      message: "Contract created successfully",
+      message: "Contract created successfully!",
       contract: newContract,
     });
   } catch (error: any) {
     res.status(500).json({
       ok: false,
-      message: "Error creating the contract",
+      message: "Error creating the contractt",
       error: error.message,
     });
   }
@@ -69,7 +69,7 @@ export const createOrUpdateContract = async (req: Request, res: Response) => {
       {
         new: true, // Return the updated document
         upsert: true, // Create a new document if one doesn't exist
-      },
+      }
     );
 
     return res.json(updatedContract);
