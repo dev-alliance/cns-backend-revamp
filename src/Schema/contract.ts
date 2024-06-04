@@ -1,36 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import mongoose, { Schema } from "mongoose";
 
-// interface Overview {
-//   name: string;
-//   vendor: string;
-//   currency: string;
-//   value: number;
-//   category: string;
-//   tags: string[];
-//   branch: string;
-//   team: string;
-//   contractType: string;
-//   status: string;
-// }
-
-// interface Lifecycle {
-//   startDate: Date;
-//   endDate: Date;
-//   noticePeriodDate: Date;
-//   renewalOwners: string[];
-// }
-
-// interface Discussions {
-//   userid: string;
-//   comment: string;
-//   mentions: [];
-//   date_time: Date;
-// }
-
 interface Contract extends mongoose.Document {
   userId: object;
-  overview: object;
+  overview: any;
   lifecycle: object;
   discussions: string[];
   attachments: string[];
@@ -43,24 +16,38 @@ interface Contract extends mongoose.Document {
 const contractSchema = new mongoose.Schema<Contract>({
   userId: {
     type: Schema.Types.ObjectId,
-    ref: "User", // Reference to the User schema
-    // required: true,
-  },
-  overview: {
-    type: Schema.Types.Mixed, // Allows for any arbitrary object structure
+    ref: "cns.users",
+    required: false,
   },
   // overview: {
-  //   name: String,
-  //   vendor: String,
-  //   currency: String,
-  //   value: Number,
-  //   category: String,
-  //   tags: [String],
-  //   branch: String,
-  //   team: String,
-  //   contractType: String,
-  //   status: String,
+  //   type: Schema.Types.Mixed, // Allows for any arbitrary object structure
   // },
+  overview: {
+    name: String,
+    with_name: String,
+    vendor: String,
+    currency: String,
+    value: String,
+    subcategory: String,
+    category: {
+      ref: "categories",
+      type: mongoose.Schema.Types.ObjectId,
+      required: false,
+    },
+    tags: {
+      ref: "tags",
+      type: mongoose.Schema.Types.ObjectId,
+      required: false,
+    },
+    branch: String,
+    team: {
+      ref: "team",
+      type: mongoose.Schema.Types.ObjectId,
+      required: false,
+    },
+    contractType: String,
+    status: String,
+  },
   // lifecycle: {
   //   startDate: Date,
   //   endDate: Date,
@@ -80,5 +67,5 @@ const contractSchema = new mongoose.Schema<Contract>({
 
 export const Contract = mongoose.model<Contract>(
   "cns.contracts",
-  contractSchema,
+  contractSchema
 );
