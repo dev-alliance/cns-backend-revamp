@@ -5,11 +5,11 @@ interface Contract extends mongoose.Document {
   userId: object;
   overview: any;
   lifecycle: object;
-  discussions: string[];
-  attachments: string[];
+  discussions: any[];
+  attachments: any[];
   shareWith: string[];
-  collaburater: string[];
-  approval: string[];
+  collaburater: any[];
+  approval: any[];
   signature: mongoose.Schema.Types.Mixed[];
 }
 
@@ -40,32 +40,28 @@ const contractSchema = new mongoose.Schema<Contract>({
       required: false,
     },
     branch: String,
-    team: {
+    teams: {
       ref: "team",
       type: mongoose.Schema.Types.ObjectId,
       required: false,
     },
     contractType: String,
     status: String,
+    wordDocumentData: String,
   },
-  // lifecycle: {
-  //   startDate: Date,
-  //   endDate: Date,
-  //   noticePeriodDate: Date,
-  //   renewalOwners: [String],
-  // },
+
   lifecycle: {
     type: Schema.Types.Mixed, // Allows for any arbitrary object structure
   },
   discussions: [Schema.Types.Mixed],
-  attachments: [String],
+  attachments: [Schema.Types.Mixed],
   shareWith: [String],
-  collaburater: [String],
-  approval: [String],
+  collaburater: [Schema.Types.Mixed],
+  approval: [Schema.Types.Mixed],
   signature: [Schema.Types.Mixed],
 });
 
 export const Contract = mongoose.model<Contract>(
   "cns.contracts",
-  contractSchema,
+  contractSchema
 );
