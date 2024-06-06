@@ -96,33 +96,50 @@ export const updateContract = async (req: Request, res: Response) => {
 };
 export const getAllContract = async (req: Request, res: Response) => {
   try {
-    const userId = req.params.id;
+    const userId = req.params.id; // Assuming 'id' is the user's ID passed in the URL
     console.log(userId, "id");
 
-    const contract = await Contract.find({ id: userId })
-      .populate({
-        path: "overview.teams",
-        select: "name _id",
-      })
-      .populate({
-        path: "overview.category",
-        select: "name _id",
-      })
-      .populate({
-        path: "overview.tags",
-        select: "name _id",
-      });
-    // .select("branchName manager status");
-    res.send(contract);
+    // Querying the database for contracts where 'contractType' is not 'template'
+    const contracts = await Contract.find({
+      userId: userId, // assuming you have a userId field in your contract documents
+      contractType: { $ne: "template" }, // Using $ne to filter out 'template'
+    });
+
+    res.send(contracts);
     // res.status(200).json({ ok: true, data: contract });
   } catch (error: any) {
+    console.error("Failed to retrieve contracts:", error);
     res.status(500).json({
       ok: false,
-      message: "Failed to retrieve branch.",
+      message: "Failed to retrieve contracts.",
       error: error.message,
     });
   }
 };
+
+export const getAllContractTemplate = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.id; // Assuming 'id' is the user's ID passed in the URL
+    console.log(userId, "id");
+
+    // Directly querying the database for contracts with 'contractType' equal to 'template'
+    const contracts = await Contract.find({
+      userId: userId, // assuming you have a userId field in your contract documents
+      contractType: "template", // Ensure this field exists in your schema and is indexed
+    });
+
+    res.send(contracts);
+    // res.status(200).json({ ok: true, data: contract });
+  } catch (error: any) {
+    console.error("Failed to retrieve contracts:", error);
+    res.status(500).json({
+      ok: false,
+      message: "Failed to retrieve contracts.",
+      error: error.message,
+    });
+  }
+};
+
 export const createOrUpdateContract = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
