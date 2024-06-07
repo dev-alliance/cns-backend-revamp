@@ -13,6 +13,7 @@ interface Contract extends mongoose.Document {
   signature: mongoose.Schema.Types.Mixed[];
   createdBy: any;
   contractType: any;
+  status: any;
 }
 
 const contractSchema = new mongoose.Schema<Contract>(
@@ -49,7 +50,6 @@ const contractSchema = new mongoose.Schema<Contract>(
         required: false,
       },
 
-      status: String,
       wordDocumentData: String,
     },
 
@@ -64,13 +64,14 @@ const contractSchema = new mongoose.Schema<Contract>(
     signature: [Schema.Types.Mixed],
     createdBy: String,
     contractType: String,
+    status: String,
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 export const Contract = mongoose.model<Contract>(
   "cns.contracts",
-  contractSchema,
+  contractSchema
 );
