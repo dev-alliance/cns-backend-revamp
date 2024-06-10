@@ -38,13 +38,14 @@ app.use(
     origin: (origin, callback) => callback(null, origin || "*"),
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     credentials: true,
-  }),
+  })
 );
 
 app.use("/uploads", express.static("uploads"));
 app.use(morgan("tiny"));
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+
+app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
+app.use(bodyParser.json({ limit: "50mb" }));
 
 app.use("/api/v1/health", health);
 app.use("/api/auth", auth);

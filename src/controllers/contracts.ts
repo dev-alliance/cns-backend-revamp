@@ -4,7 +4,23 @@ import { Contract } from "../Schema/contract";
 import { SUCCESS_CODES } from "../../constants/successCode";
 import { ERROR_CODES } from "../../constants/errorCodes";
 import mongoose from "mongoose";
+import fs from "fs";
+import path from "path";
+// const CLIENT_ID =
+//   "515496484897-k1rlv3mba7lm3fb5l3sseku8dkvh2msm.apps.googleusercontent.com";
+// const CLIENT_SECRET = "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";
+// const REFRESH_TOKEN =
+//   "1//04sNLIVBl7eOzCgYIARAAGAQSNgF-L9IrKmeVcawXBE1EA9hM9sN72_PCefp-d1FsWpiDuh02VzxGpdrks5ABfIMXPueZrIG6fQ";
+// const USER_EMAIL = "dev.alliancetech@gmail.com"; // This should be the Google user's email
 
+import AWS from "aws-sdk";
+AWS.config.update({
+  accessKeyId: "AKIAYIZRJVUCAVYDISPU",
+  secretAccessKey: "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",
+  region: "ap-southeast-2",
+});
+
+const s3 = new AWS.S3();
 export const getContractsByUserId = async (req: Request, res: Response) => {
   try {
     const contracts = await Contract.findById(req.params.id);
@@ -33,8 +49,35 @@ export const createContract = async (req: Request, res: Response) => {
         contractData.overview[field] = undefined; // Set invalid ObjectId fields to undefined
       }
     });
+    let fileUrl;
+    if (contractData.pdfData) {
+      const base64Data = contractData.pdfData.replace(
+        /^data:application\/pdf;base64,/,
+        ""
+      );
+      const buffer = Buffer.from(base64Data, "base64");
+      const fileName = `contract-${Date.now()}.pdf`;
+
+      const uploadParams = {
+        Bucket: "your-s3-bucket-name",
+        Key: `uploads/${fileName}`,
+        Body: buffer,
+        ContentType: "application/pdf",
+      };
+
+      try {
+        const uploadResult = await s3.upload(uploadParams).promise();
+        fileUrl = uploadResult.Location; // This is the URL of the uploaded PDF
+        contractData.pdfData = fileUrl; // Save the URL in the database
+        console.log(fileUrl);
+      } catch (error) {
+        console.error("Error in uploading PDF to S3", error);
+        throw error;
+      }
+    }
 
     const newContract = await Contract.create(contractData);
+
     res.status(201).json({
       ok: true,
       message: "Contract created successfully!",
@@ -70,7 +113,7 @@ export const updateContract = async (req: Request, res: Response) => {
     const updatedContract = await Contract.findByIdAndUpdate(
       contractId,
       contractUpdates,
-      { new: true }, // This option returns the updated document
+      { new: true } // This option returns the updated document
     );
 
     if (!updatedContract) {
@@ -155,7 +198,7 @@ export const createOrUpdateContract = async (req: Request, res: Response) => {
       {
         new: true, // Return the updated document
         upsert: true, // Create a new document if one doesn't exist
-      },
+      }
     );
 
     return res.json(updatedContract);
