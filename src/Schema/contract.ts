@@ -74,10 +74,10 @@ const contractSchema = new mongoose.Schema<Contract>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 export const Contract = mongoose.model<Contract>(
   "cns.contracts",
-  contractSchema
+  contractSchema,
 );
