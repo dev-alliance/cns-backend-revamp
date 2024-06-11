@@ -16,6 +16,7 @@ interface Contract extends mongoose.Document {
   status: any;
   wordDocumentData: any;
   pdfData: any;
+  uploadedWordData: any;
 }
 
 const contractSchema = new mongoose.Schema<Contract>(
@@ -51,8 +52,6 @@ const contractSchema = new mongoose.Schema<Contract>(
         type: mongoose.Schema.Types.ObjectId,
         required: false,
       },
-
-      wordDocumentData: String,
     },
 
     lifecycle: {
@@ -68,16 +67,17 @@ const contractSchema = new mongoose.Schema<Contract>(
     contractType: String,
     status: String,
     wordDocumentData: String,
+    uploadedWordData: String,
     pdfData: {
       type: Schema.Types.Mixed, // Allows for any arbitrary object structure
     },
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 export const Contract = mongoose.model<Contract>(
   "cns.contracts",
-  contractSchema,
+  contractSchema
 );
