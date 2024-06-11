@@ -78,7 +78,7 @@ export const updateContract = async (req: Request, res: Response) => {
     const updatedContract = await Contract.findByIdAndUpdate(
       contractId,
       contractUpdates,
-      { new: true } // This option returns the updated document
+      { new: true }, // This option returns the updated document
     );
 
     if (!updatedContract) {
@@ -175,7 +175,7 @@ export const createOrUpdateContract = async (req: Request, res: Response) => {
       {
         new: true, // Return the updated document
         upsert: true, // Create a new document if one doesn't exist
-      }
+      },
     );
 
     return res.json(updatedContract);
