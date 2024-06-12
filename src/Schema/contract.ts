@@ -34,6 +34,7 @@ const contractSchema = new mongoose.Schema<Contract>(
       with_name: String,
       vendor: String,
       currency: String,
+      disription: String,
       value: String,
       subcategory: String,
       category: {
@@ -74,10 +75,10 @@ const contractSchema = new mongoose.Schema<Contract>(
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 export const Contract = mongoose.model<Contract>(
   "cns.contracts",
-  contractSchema,
+  contractSchema
 );
