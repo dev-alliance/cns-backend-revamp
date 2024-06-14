@@ -19,7 +19,7 @@ export interface IUserDocument {
   mobile: string;
   email: string;
   password: string;
-  role: mongoose.Schema.Types.ObjectId;
+  role: any;
   emailVerified: boolean;
   image: string;
   status: string;
@@ -39,7 +39,7 @@ const loginHistorySchema = new mongoose.Schema<IHistory>(
       type: Date,
     },
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 const userSchema = new mongoose.Schema<IUserDocument>(
@@ -130,7 +130,7 @@ const userSchema = new mongoose.Schema<IUserDocument>(
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 //converting Email to LowerCase
@@ -149,7 +149,7 @@ userSchema.methods.getJWTToken = function () {
     process.env.JWT_SECRET!,
     {
       expiresIn: process.env.JWT_EXPIRE,
-    },
+    }
   );
 };
 
