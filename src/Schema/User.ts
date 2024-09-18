@@ -155,17 +155,21 @@ userSchema.methods.getJWTToken = function () {
 
 //Hashing Password Before Saving User
 userSchema.pre("save", async function (next) {
-  try {
+  try{
     if (this.isModified("password")) {
       this.password = await bcrypt.hash(this.password, 10);
     }
     next();
   }
-  catch (e) {
+  catch(e){
     console.log(e)
     next()
   }
 });
+//Comparing Password for Login
+userSchema.methods.comparePassword = async function (enteredPassword: string) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
 
 //Generating Password Reset Token
 // userSchema.methods.getResetPasswordToken = function () {
