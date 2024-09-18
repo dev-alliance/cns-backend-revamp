@@ -126,7 +126,6 @@ export const getAllContract = async (req: Request, res: Response) => {
         select: "name _id",
       });
 
-      
     res.send(contracts);
     // res.status(200).json({ ok: true, data: contract });
   } catch (error: any) {

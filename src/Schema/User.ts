@@ -155,15 +155,14 @@ userSchema.methods.getJWTToken = function () {
 
 //Hashing Password Before Saving User
 userSchema.pre("save", async function (next) {
-  try{
+  try {
     if (this.isModified("password")) {
       this.password = await bcrypt.hash(this.password, 10);
     }
     next();
-  }
-  catch(e){
-    console.log(e)
-    next()
+  } catch (e) {
+    console.log(e);
+    next();
   }
 });
 //Comparing Password for Login
