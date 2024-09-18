@@ -1,6 +1,24 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import mongoose, { Schema } from "mongoose";
 
+
+interface Replies {
+  text: string;
+  date: Date;
+  userId: object;
+}
+
+export interface Comments {
+  style: object;
+  range: object;
+  access: string;
+  date: Date;
+  userId: object;
+  text: string;
+  replies?: Replies[];
+  contractId: object;
+}
+
 interface Contract extends mongoose.Document {
   userId: object;
   overview: any;
@@ -17,9 +35,10 @@ interface Contract extends mongoose.Document {
   wordDocumentData: any;
   pdfData: any;
   uploadedWordData: any;
-  pages:any[];
-  pageSize:object;
-  pageMargins:object
+  pages: any[];
+  pageSize: object;
+  pageMargins: object;
+  comments: [Comments]
 }
 
 const contractSchema = new mongoose.Schema<Contract>(
@@ -75,18 +94,18 @@ const contractSchema = new mongoose.Schema<Contract>(
     pdfData: {
       type: Schema.Types.Mixed, // Allows for any arbitrary object structure
     },
-    pages:{
-      type:[]
+    pages: {
+      type: []
     },
-    pageSize:{
-      type:Schema.Types.Mixed,
-      required:true
+    pageSize: {
+      type: Schema.Types.Mixed,
+      required: true
     },
-    pageMargins:{
-      type:Schema.Types.Mixed,
-      required:true
+    pageMargins: {
+      type: Schema.Types.Mixed,
+      required: true
     },
-    
+    comments: []
   },
   {
     timestamps: true,
