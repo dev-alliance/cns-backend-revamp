@@ -17,6 +17,9 @@ interface Contract extends mongoose.Document {
   wordDocumentData: any;
   pdfData: any;
   uploadedWordData: any;
+  pages:any[];
+  pageSize:object;
+  pageMargins:object
 }
 
 const contractSchema = new mongoose.Schema<Contract>(
@@ -72,6 +75,18 @@ const contractSchema = new mongoose.Schema<Contract>(
     pdfData: {
       type: Schema.Types.Mixed, // Allows for any arbitrary object structure
     },
+    pages:{
+      type:[]
+    },
+    pageSize:{
+      type:Schema.Types.Mixed,
+      required:true
+    },
+    pageMargins:{
+      type:Schema.Types.Mixed,
+      required:true
+    },
+    
   },
   {
     timestamps: true,
