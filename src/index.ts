@@ -27,7 +27,6 @@ import company from "./routes/compony";
 import approval from "./routes/approval";
 import role from "./routes/role";
 
-
 const PORT: number = config.get<number>("port");
 const MONGOURI = config.get<string>("mongoURI");
 // const MONGOURI = `mongodb://localhost:27017/cns`;
