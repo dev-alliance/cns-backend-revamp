@@ -34,10 +34,13 @@ interface Contract extends mongoose.Document {
   wordDocumentData: any;
   pdfData: any;
   uploadedWordData: any;
-  pages: any[];
-  pageSize: object;
-  pageMargins: object;
-  comments: [Comments];
+  pages:any[];
+  pageSize:object;
+  pageMargins:object;
+  comments:[Comments];
+  newFonts:any[];
+  newFontStyles:any[];
+  newFontSize:any[]
 }
 
 const contractSchema = new mongoose.Schema<Contract>(
@@ -93,18 +96,21 @@ const contractSchema = new mongoose.Schema<Contract>(
     pdfData: {
       type: Schema.Types.Mixed, // Allows for any arbitrary object structure
     },
-    pages: {
-      type: [],
+    pages:{
+      type:[]
     },
-    pageSize: {
-      type: Schema.Types.Mixed,
-      required: true,
+    pageSize:{
+      type:Schema.Types.Mixed,
+      required:true
     },
-    pageMargins: {
-      type: Schema.Types.Mixed,
-      required: true,
+    pageMargins:{
+      type:Schema.Types.Mixed,
+      required:true
     },
-    comments: [],
+    comments:[],
+    newFonts:[],
+    newFontSize:[],
+    newFontStyles:[]
   },
   {
     timestamps: true,
